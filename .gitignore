@@ -1,0 +1,9 @@
+# Packages
+node_modules/
+
+# Hardhat build outputs
+artifacts/
+cache/
+
+# Webapp build outputs
+build/
