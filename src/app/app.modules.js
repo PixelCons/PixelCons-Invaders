@@ -107,34 +107,6 @@
 				}
 				return _locationPath.apply($location, [path]);
 			};
-			
-			// update background according to account data
-			var backgroundAccount = null;
-			function updateBackgroundForAccount() {
-				web3Service.awaitState(async function() {
-					try {
-						let loadedAccount = web3Service.getActiveAccount();
-						if(backgroundAccount != loadedAccount) {
-							backgroundAccount = loadedAccount;
-							if(backgroundAccount) {
-								let pixelcons = await coreContract.fetchPixelconsByAccount(backgroundAccount, {simpleFetch: true});
-								if(pixelcons && pixelcons.length) {
-									let pixelconIds = [];
-									for(let i=0; i<pixelcons.length; i++) pixelconIds.push(pixelcons[i].id);
-									let backgroundImage = decoder.generateTiledImage(pixelconIds, 7, 7, 8, null, true, true, false);
-									updateBackground(backgroundImage, 500);
-									
-								} else {
-									let backgroundImage = decoder.generateTiledImage([], 7, 7, 8, null, true, true, false);
-									updateBackground(backgroundImage, 500);
-								}
-							}
-						}
-					} catch(err) { }
-				}, true);
-			}
-			web3Service.onAccountDataChange(updateBackgroundForAccount, null, true);
-			updateBackgroundForAccount();
 
 			// pre-load dialogs
 			$http.get(HTMLTemplates['dialog.collection'], { cache: $templateCache });

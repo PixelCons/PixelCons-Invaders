@@ -2,7 +2,6 @@ div.header {
 	position: relative;
 	width: 100%;
 	height: 80px;
-	background-color: #fafafa;
 	z-index: 5;
 }
 div.header.sm {
@@ -49,27 +48,11 @@ div.header.sm .pixelconTitle .pixelconLogoText {
 	font-size: 15px;
 	margin-left: -11px;
 }
-div.header .pixelconTitle .pixelconPageText {
-	line-height: 20px;
-	height: 20px;
-	margin-right: auto;
-	text-transform: uppercase;
-	font-family: Roboto, "Helvetica Neue", sans-serif;
-	font-size: 14px;
-	border-bottom: 2px solid #2196f3;
-}
-div.header.sm .pixelconTitle .pixelconPageText {
-	margin-right: 10px;
-}
-div.header .pixelconTitle .pixelconPageText.noShow {
-	max-width: 0px;
-	overflow: hidden;
-}
 
 /* Menu Buttons */
 div.header .menuButtons {
 	position: absolute;
-	right: 80px;
+	right: 65px;
 	top: 16px;
 }
 div.header.md .menuButtons {
@@ -88,7 +71,7 @@ div.header.sm .menuButtons button.start {
 }
 div.header .menuButtons button.nav.highlight {
 	margin-bottom: 3px;
-	border-bottom: 3px solid #2196f3;
+	border-bottom: 3px solid #5591c1;
 	border-radius: 0px;
 }
 div.header.md .menuButtons button.nav {
@@ -121,6 +104,9 @@ div.header .menuButtons md-menu {
 div.header.sm .menuButtons md-menu {
 	display: inline;
 }
+div.header button.quickButton {
+	min-width: 0px;
+}
 div.header .marketButton {
 	position: absolute;
 	top: 15px;
@@ -145,13 +131,15 @@ div.header.sm .marketButton button {
 	padding-right: 4px;
 	min-height: 33px;
 }
+div.header.sm .marketButton .buttonIcon {
+	margin-top: 5px;
+}
 
 /* User Icon */
 div.header .accountIcon {
 	position: absolute;
 	padding: 4px;
 	border-radius: 6px;
-	background-color: #ffffff;
 	right: 10px;
 	top: 10px;
 	width: 48px;
@@ -177,6 +165,11 @@ div.header .connectButton div {
 	position: absolute;
 	top: 12px;
 	left: 4px;
+	font-size: 12px;
+	color: #f1f1f1;
+}
+div.header.sm .connectButton div {
+    font-size: 10px;
 }
 div.header .iconFill {
 	position: relative;

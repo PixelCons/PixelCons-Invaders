@@ -3,7 +3,6 @@ div.footer {
 	width: 100%;
 	height: 100px;
 	margin-top: -100px;
-	background-color: #fafafa;
 }
 div.footerSpacer {
 	width: 100%;
@@ -63,24 +62,24 @@ div.footer .socialLink {
 	background-repeat: no-repeat;
 	background-size: contain;
 	cursor: pointer;
-	opacity: 0.45;
-	filter: alpha(opacity=45);
+	opacity: 0.8;
+	filter: alpha(opacity=80);
 }
 div.footer .socialLink:hover {
-	opacity: 0.9;
-	filter: alpha(opacity=90);
+	opacity: 1.0;
+	filter: alpha(opacity=100);
 }
 div.footer .socialLink.github {
-	background-image: url("/img/icon_github.svg");
+	background-image: url("/img/icon_github_w.svg");
 }
 div.footer .socialLink.twitter {
-	background-image: url("/img/icon_twitter.svg");
+	background-image: url("/img/icon_twitter_w.svg");
 }
 div.footer .socialLink.discord {
-	background-image: url("/img/icon_discord.svg");
+	background-image: url("/img/icon_discord_w.svg");
 }
 div.footer .socialLink.opensea {
-	background-image: url("/img/icon_opensea.svg");
+	background-image: url("/img/icon_opensea_w.svg");
 }
 div.footer .tipButton {
 	min-width: 60px;
@@ -103,8 +102,8 @@ div.footer .settingsButton .settingsButtonIcon {
     background-image: url(/img/icon_settings.svg);
     background-position: center;
     background-repeat: no-repeat;
-	opacity: 0.65;
-	filter: alpha(opacity=65);
+	opacity: 0.6;
+	filter: alpha(opacity=60);
 }
 div.footer .copyright {
 	position: absolute;

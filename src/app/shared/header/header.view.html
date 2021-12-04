@@ -1,9 +1,9 @@
-<div class="header md-whiteframe-1dp" ng-class="ctrl.screenSize">
+<div class="header colorLight md-whiteframe-1dp" ng-class="ctrl.screenSize">
 	
 	<!-- Buttons -->
 	<a ng-href="{{ctrl.marketLink}}" target="_blank" class="marketButton plain textDark" ng-if="ctrl.marketEnabled">
 		<md-button class="md-raised">
-			<div class="buttonIcon market"></div>
+			<div class="buttonIcon dark market"></div>
 			{{ctrl.screenSize.sm?'':ctrl.marketName}}
 		</md-button>
 	</a>
@@ -11,19 +11,18 @@
 		<a href="/search" class="plain textDark">
 			<md-button class="nav" ng-class="{'highlight':ctrl.page=='browse'}" ng-click="ctrl.goPath('/search')">
 				<div class="buttonIcon search"></div>
-				{{ctrl.screenSize.sm?'':(ctrl.screenSize.md?'BRW':'Browse')}}
+				{{ctrl.screenSize.sm?'':(ctrl.screenSize.md?'':'Invaders')}}
 			</md-button>
 		</a>
 		<a href="/create" class="plain textDark">
 			<md-button class="nav" ng-class="{'highlight':ctrl.page=='create'}" ng-click="ctrl.goPath('/create')">
 				<div class="buttonIcon create"></div>
-				{{ctrl.screenSize.sm?'':(ctrl.screenSize.md?'CR8':'Create')}}
+				{{ctrl.screenSize.sm?'':(ctrl.screenSize.md?'':'Uncover New')}}
 			</md-button>
 		</a>
 		<a href="/account" class="plain textDark">
-			<md-button class="nav" ng-class="{'highlight':ctrl.page=='account'}" ng-show="ctrl.loggedIn" ng-click="ctrl.goPath('/account')">
+			<md-button class="nav quickButton" ng-class="{'highlight':ctrl.page=='account'}" ng-show="ctrl.loggedIn" ng-click="ctrl.goPath('/account')">
 				<div class="buttonIcon account"></div>
-				{{ctrl.screenSize.sm?'':(ctrl.screenSize.md?'ACC':'Account')}}
 			</md-button>
 		</a>
 		
@@ -42,20 +41,20 @@
 	</a>
 	
 	<!-- User Account -->
-	<div ng-if="ctrl.privacyMode" class="accountIcon connectButton clickable textBold textSmall textWhite md-whiteframe-1dp" ng-click="ctrl.connect()">
+	<div ng-if="ctrl.privacyMode" class="accountIcon colorDark connectButton clickable textBold textSmall textWhite md-whiteframe-1dp" ng-click="ctrl.connect()">
 		<img class="iconFill" ng-src="img/icon_account.svg"/>
 		<div>Connect Account</div>
 	</div>
-	<div class="accountIcon md-whiteframe-1dp" ng-if="ctrl.web3error">
+	<div class="accountIcon colorDark md-whiteframe-1dp" ng-if="ctrl.web3error">
 		<img class="iconFill" ng-src="img/icon_error.svg"/>
 		<md-tooltip md-direction="bottom">Error Connecting to Network</md-tooltip>
 	</div>
-	<div class="accountIcon md-whiteframe-1dp" ng-if="ctrl.loggedIn && !ctrl.accountAddress && !ctrl.privacyMode">
+	<div class="accountIcon colorDark md-whiteframe-1dp" ng-if="ctrl.loggedIn && !ctrl.accountAddress && !ctrl.privacyMode">
 		<img class="iconFill" ng-src="img/icon_account.svg"/>
 		<md-tooltip md-direction="bottom">Please log into {{ctrl.web3ProviderName}}</md-tooltip>
 	</div>
 	<md-menu ng-if="ctrl.loggedIn && ctrl.accountAddress" md-position-mode="target-right target">
-		<div class="accountIcon clickable crispImage md-whiteframe-1dp" ng-click="ctrl.showActivityMenu($mdOpenMenu)">
+		<div class="accountIcon colorDark clickable crispImage md-whiteframe-1dp" ng-click="ctrl.showActivityMenu($mdOpenMenu)">
 			<div class="iconFill" ng-mouseenter="ctrl.showActivityMenu($mdOpenMenu)" ng-mouseleave="ctrl.cancelActivityMenu()">
 				<img class="iconFill" ng-src="{{ctrl.userIcon}}"/>
 				<img ng-show="ctrl.waitingTransactions.length>0" class="iconFillOverlay crispImage" src="img/loading.gif"/>

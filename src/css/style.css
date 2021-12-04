@@ -39,19 +39,19 @@
 
 /* Colors */
 .colorDark {
-	background-color: #333333;
+	background-color: #f2f2f2;
 }
 .colorDarkOverlay {
 	background-color: rgba(242, 242, 242, 0.7);
 }
 .colorLight {
-	background-color: #f7f7f7;
+	background-color: #525252;
 }
 .colorGray {
-	background-color: #d2d2d2;
+	background-color: #f7f7f7;
 }
 .colorWhite {
-	background-color: #ffffff;
+	background-color: #333333;
 }
 .colorYellow {
 	background-color: #efd273;
@@ -130,16 +130,16 @@
 	color: grey;
 }
 .textDark {
-	color: #333333;
+	color: #f2f2f2;
 }
 .textLight {
-	color: #717171;
-}
-.textLighter {
 	color: #a1a1a1;
 }
+.textLighter {
+	color: #717171;
+}
 .textWhite {
-	color: #f2f2f2;
+	color: #333333;
 }
 
 /* Icon Button */
@@ -165,20 +165,24 @@
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;
-	opacity: 0.7;
-	filter: alpha(opacity=70);
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+}
+.buttonIcon.dark {
+	opacity: 0.6;
+	filter: alpha(opacity=60);
 }
 .buttonIcon.market {
 	background-image: url("/img/icon_market.svg");
 }
 .buttonIcon.search {
-	background-image: url("/img/icon_search.svg");
+	background-image: url("/img/icon_explore_w.svg");
 }
 .buttonIcon.account {
-	background-image: url("/img/icon_wallet.svg");
+	background-image: url("/img/icon_wallet_w.svg");
 }
 .buttonIcon.create {
-	background-image: url("/img/icon_create.svg");
+	background-image: url("/img/icon_scan_w.svg");
 }
 .buttonIcon.download {
 	background-image: url("/img/icon_download.svg");
@@ -198,8 +202,6 @@ div.pageContent {
 div.pageContentBackground {
 	min-height: 100%;
 	background-image: url("../img/back.png");
-	background-size: 560px;
-    background-position: 32px 40px;
 }
 div.pageContentBackground.groupOverride {
 	background-image: url("../img/back.png");
@@ -213,6 +215,17 @@ div.md-open-menu-container {
 	font-size: 0px;
 	width: auto !important;
 	display: inline-block !important;
+}
+
+/* Color override */
+button.md-button.md-primary.md-raised {
+	background-color: #5591c1;
+}
+button.md-button.md-raised {
+	color: #525252;
+}
+button.md-button.md-raised.dim {
+	background-color: #dcdcdc;
 }
 
 /* Share links */
@@ -276,7 +289,6 @@ a.plain:visited,
 a.plain:hover,
 a.plain:active {
 	text-decoration: none;
-	color: unset;
 }
 a.buttonLink {
 	display: block;
