@@ -187,15 +187,6 @@
 
 		// Search for similar pixelcons
 		function searchSimilar() {
-			$mdDialog.show({
-				controller: 'SimilaritiesDialogCtrl',
-				controllerAs: 'ctrl',
-				templateUrl: HTMLTemplates['dialog.similarities'],
-				parent: angular.element(document.body),
-				locals: { pixelconId: _this.pixelconId },
-				bindToController: true,
-				clickOutsideToClose: true
-			});
 		}
 
 		// Gets page relevant pixelcon from list

@@ -1,9 +1,44 @@
 <div class="pixelconSearchPage" ng-class="ctrl.screenSize">
 	<div class="topSpacer"></div>
 	
+	<div class="topFilter" ng-class="{'expanded': ctrl.filterOpen}">
+	
+		<md-button class="topFilterButton" ng-click="ctrl.filterOpen = !ctrl.filterOpen">
+			<div class="buttonIcon filter"></div>
+		</md-button>
+		<md-button class="topFilterButton" ng-click="">
+			<div class="buttonIcon share"></div>
+		</md-button>
+		
+		
+		
+		
+		
+		
+		<md-button class="topFilterButton right" ng-click="">
+			<div class="buttonIcon large"></div>
+		</md-button>
+		<md-button class="topFilterButton right" ng-click="">
+			<div class="buttonIcon small"></div>
+		</md-button>
+		<md-select class="md-no-underline right" ng-model="ctrl.sortBy">
+			<md-option value="createdDesc">Uncovered Desc</md-option>
+			<md-option value="createdAsc">Uncovered Asc</md-option>
+		</md-select>
+		
+		
+		
+		
+		<div class="">
+			
+		</div>
+			
+	</div>
+	
+	<!--
 	<div class="accountCard colorLight">
 		
-		<!-- Header -->
+		<!-- Header --
 		<div class="searchFilter">
 			<div class="searchBar">
 				<form ng-submit="ctrl.checkUpdateData()">
@@ -26,30 +61,30 @@
 		</div>
 		
 		
-		<!-- Viewer window -->
+		<!-- Viewer window --
 		<div id="searchPagePixelconWindow" class="displayWindow colorDark"  ng-style="{'min-height': ctrl.displayHeight}">
 		
-			<!-- Error -->
+			<!-- Error --
 			<div class="error colorLight textSelectable" ng-show="ctrl.error" ng-bind-html="ctrl.error"></div>
 		
-			<!-- Empty -->
+			<!-- Empty --
 			<div class="error colorLight textSelectable" ng-show="!ctrl.error && !ctrl.loading && !ctrl.grabbingData && ctrl.pixelcons.length==0">
 				No PixelCons
 			</div>
 		
-			<!-- Loading -->
+			<!-- Loading --
 			<div class="loading colorLight" ng-show="ctrl.loading || ctrl.grabbingData">
 				<img class="crispImage" src="img/loading.gif" alt="Loading.." height="100%" width="100%"/>
 			</div>
 		
-			<!-- PixelCon -->
+			<!-- PixelCon --
 			<div class="displayTable">
 				<pixelconcard class="pixelconCard" pixelcon="pixelcon" size="{{(ctrl.screenSize.sm)?'xs':(ctrl.screenSize.md?'sm':'md')}}" ng-repeat="pixelcon in ctrl.pixelcons track by $index"></pixelconcard>
 			</div>
 		</div>
 
 		
-		<!-- Paging -->
+		<!-- Paging --
 		<div class="searchPaging">
 			<section layout="row" layout-align="left">
 				<md-button ng-click="ctrl.updatePage(ctrl.currPage-1)" ng-disabled="ctrl.currPage<=1" class="pageButton previous" aria-label="Page Previous"></md-button>
@@ -67,7 +102,7 @@
 			<div class="pagingText textLight" ng-if="ctrl.maxPage && !ctrl.screenSize.sm"><b>{{ctrl.maxPage}}</b> Pages</div>
 		</div>
 	</div>
-	
+	-->
 	
 	<div class="bottomSpacer"></div>
 	<div class="footerSpacer"></div>

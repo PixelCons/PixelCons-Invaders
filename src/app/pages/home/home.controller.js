@@ -5,10 +5,10 @@
 	HomePageCtrl.$inject = ['$scope', '$mdMedia', '$window', '$location', '$timeout', '$interval', 'decoder', 'market'];
 	function HomePageCtrl($scope, $mdMedia, $window, $location, $timeout, $interval, decoder, market) {
 		var _this = this;
-		const slideWidth = 380;
-		const slideAutoScrollDelay = 5000;
-		_this.marketName = market.getMarketName();
-		_this.sliderDotClick = sliderDotClick;
+		//const slideWidth = 380;
+		//const slideAutoScrollDelay = 5000;
+		//_this.marketName = market.getMarketName();
+		//_this.sliderDotClick = sliderDotClick;
 
 		// Watch for screen size changes
 		_this.screenSize = {};
@@ -16,6 +16,7 @@
 		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
 		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 
+/*
 		// Curated collections
 		_this.facesCollection = [
 			'0x9a4994999499994999999999920990299cc99cc99cc77cc99cc00cc99cc9acc9',
@@ -310,5 +311,6 @@
 		angular.element(slideScrollerContainer).bind('touchcancel', sliderMouseLeave);
 		
 		recalcSliderSize($window.innerWidth);
+*/
 	}
 }());

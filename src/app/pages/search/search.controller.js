@@ -5,6 +5,12 @@
 	SearchPageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', 'web3Service', 'coreContract'];
 	function SearchPageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, web3Service, coreContract) {
 		var _this = this;
+		_this.sortBy = 'createdDesc';
+		
+		
+		
+		
+		
 		const maxInPage = 50;
 		const minGrade = 8;
 		_this.pixelcons = [];

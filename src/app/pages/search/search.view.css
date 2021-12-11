@@ -17,6 +17,119 @@ div.pixelconSearchPage.sm div.bottomSpacer {
 	height: 20px;
 }
 
+/* Top Filter */
+div.pixelconSearchPage div.topFilter {
+	width: calc(100% - 60px);
+	max-width: 1280px;
+	margin: 0 auto;
+	font-size: 0px;
+	padding: 0px 5px;
+	background-color: #80808093;
+	height: 45px;
+}
+div.pixelconSearchPage div.topFilter.expanded {
+	height: 245px;
+}
+div.pixelconSearchPage.sm div.topFilter {
+	width: calc(100% - 24px);
+}
+
+div.pixelconSearchPage md-select {
+	display: inline-block;
+	vertical-align: middle;
+	margin: 7px 0px;
+	margin-right: 10px;
+	font-size: 14px;
+	color: #f2f2f2;
+}
+div.pixelconSearchPage md-select:focus div.md-text {
+	color: #f2f2f2;
+}
+div.pixelconSearchPage md-select div.md-text {
+	margin-left: 30px;
+}
+div.pixelconSearchPage md-select .md-select-icon {
+	background-image: url(/img/icon_sort_w.svg);
+    width: 20px;
+    height: 20px;
+    color: #00000000;
+	position: absolute;
+}
+
+div.pixelconSearchPage button.topFilterButton {
+    margin-left: 0px;
+    margin-right: 0px;
+    min-width: 0px;
+    height: 0px;
+    padding: 0px 4px;
+    min-height: 33px;
+}
+div.pixelconSearchPage .right {
+	float: right;
+}
+div.pixelconSearchPage button.topFilterButton .buttonIcon {
+	margin-top: 4px;
+}
+div.pixelconSearchPage .buttonIcon.filter {
+	background-image: url(/img/icon_filter_w.svg);
+}
+div.pixelconSearchPage .buttonIcon.share {
+	background-image: url(/img/icon_share_w.svg);
+}
+div.pixelconSearchPage .buttonIcon.small {
+	background-image: url(/img/icon_small_w.svg);
+}
+div.pixelconSearchPage .buttonIcon.large {
+	background-image: url(/img/icon_large_w.svg);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Search Card Container */
 div.pixelconSearchPage div.accountCard {
 	width: calc(100% - 60px);

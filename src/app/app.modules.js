@@ -19,30 +19,9 @@
 				controller: 'DetailsPageCtrl',
 				controllerAs: 'ctrl'
 			})
-			.when("/collection/:index", {
-				templateUrl: HTMLTemplates['page.collection'],
-				controller: 'CollectionPageCtrl',
-				controllerAs: 'ctrl'
-			})
-			.when("/creator/:address", {
-				templateUrl: HTMLTemplates['page.creator'],
-				controller: 'CreatorPageCtrl',
-				controllerAs: 'ctrl'
-			})
-			.when("/owner/:address", {
-				templateUrl: HTMLTemplates['page.owner'],
-				controller: 'OwnerPageCtrl',
-				controllerAs: 'ctrl'
-			})
 			.when("/search", {
 				templateUrl: HTMLTemplates['page.search'],
 				controller: 'SearchPageCtrl',
-				controllerAs: 'ctrl',
-				reloadOnSearch: false
-			})
-			.when("/account", {
-				templateUrl: HTMLTemplates['page.account'],
-				controller: 'AccountPageCtrl',
 				controllerAs: 'ctrl',
 				reloadOnSearch: false
 			})
@@ -109,10 +88,7 @@
 			};
 
 			// pre-load dialogs
-			$http.get(HTMLTemplates['dialog.collection'], { cache: $templateCache });
-			$http.get(HTMLTemplates['dialog.pixelcon'], { cache: $templateCache });
 			$http.get(HTMLTemplates['dialog.send'], { cache: $templateCache });
-			$http.get(HTMLTemplates['dialog.similarities'], { cache: $templateCache });
 			$http.get(HTMLTemplates['dialog.prints'], { cache: $templateCache });
 			$http.get(HTMLTemplates['dialog.settings'], { cache: $templateCache });
 		}]);

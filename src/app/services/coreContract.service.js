@@ -2,8 +2,8 @@
 	angular.module('App')
 		.service('coreContract', coreContract);
 
-	coreContract.$inject = ['$q', 'web3Service', 'similarities'];
-	function coreContract($q, web3Service, similarities) {
+	coreContract.$inject = ['$q', 'web3Service'];
+	function coreContract($q, web3Service) {
 		const _contractPath = 'contracts/PixelCons.json';
 		const _networkIndex = 0;
 		const _cacheNameFetch = true;
@@ -245,7 +245,6 @@
 							
 							//fill in additional data
 							await addCollectionData(contract, pixelcon);
-							await addMatchData(pixelcon);
 							
 							resolve(pixelcon);
 						}
@@ -976,7 +975,6 @@
 			if(!options || !options.simpleFetch) {
 				let isAsynchronous = (options && options.asynchronousLoad);
 				await addCollectionData(contract, pixelcons, isAsynchronous);
-				await addMatchData(pixelcons, isAsynchronous);
 			}
 			
 			return pixelcons;
@@ -1033,35 +1031,6 @@
 							pixelcons[i].collection = collection;
 							collectionCache[collectionIndex] = collection;
 						}
-					}
-				}
-			} catch (err) {
-				console.log(err);
-			}
-			return isArray ? pixelcons : pixelcons[0];
-		}
-		
-		// Adds match details to the given pixelcons
-		async function addMatchData(pixelcons, isAsynchronous) {
-			let isArray = true;
-			if (pixelcons.length === undefined && pixelcons.id) {
-				isArray = false;
-				pixelcons = [pixelcons];
-			}
-			try {
-				if(similarities.isEnabled()) {
-					if(isAsynchronous) {
-						let allPixelconsPromise = getAllPixelcons();
-						for (let i = 0; i < pixelcons.length; i++) {
-							extendPixelconLoadPromise(pixelcons[i], allPixelconsPromise, function(pixelcon, allPixelcons) {
-								pixelcon.match = similarities.getMatch(pixelcons[i].id, allPixelcons);
-								return pixelcon;
-							});
-						}
-						
-					} else {
-						let allPixelcons = await getAllPixelcons();
-						for (let i = 0; i < pixelcons.length; i++) pixelcons[i].match = similarities.getMatch(pixelcons[i].id, allPixelcons);
 					}
 				}
 			} catch (err) {
