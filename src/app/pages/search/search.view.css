@@ -25,10 +25,6 @@ div.pixelconSearchPage div.topFilter {
 	font-size: 0px;
 	padding: 0px 5px;
 	background-color: #80808093;
-	height: 45px;
-}
-div.pixelconSearchPage div.topFilter.expanded {
-	height: 245px;
 }
 div.pixelconSearchPage.sm div.topFilter {
 	width: calc(100% - 24px);
@@ -82,19 +78,116 @@ div.pixelconSearchPage .buttonIcon.small {
 div.pixelconSearchPage .buttonIcon.large {
 	background-image: url(/img/icon_large_w.svg);
 }
+div.pixelconSearchPage div.topFilter .moreFilter {
+	max-height: 0px;
+	padding: 0px 0px;
+	overflow: hidden;
+	transition: max-height cubic-bezier(0.35, 0, 0.25, 1) 0.1s, padding cubic-bezier(0.35, 0, 0.25, 1) 0.1s;
+}
+div.pixelconSearchPage div.topFilter.expanded .moreFilter {
+	max-height: 250px;
+	padding: 5px 0px;
+}
 
+/* Selects */
+div.pixelconSearchPage div.levelSelect {
+	display: inline-block;
+	margin: 0px 6px;
+	width: 155px;
+}
+div.pixelconSearchPage input.levelInput {
+	background-color: unset;
+	border: none;
+	border-bottom: 1px solid #f2f2f2;
+	color: #f2f2f2;
+	width: 40px;
+}
+div.pixelconSearchPage div.ownerSelect {
+	display: inline-block;
+	margin: 0px 6px;
+	width: 310px;
+}
+div.pixelconSearchPage input.ownerInput {
+	background-color: unset;
+	border: none;
+	border-bottom: 1px solid #f2f2f2;
+	color: #f2f2f2;
+	width: 250px;
+}
 
-
-
-
-
-
-
-
-
-
-
-
+/* Checkbox */
+div.pixelconSearchPage md-checkbox.colorCheckbox div.md-icon {
+	border-color: #a2a2a2;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox {
+	color: #a2a2a2;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked div.md-icon {
+	border-color: #f2f2f2;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked {
+	color: #f2f2f2;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.water div.md-icon {
+    background-color: #29ADFF;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked.water div.md-icon {
+    background-color: #29ADFFD1;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.forest div.md-icon {
+    background-color: #00E756;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked.forest div.md-icon {
+    background-color: #00E756D1;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.fire div.md-icon {
+    background-color: #FF004D;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked.fire div.md-icon {
+    background-color: #FF004DD1;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.desert div.md-icon {
+    background-color: #FFA300;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked.desert div.md-icon {
+    background-color: #FFA300D1;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.electric div.md-icon {
+    background-color: #FFFF27;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked.electric div.md-icon {
+    background-color: #FFFF27D1;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.metal div.md-icon {
+    background-color: #FFF1E8;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked.metal div.md-icon {
+    background-color: #FFF1E8D1;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.defence div.md-icon {
+    background-color: #C2C3C3;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked.defence div.md-icon {
+    background-color: #C2C3C3D1;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.attack div.md-icon {
+    background-color: #83769C;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked.attack div.md-icon {
+    background-color: #83769CD1;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.longRange div.md-icon {
+    background-color: #5F574F;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked.longRange div.md-icon {
+    background-color: #5F574FD1;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.shortRange div.md-icon {
+    background-color: #1D2B53;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked.shortRange div.md-icon {
+    background-color: #1D2B53D1;
+}
 
 
 

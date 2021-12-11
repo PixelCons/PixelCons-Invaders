@@ -5,8 +5,22 @@
 	SearchPageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', 'web3Service', 'coreContract'];
 	function SearchPageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, web3Service, coreContract) {
 		var _this = this;
+		_this.filterOpen = true;
 		_this.sortBy = 'createdDesc';
+		_this.levelMin = 0;
+		_this.levelMax = 20;
 		
+		
+		_this.typeWater = true;
+		_this.typeForest = true;
+		_this.typeFire = true;
+		_this.typeDesert = true;
+		_this.typeElectric = true;
+		_this.typeMetal = true;
+		_this.attrDefence = true;
+		_this.attrAttack = true;
+		_this.attrLongRange = true;
+		_this.attrShortRange = true;
 		
 		
 		

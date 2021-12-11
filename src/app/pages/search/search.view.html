@@ -29,7 +29,35 @@
 		
 		
 		
-		<div class="">
+		<div class="moreFilter">
+		
+			<div class="levelSelect textDark textMedium">
+				<span>Level</span>
+				<input class="levelInput" type="number" step="any" name="levelMin" ng-model="ctrl.levelMin" min="0" max="30"/>
+				<span>to</span>
+				<input class="levelInput" type="number" step="any" name="levelMax" ng-model="ctrl.levelMax" min="0" max="30"/>
+			</div>
+			<div class="ownerSelect textDark textMedium">
+				<span>Owner</span>
+				<input class="ownerInput" maxlength="25" name="owner" ng-model="ctrl.owner"/>
+			</div>
+		
+			<br/>
+			<md-checkbox class="colorCheckbox water textDark textMedium" ng-model="ctrl.typeWater">Water</md-checkbox>
+			<md-checkbox class="colorCheckbox forest textDark textMedium" ng-model="ctrl.typeForest">Forest</md-checkbox>
+			<md-checkbox class="colorCheckbox fire textDark textMedium" ng-model="ctrl.typeFire">Fire</md-checkbox>
+			<md-checkbox class="colorCheckbox desert textDark textMedium" ng-model="ctrl.typeDesert">Desert</md-checkbox>
+			<md-checkbox class="colorCheckbox electric textDark textMedium" ng-model="ctrl.typeElectric">Electric</md-checkbox>
+			<md-checkbox class="colorCheckbox metal textDark textMedium" ng-model="ctrl.typeMetal">Metal</md-checkbox>
+			
+			<br/>
+			<md-checkbox class="colorCheckbox defence textDark textMedium" ng-model="ctrl.attrDefence">Defence</md-checkbox>
+			<md-checkbox class="colorCheckbox attack textDark textMedium" ng-model="ctrl.attrAttack">Attack</md-checkbox>
+			
+			<br/>
+			<md-checkbox class="colorCheckbox longRange textDark textMedium" ng-model="ctrl.attrLongRange">Long Range</md-checkbox>
+			<md-checkbox class="colorCheckbox shortRange textDark textMedium" ng-model="ctrl.attrShortRange">Short Range</md-checkbox>
+		
 			
 		</div>
 			
