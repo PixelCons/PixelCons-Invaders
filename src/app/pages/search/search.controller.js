@@ -2,15 +2,24 @@
 	angular.module('App')
 		.controller('SearchPageCtrl', SearchPageCtrl);
 
-	SearchPageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', 'web3Service', 'coreContract'];
-	function SearchPageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, web3Service, coreContract) {
+	SearchPageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', '$timeout', 'web3Service', 'coreContract'];
+	function SearchPageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, $timeout, web3Service, coreContract) {
 		var _this = this;
-		_this.filterOpen = true;
+		var ownerCheckTimeout;
+		_this.formatAddressString = formatAddressString;
+		_this.copyLink = copyLink;
+		_this.shareOnTwitter = shareOnTwitter;
+		_this.shareOnFacebook = shareOnFacebook;
+		_this.onLevelChange = onLevelChange;
+		_this.onOwnerChange = onOwnerChange;
+		_this.filterOpen = false;
 		_this.sortBy = 'createdDesc';
 		_this.levelMin = 0;
 		_this.levelMax = 20;
-		
-		
+		_this.lastLevelMin = _this.levelMin;
+		_this.latsLevelMax = _this.levelMax;
+		_this.owner = null;
+		_this.ownerAddress = null;
 		_this.typeWater = true;
 		_this.typeForest = true;
 		_this.typeFire = true;
@@ -21,6 +30,154 @@
 		_this.attrAttack = true;
 		_this.attrLongRange = true;
 		_this.attrShortRange = true;
+		
+		_this.owner = '0x1a5805e6bE1f495b8346cEfA32F2a567c063598C';
+		onOwnerChange(true);
+		function updatePathParams() {
+			
+				//update url parameters
+				if (($routeParams.search === undefined && _this.filter.searchText) || ($routeParams.search !== undefined && _this.filter.searchText != $routeParams.search)) {
+					$location.search('search', _this.filter.searchText ? _this.filter.searchText : undefined).replace();
+				}
+				if (($routeParams.desc === undefined && _this.filter.sortDesc) || ($routeParams.desc !== undefined && _this.filter.sortDesc == ($routeParams.desc != 'true'))) {
+					$location.search('desc', (_this.filter.sortDesc) ? 'true' : undefined).replace();
+				}
+		}
+		
+		
+		// Returns the formatted address string for filter header
+		function formatAddressString(length) {
+			if(_this.ownerAddressNameLoading) return web3Service.compressString(_this.ownerAddress, 12);
+			let address = _this.ownerAddressName || _this.ownerAddress;
+			return web3Service.compressString(address, 16);
+		}
+
+		// Copies share link to the clipboard
+		function copyLink() {
+			let copyText = document.getElementById("copyToClipboard");
+			copyText.value = document.location.origin + '/owner/' + _this.accountAddress;
+			copyText.select();
+			document.execCommand("copy");
+		}
+
+		// Share this page on twitter
+		function shareOnTwitter() {
+			let url = "https://twitter.com/intent/tweet?url=";
+			url += encodeURI(document.location.origin + '/owner/' + _this.accountAddress);
+			url += '&text=' + encodeURI("Check out these PixelCons!");
+			return url;
+		}
+
+		// Share this page on facebook
+		function shareOnFacebook() {
+			let url = "https://www.facebook.com/sharer/sharer.php?u="
+			url += encodeURI(document.location.origin + '/owner/' + _this.accountAddress);
+			return url;
+		}
+		
+		function onOwnerChange(noWait) {
+			let processOwner = function() {
+				if(!_this.owner) {
+					_this.ownerAddress = null;
+					_this.ownerAddressName = null;
+					_this.checkingOwner = false;
+					
+				} else if(web3Service.isAddress(_this.owner)) {
+					_this.ownerAddress = web3Service.formatAddress(_this.owner);
+					_this.checkingOwner = false;
+					if(!!_this.ownerAddress) {
+						_this.ownerAddressNameLoading = true;
+						web3Service.awaitState(async function() {
+							let owner = web3Service.formatAddress(_this.owner) || _this.owner;
+							if(owner != _this.ownerAddress)_this.ownerAddressName = _this.owner.toLowerCase();
+							else _this.ownerAddressName = await web3Service.reverseName(_this.ownerAddress);
+							_this.ownerAddressNameLoading = false;
+							$scope.$apply();
+						}, true);
+					} else {
+						_this.ownerAddressName = null;
+					}
+					
+				} else {
+					web3Service.awaitState(async function() {
+						_this.ownerAddress = await web3Service.resolveName(_this.owner);
+						_this.checkingOwner = false;
+						if(!!_this.ownerAddress) {
+							_this.ownerAddressNameLoading = true;
+							let owner = web3Service.formatAddress(_this.owner) || _this.owner;
+							if(owner != _this.ownerAddress) _this.ownerAddressName = _this.owner.toLowerCase();
+							else _this.ownerAddressName = await web3Service.reverseName(_this.ownerAddress);
+							_this.ownerAddressNameLoading = false;
+						} else {
+							_this.ownerAddressName = null;
+						}
+						$scope.$apply();
+					}, true);
+				}
+			}
+			
+			_this.checkingOwner = true;
+			if(ownerCheckTimeout) $timeout.cancel(ownerCheckTimeout);
+			if(noWait || !_this.owner) processOwner();
+			else ownerCheckTimeout = $timeout(processOwner, 700);
+		}
+		
+		function onLevelChange() {
+			if(_this.lastLevelMin != _this.levelMin) {
+				if(_this.levelMin === undefined) _this.levelMin = _this.lastLevelMin;
+				if(_this.levelMin !== null) {
+					_this.levelMin = parseInt("" + _this.levelMin);
+					if(isNaN(_this.levelMin)) _this.levelMin = _this.lastLevelMin;
+					if(_this.levelMin < 0) _this.levelMin = 0;
+					if(_this.levelMin > 30) _this.levelMin = 30;
+					if(_this.levelMax < _this.levelMin) _this.levelMax = _this.levelMin;
+				}
+				_this.lastLevelMin = _this.levelMin;
+			}
+			if(_this.lastLevelMax != _this.levelMax) {
+				if(_this.levelMax === undefined) _this.levelMax = _this.lastLevelMax;
+				if(_this.levelMax !== null) {
+					_this.levelMax = parseInt("" + _this.levelMax);
+					if(isNaN(_this.levelMax)) _this.levelMax = _this.lastLevelMax;
+					if(_this.levelMax < 0) _this.levelMax = 0;
+					if(_this.levelMax > 30) _this.levelMax = 30;
+					if(_this.levelMax < _this.levelMin) _this.levelMin = _this.levelMax;
+				}
+				_this.lastLevelMax = _this.levelMax;
+			}
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		
@@ -150,7 +307,7 @@
 
 			//all
 			for (let i = 0; i < pixelconCount; i++) {
-				let grade = loadedFilter.searchText.length ? gradeNameWithText(pixelconNames[i], loadedFilter.searchText) : 200;
+				let grade = 200;
 				if (grade > minGrade) pixelconFilterCount++;
 				if (grade > pixelconFilterGradeMax) pixelconFilterGradeMax = grade;
 				pixelconFilterGrades[i] = grade;
@@ -236,84 +393,5 @@
 		web3Service.onWaitingTransactionsChange(function (transactionData) {
 			dirtyDatabaseData = transactionData && transactionData.success;
 		}, $scope);
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////// Text Search Algorithm //////////////////////////////////////////////////////////////////
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		function gradeNameWithText(name, text) {
-			let lName = name.toLowerCase();
-			let lText = text.toLowerCase();
-
-			let highestGrade = 0;
-			let foundCharacterIndexesInText = new Array(name.length);
-			function searchForMatchingIndexes(nameIndex) {
-				if (nameIndex == name.length) {
-					//evaluate character index pattern (recursion end condition)
-					let grade = 0;
-					for (let i = 0; i < name.length; i++) {
-						let matchingIndex = foundCharacterIndexesInText[i];
-
-						//1 point if not null
-						if (matchingIndex === null) {
-							continue;
-						}
-						grade += 1;
-
-						//1 point if index is unique
-						let repeated = false;
-						for (let j = 0; j < name.length; j++) {
-							if (j != i && foundCharacterIndexesInText[j] === matchingIndex) {
-								repeated = true;
-								break;
-							}
-						}
-						if (!repeated) grade += 1;
-
-						//1 point if case matches
-						if (name[i] == text[matchingIndex]) grade += 1;
-
-						//Note: the next few rules depend on the previous index being valid
-						if (i == 0 || foundCharacterIndexesInText[i - 1] === null) {
-							continue;
-						}
-						let lastIndex = foundCharacterIndexesInText[i - 1];
-
-						//1 point if this index is greater than the last
-						if (matchingIndex <= lastIndex) continue;
-						grade += 1;
-
-						//1 point if this index is 5 steps of the last
-						if (matchingIndex - lastIndex <= 5) grade += 1;
-
-						//1 point if this index is 2 steps of the last
-						if (matchingIndex - lastIndex <= 2) grade += 1;
-
-					}
-
-					//update highest grade
-					if (grade > highestGrade) highestGrade = grade;
-
-				} else {
-					//search through 'text' to find all matching characters to 'name[nameIndex]'
-					let foundIndexInText = false;
-					for (let t = 0; t < text.length; t++) {
-						if (lName[nameIndex] == lText[t]) {
-							foundIndexInText = true;
-							foundCharacterIndexesInText[nameIndex] = t;
-							searchForMatchingIndexes(nameIndex + 1);
-						}
-					}
-					//if 'name[nameIndex]' was not found in 'text', put 'null' as placeholder and continue with recursion
-					if (!foundIndexInText) {
-						foundCharacterIndexesInText[nameIndex] = null;
-						searchForMatchingIndexes(nameIndex + 1);
-					}
-				}
-			}
-			searchForMatchingIndexes(0);
-
-			return highestGrade;
-		}
 	}
 }());

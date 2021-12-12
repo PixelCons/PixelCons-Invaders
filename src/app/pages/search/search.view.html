@@ -2,46 +2,64 @@
 	<div class="topSpacer"></div>
 	
 	<div class="topFilter" ng-class="{'expanded': ctrl.filterOpen}">
-	
-		<md-button class="topFilterButton" ng-click="ctrl.filterOpen = !ctrl.filterOpen">
+		<md-button class="topFilterButton filterButton textDark" ng-click="ctrl.filterOpen = !ctrl.filterOpen" aria-label="Filter">
 			<div class="buttonIcon filter"></div>
+			<accounticon ng-if="ctrl.ownerAddress" class="accountTitleIcon" address="ctrl.ownerAddress" border="2"></accounticon>
+			<span ng-if="ctrl.ownerAddress">{{ctrl.formatAddressString()}}</span>
+			<md-progress-circular ng-if="ctrl.ownerAddressNameLoading" class="filterAddressLoading" md-diameter="14px" md-mode="indeterminate"></md-progress-circular>
+			<span ng-if="!ctrl.ownerAddress && !ctrl.ownerAddressName">Filter Invaders</span>
 		</md-button>
-		<md-button class="topFilterButton" ng-click="">
-			<div class="buttonIcon share"></div>
-		</md-button>
-		
-		
-		
-		
-		
-		
-		<md-button class="topFilterButton right" ng-click="">
+		<md-menu ng-if="ctrl.ownerAddress" md-position-mode="target-right target">
+			<md-button class="topFilterButton" ng-click="$mdOpenMenu()" aria-label="Share Account">
+				<div class="buttonIcon share"></div>
+			</md-button>
+			<md-menu-content class="shareLinksContextMenu">
+				<md-menu-item>
+					<md-button ng-click="ctrl.copyLink()"><div class="shareLinkIcon url textBlack"></div>Copy URL</md-button>
+				</md-menu-item>
+				<md-menu-item>
+					<a ng-href="{{ctrl.shareOnFacebook()}}" target="_blank" class="textBlack">
+						<md-button><div class="shareLinkIcon facebook"></div>Share on Facebook</md-button>
+					</a>
+				</md-menu-item>
+				<md-menu-item>
+					<a ng-href="{{ctrl.shareOnTwitter()}}" target="_blank" class="textBlack">
+						<md-button><div class="shareLinkIcon twitter"></div>Share on Twitter</md-button>
+					</a>
+				</md-menu-item>
+			</md-menu-content>
+		</md-menu>
+		<md-button class="topFilterButton right" ng-click="" aria-label="Large View">
 			<div class="buttonIcon large"></div>
 		</md-button>
-		<md-button class="topFilterButton right" ng-click="">
+		<md-button class="topFilterButton right" ng-click="" aria-label="Small View">
 			<div class="buttonIcon small"></div>
 		</md-button>
-		<md-select class="md-no-underline right" ng-model="ctrl.sortBy">
+		<md-select ng-if="!ctrl.screenSize.sm" class="md-no-underline right" ng-model="ctrl.sortBy" aria-label="Sort">
 			<md-option value="createdDesc">Uncovered Desc</md-option>
 			<md-option value="createdAsc">Uncovered Asc</md-option>
 		</md-select>
 		
-		
-		
-		
 		<div class="moreFilter">
-		
+			<md-select ng-if="ctrl.screenSize.sm" class="md-no-underline" ng-model="ctrl.sortBy">
+				<md-option value="createdDesc">Uncovered Desc</md-option>
+				<md-option value="createdAsc">Uncovered Asc</md-option>
+			</md-select>
+			<br/>
 			<div class="levelSelect textDark textMedium">
 				<span>Level</span>
-				<input class="levelInput" type="number" step="any" name="levelMin" ng-model="ctrl.levelMin" min="0" max="30"/>
+				<input class="levelInput" type="number" step="any" name="levelMin" ng-model="ctrl.levelMin" ng-change="ctrl.onLevelChange()" min="0" max="30"/>
 				<span>to</span>
-				<input class="levelInput" type="number" step="any" name="levelMax" ng-model="ctrl.levelMax" min="0" max="30"/>
+				<input class="levelInput" type="number" step="any" name="levelMax" ng-model="ctrl.levelMax" ng-change="ctrl.onLevelChange()" min="0" max="30"/>
 			</div>
+			<br/>
 			<div class="ownerSelect textDark textMedium">
 				<span>Owner</span>
-				<input class="ownerInput" maxlength="25" name="owner" ng-model="ctrl.owner"/>
+				<input class="ownerInput" maxlength="45" name="owner" ng-model="ctrl.owner" ng-change="ctrl.onOwnerChange()"/>
+				<md-progress-circular ng-show="ctrl.checkingOwner" class="ownerLoading" md-diameter="16px" md-mode="indeterminate"></md-progress-circular>
+				<accounticon ng-show="!ctrl.checkingOwner && ctrl.ownerAddress" class="ownerIcon" address="ctrl.ownerAddress" border="2"></accounticon>
+				<div ng-show="!ctrl.checkingOwner && !ctrl.ownerAddress && ctrl.owner" class="ownerUnknown textDark textBold textMedium">??</div>
 			</div>
-		
 			<br/>
 			<md-checkbox class="colorCheckbox water textDark textMedium" ng-model="ctrl.typeWater">Water</md-checkbox>
 			<md-checkbox class="colorCheckbox forest textDark textMedium" ng-model="ctrl.typeForest">Forest</md-checkbox>
@@ -49,16 +67,12 @@
 			<md-checkbox class="colorCheckbox desert textDark textMedium" ng-model="ctrl.typeDesert">Desert</md-checkbox>
 			<md-checkbox class="colorCheckbox electric textDark textMedium" ng-model="ctrl.typeElectric">Electric</md-checkbox>
 			<md-checkbox class="colorCheckbox metal textDark textMedium" ng-model="ctrl.typeMetal">Metal</md-checkbox>
-			
 			<br/>
 			<md-checkbox class="colorCheckbox defence textDark textMedium" ng-model="ctrl.attrDefence">Defence</md-checkbox>
 			<md-checkbox class="colorCheckbox attack textDark textMedium" ng-model="ctrl.attrAttack">Attack</md-checkbox>
-			
 			<br/>
 			<md-checkbox class="colorCheckbox longRange textDark textMedium" ng-model="ctrl.attrLongRange">Long Range</md-checkbox>
 			<md-checkbox class="colorCheckbox shortRange textDark textMedium" ng-model="ctrl.attrShortRange">Short Range</md-checkbox>
-		
-			
 		</div>
 			
 	</div>

@@ -179,7 +179,9 @@
 		this.hexToInt = hexToInt;
 		this.filterTextToByteSize = filterTextToByteSize;
 		this.formatAddress = formatAddress;
-		this.compressAddressString = compressAddressString;
+		this.resolveName = resolveName;
+		this.reverseName = reverseName;
+		this.compressString = compressString;
 		this.scrambleList = scrambleList;
 		this.getNetworkName = getNetworkName;
 		this.getNetworkIcon = getNetworkIcon;
@@ -782,13 +784,39 @@
 			} catch (err) { }
 			return null;
 		}
+
+		// uses ENS to try and resolve the given name
+		async function resolveName(name) {
+			try {
+				if(isAddress(name)) return formatAddress(name);
+				let mainnetwork = getMainNetwork();
+				let provider = getWeb3Provider(mainnetwork.chainId);
+				if(provider) {
+					let address = await provider.resolveName(name);
+					return formatAddress(address);
+				}
+			} catch (err) { }
+			return null;
+		}
+
+		// uses ENS to try and resolve the given address
+		async function reverseName(address) {
+			try {
+				let mainnetwork = getMainNetwork();
+				let provider = getWeb3Provider(mainnetwork.chainId);
+				if(provider) {
+					return await provider.lookupAddress(address);
+				}
+			} catch (err) { }
+			return null;
+		}
 		
-		// Compresses the given address string
-		function compressAddressString(address, maxChars) {
+		// Compresses the given string
+		function compressString(address, maxChars) {
 			let comp = address || '';
-			if (maxChars) {
+			if (maxChars && address.length > maxChars) {
 				if (maxChars < 5) comp = '';
-				else comp = comp.substr(0, (maxChars / 2) + 1) + '...' + comp.substr(comp.length - ((maxChars / 2) - 1));
+				else comp = comp.substr(0, (maxChars / 2) + 1) + '…' + comp.substr(comp.length - ((maxChars / 2) - 1));
 			}
 
 			return comp;

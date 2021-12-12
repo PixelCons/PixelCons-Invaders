@@ -29,7 +29,6 @@ div.pixelconSearchPage div.topFilter {
 div.pixelconSearchPage.sm div.topFilter {
 	width: calc(100% - 24px);
 }
-
 div.pixelconSearchPage md-select {
 	display: inline-block;
 	vertical-align: middle;
@@ -51,7 +50,6 @@ div.pixelconSearchPage md-select .md-select-icon {
     color: #00000000;
 	position: absolute;
 }
-
 div.pixelconSearchPage button.topFilterButton {
     margin-left: 0px;
     margin-right: 0px;
@@ -59,6 +57,16 @@ div.pixelconSearchPage button.topFilterButton {
     height: 0px;
     padding: 0px 4px;
     min-height: 33px;
+}
+div.pixelconSearchPage button.filterButton {
+	text-transform: none;
+}
+div.pixelconSearchPage accounticon.accountTitleIcon {
+	display: inline-block;
+	vertical-align: middle;
+	width: 26px;
+	height: 26px;
+	margin-top: -4px;
 }
 div.pixelconSearchPage .right {
 	float: right;
@@ -85,14 +93,14 @@ div.pixelconSearchPage div.topFilter .moreFilter {
 	transition: max-height cubic-bezier(0.35, 0, 0.25, 1) 0.1s, padding cubic-bezier(0.35, 0, 0.25, 1) 0.1s;
 }
 div.pixelconSearchPage div.topFilter.expanded .moreFilter {
-	max-height: 250px;
+	max-height: 300px;
 	padding: 5px 0px;
 }
 
 /* Selects */
 div.pixelconSearchPage div.levelSelect {
 	display: inline-block;
-	margin: 0px 6px;
+	margin: 10px;
 	width: 155px;
 }
 div.pixelconSearchPage input.levelInput {
@@ -103,8 +111,9 @@ div.pixelconSearchPage input.levelInput {
 	width: 40px;
 }
 div.pixelconSearchPage div.ownerSelect {
+	position: relative;
 	display: inline-block;
-	margin: 0px 6px;
+	margin: 10px;
 	width: 310px;
 }
 div.pixelconSearchPage input.ownerInput {
@@ -112,15 +121,41 @@ div.pixelconSearchPage input.ownerInput {
 	border: none;
 	border-bottom: 1px solid #f2f2f2;
 	color: #f2f2f2;
-	width: 250px;
+	width: 225px;
+}
+div.pixelconSearchPage accounticon.ownerIcon {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+	width: 20px;
+	height: 20px;
+}
+div.pixelconSearchPage md-progress-circular.ownerLoading {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+}
+div.pixelconSearchPage md-progress-circular.filterAddressLoading {
+	display: inline-block;
+}
+div.pixelconSearchPage md-progress-circular svg path {
+	stroke: #f2f2f2;
+}
+div.pixelconSearchPage div.ownerUnknown {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+	width: 20px;
+	height: 20px;
 }
 
 /* Checkbox */
 div.pixelconSearchPage md-checkbox.colorCheckbox div.md-icon {
-	border-color: #a2a2a2;
+	border-color: #f2f2f2;
 }
 div.pixelconSearchPage md-checkbox.colorCheckbox {
 	color: #a2a2a2;
+	margin: 10px;
 }
 div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked div.md-icon {
 	border-color: #f2f2f2;

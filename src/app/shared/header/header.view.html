@@ -9,19 +9,19 @@
 	</a>
 	<div layout="row" class="menuButtons">
 		<a href="/search" class="plain textDark">
-			<md-button class="nav" ng-class="{'highlight':ctrl.page=='browse'}" ng-click="ctrl.goPath('/search')">
+			<md-button class="nav" ng-class="{'highlight':ctrl.page=='browse'}" ng-click="ctrl.goPath('/search')" aria-label="Search">
 				<div class="buttonIcon search"></div>
 				{{ctrl.screenSize.sm?'':(ctrl.screenSize.md?'':'Invaders')}}
 			</md-button>
 		</a>
 		<a href="/create" class="plain textDark">
-			<md-button class="nav" ng-class="{'highlight':ctrl.page=='create'}" ng-click="ctrl.goPath('/create')">
+			<md-button class="nav" ng-class="{'highlight':ctrl.page=='create'}" ng-click="ctrl.goPath('/create')" aria-label="Create">
 				<div class="buttonIcon create"></div>
 				{{ctrl.screenSize.sm?'':(ctrl.screenSize.md?'':'Uncover New')}}
 			</md-button>
 		</a>
 		<a href="/account" class="plain textDark">
-			<md-button class="nav quickButton" ng-class="{'highlight':ctrl.page=='account'}" ng-show="ctrl.loggedIn" ng-click="ctrl.goPath('/account')">
+			<md-button class="nav quickButton" ng-class="{'highlight':ctrl.page=='account'}" ng-show="ctrl.loggedIn" ng-click="ctrl.goPath('/account')" aria-label="Account">
 				<div class="buttonIcon account"></div>
 			</md-button>
 		</a>
@@ -42,7 +42,7 @@
 	</a>
 	
 	<!-- User Account -->
-	<div ng-if="ctrl.privacyMode" class="accountIcon colorDark connectButton clickable textBold textSmall textWhite md-whiteframe-1dp" ng-click="ctrl.connect()">
+	<div ng-if="ctrl.privacyMode" class="accountIcon colorDark connectButton clickable textBold textSmall md-whiteframe-1dp" ng-click="ctrl.connect()">
 		<img class="iconFill" ng-src="img/icon_account.svg"/>
 		<div>Connect Account</div>
 	</div>
