@@ -6,16 +6,22 @@
 	function SearchPageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, $timeout, web3Service, coreContract) {
 		var _this = this;
 		var ownerCheckTimeout;
+		const levelMinDefault = 0;
+		const levelMaxDefault = 20;
+		const sortByDefault = 'createdDesc';
 		_this.formatAddressString = formatAddressString;
 		_this.copyLink = copyLink;
 		_this.shareOnTwitter = shareOnTwitter;
 		_this.shareOnFacebook = shareOnFacebook;
 		_this.onLevelChange = onLevelChange;
 		_this.onOwnerChange = onOwnerChange;
+		_this.onTypeChange = onTypeChange;
+		_this.onAttributeChange = onAttributeChange;
+		_this.onSortChange = onSortChange;
 		_this.filterOpen = false;
-		_this.sortBy = 'createdDesc';
-		_this.levelMin = 0;
-		_this.levelMax = 20;
+		_this.sortBy = sortByDefault;
+		_this.levelMin = levelMinDefault;
+		_this.levelMax = levelMaxDefault;
 		_this.lastLevelMin = _this.levelMin;
 		_this.latsLevelMax = _this.levelMax;
 		_this.owner = null;
@@ -31,48 +37,72 @@
 		_this.attrLongRange = true;
 		_this.attrShortRange = true;
 		
-		_this.owner = '0x1a5805e6bE1f495b8346cEfA32F2a567c063598C';
-		onOwnerChange(true);
+		loadPathParams();
+		function loadPathParams() {
+			if ($routeParams.sortBy !== undefined) {
+				_this.sortBy = $routeParams.sortBy;
+			}
+			if ($routeParams.lvlMin !== undefined) {
+				_this.levelMin = parseInt($routeParams.lvlMin);
+				if(isNaN(_this.levelMin)) _this.levelMin = levelMinDefault;
+			}
+			if ($routeParams.lvlMax !== undefined) {
+				_this.levelMax = parseInt($routeParams.lvlMax);
+				if(isNaN(_this.levelMax)) _this.levelMin = levelMaxDefault;
+			}
+			if ($routeParams.excludeTypes !== undefined) {
+				_this.typeWater = ($routeParams.excludeTypes.indexOf('water') == -1);
+				_this.typeForest = ($routeParams.excludeTypes.indexOf('forest') == -1);
+				_this.typeFire = ($routeParams.excludeTypes.indexOf('fire') == -1);
+				_this.typeDesert = ($routeParams.excludeTypes.indexOf('desert') == -1);
+				_this.typeElectric = ($routeParams.excludeTypes.indexOf('electric') == -1);
+				_this.typeMetal = ($routeParams.excludeTypes.indexOf('metal') == -1);
+			}
+			if ($routeParams.excludeAttributes !== undefined) {
+				_this.attrDefence = ($routeParams.excludeAttributes.indexOf('defence') == -1);
+				_this.attrAttack = ($routeParams.excludeAttributes.indexOf('attack') == -1);
+				_this.attrLongRange = ($routeParams.excludeAttributes.indexOf('longrange') == -1);
+				_this.attrShortRange = ($routeParams.excludeAttributes.indexOf('shortrange') == -1);
+			}
+			if ($routeParams.owner !== undefined) {
+				_this.owner = $routeParams.owner;
+				onOwnerChange(true);
+			}
+		}
+		
 		function updatePathParams() {
-			
-				//update url parameters
-				if (($routeParams.search === undefined && _this.filter.searchText) || ($routeParams.search !== undefined && _this.filter.searchText != $routeParams.search)) {
-					$location.search('search', _this.filter.searchText ? _this.filter.searchText : undefined).replace();
-				}
-				if (($routeParams.desc === undefined && _this.filter.sortDesc) || ($routeParams.desc !== undefined && _this.filter.sortDesc == ($routeParams.desc != 'true'))) {
-					$location.search('desc', (_this.filter.sortDesc) ? 'true' : undefined).replace();
-				}
-		}
-		
-		
-		// Returns the formatted address string for filter header
-		function formatAddressString(length) {
-			if(_this.ownerAddressNameLoading) return web3Service.compressString(_this.ownerAddress, 12);
-			let address = _this.ownerAddressName || _this.ownerAddress;
-			return web3Service.compressString(address, 16);
-		}
-
-		// Copies share link to the clipboard
-		function copyLink() {
-			let copyText = document.getElementById("copyToClipboard");
-			copyText.value = document.location.origin + '/owner/' + _this.accountAddress;
-			copyText.select();
-			document.execCommand("copy");
-		}
-
-		// Share this page on twitter
-		function shareOnTwitter() {
-			let url = "https://twitter.com/intent/tweet?url=";
-			url += encodeURI(document.location.origin + '/owner/' + _this.accountAddress);
-			url += '&text=' + encodeURI("Check out these PixelCons!");
-			return url;
-		}
-
-		// Share this page on facebook
-		function shareOnFacebook() {
-			let url = "https://www.facebook.com/sharer/sharer.php?u="
-			url += encodeURI(document.location.origin + '/owner/' + _this.accountAddress);
-			return url;
+			if (($routeParams.sortBy === undefined && _this.sortBy !== sortByDefault) || ($routeParams.sortBy !== undefined && _this.sortBy != $routeParams.sortBy)) {
+				$location.search('sortBy', (_this.sortBy !== sortByDefault) ? _this.sortBy : undefined).replace();
+			}
+			if (($routeParams.lvlMin === undefined && _this.levelMin !== levelMinDefault) || ($routeParams.lvlMin !== undefined && _this.levelMin != $routeParams.lvlMin)) {
+				$location.search('lvlMin', (_this.levelMin !== levelMinDefault) ? _this.levelMin : undefined).replace();
+			}
+			if (($routeParams.lvlMax === undefined && _this.levelMax !== levelMaxDefault) || ($routeParams.lvlMax !== undefined && _this.levelMax != $routeParams.lvlMax)) {
+				$location.search('lvlMax', (_this.levelMax !== levelMaxDefault) ? _this.levelMax : undefined).replace();
+			}
+			if (($routeParams.owner === undefined && _this.ownerAddress) || ($routeParams.owner !== undefined && _this.ownerAddress != $routeParams.owner)) {
+				$location.search('owner', (_this.ownerAddress) ? _this.ownerAddress : undefined).replace();
+			}
+			let excludeTypes = [];
+			if(!_this.typeWater) excludeTypes.push('water');
+			if(!_this.typeForest) excludeTypes.push('forest');
+			if(!_this.typeFire) excludeTypes.push('fire');
+			if(!_this.typeDesert) excludeTypes.push('desert');
+			if(!_this.typeElectric) excludeTypes.push('electric');
+			if(!_this.typeMetal) excludeTypes.push('metal');
+			excludeTypes = excludeTypes.join(',');
+			if (($routeParams.excludeTypes === undefined && excludeTypes !== '') || ($routeParams.excludeTypes !== undefined && excludeTypes != $routeParams.excludeTypes)) {
+				$location.search('excludeTypes', (excludeTypes !== '') ? excludeTypes : undefined).replace();
+			}
+			let excludeAttributes = [];
+			if(!_this.attrDefence) excludeAttributes.push('defence');
+			if(!_this.attrAttack) excludeAttributes.push('attack');
+			if(!_this.attrLongRange) excludeAttributes.push('longrange');
+			if(!_this.attrShortRange) excludeAttributes.push('shortrange');
+			excludeAttributes = excludeAttributes.join(',');
+			if (($routeParams.excludeAttributes === undefined && excludeAttributes !== '') || ($routeParams.excludeAttributes !== undefined && excludeAttributes != $routeParams.excludeAttributes)) {
+				$location.search('excludeAttributes', (excludeAttributes !== '') ? excludeAttributes : undefined).replace();
+			}
 		}
 		
 		function onOwnerChange(noWait) {
@@ -81,6 +111,7 @@
 					_this.ownerAddress = null;
 					_this.ownerAddressName = null;
 					_this.checkingOwner = false;
+					updatePathParams();
 					
 				} else if(web3Service.isAddress(_this.owner)) {
 					_this.ownerAddress = web3Service.formatAddress(_this.owner);
@@ -97,6 +128,7 @@
 					} else {
 						_this.ownerAddressName = null;
 					}
+					updatePathParams();
 					
 				} else {
 					web3Service.awaitState(async function() {
@@ -112,6 +144,7 @@
 							_this.ownerAddressName = null;
 						}
 						$scope.$apply();
+						updatePathParams();
 					}, true);
 				}
 			}
@@ -145,10 +178,50 @@
 				}
 				_this.lastLevelMax = _this.levelMax;
 			}
+			updatePathParams();
 		}
 		
+		function onTypeChange() {
+			updatePathParams();
+		}
 		
+		function onAttributeChange() {
+			updatePathParams();
+		}
 		
+		function onSortChange() {
+			updatePathParams();
+		}
+		
+		// Returns the formatted address string for filter header
+		function formatAddressString(length) {
+			if(_this.ownerAddressNameLoading) return web3Service.compressString(_this.ownerAddress, 12);
+			let address = _this.ownerAddressName || _this.ownerAddress;
+			return web3Service.compressString(address, 16);
+		}
+
+		// Copies share link to the clipboard
+		function copyLink() {
+			let copyText = document.getElementById("copyToClipboard");
+			copyText.value = document.location.origin + '/owner/' + _this.accountAddress;
+			copyText.select();
+			document.execCommand("copy");
+		}
+
+		// Share this page on twitter
+		function shareOnTwitter() {
+			let url = "https://twitter.com/intent/tweet?url=";
+			url += encodeURI(document.location.origin + '/owner/' + _this.accountAddress);
+			url += '&text=' + encodeURI("Check out these PixelCons!");
+			return url;
+		}
+
+		// Share this page on facebook
+		function shareOnFacebook() {
+			let url = "https://www.facebook.com/sharer/sharer.php?u="
+			url += encodeURI(document.location.origin + '/owner/' + _this.accountAddress);
+			return url;
+		}
 		
 		
 		

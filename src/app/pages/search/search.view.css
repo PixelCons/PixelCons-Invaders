@@ -150,12 +150,19 @@ div.pixelconSearchPage div.ownerUnknown {
 }
 
 /* Checkbox */
-div.pixelconSearchPage md-checkbox.colorCheckbox div.md-icon {
-	border-color: #f2f2f2;
-}
 div.pixelconSearchPage md-checkbox.colorCheckbox {
 	color: #a2a2a2;
 	margin: 10px;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox div.md-icon {
+	border-color: #f2f2f2;
+}
+div.pixelconSearchPage md-checkbox.colorCheckbox .md-label {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
 }
 div.pixelconSearchPage md-checkbox.colorCheckbox.md-checked div.md-icon {
 	border-color: #f2f2f2;

@@ -35,13 +35,13 @@
 		<md-button class="topFilterButton right" ng-click="" aria-label="Small View">
 			<div class="buttonIcon small"></div>
 		</md-button>
-		<md-select ng-if="!ctrl.screenSize.sm" class="md-no-underline right" ng-model="ctrl.sortBy" aria-label="Sort">
+		<md-select ng-if="!ctrl.screenSize.sm" class="md-no-underline right" ng-model="ctrl.sortBy" ng-change="ctrl.onSortChange()" aria-label="Sort">
 			<md-option value="createdDesc">Uncovered Desc</md-option>
 			<md-option value="createdAsc">Uncovered Asc</md-option>
 		</md-select>
 		
 		<div class="moreFilter">
-			<md-select ng-if="ctrl.screenSize.sm" class="md-no-underline" ng-model="ctrl.sortBy">
+			<md-select ng-if="ctrl.screenSize.sm" class="md-no-underline" ng-model="ctrl.sortBy" ng-change="ctrl.onSortChange()" aria-label="Sort">
 				<md-option value="createdDesc">Uncovered Desc</md-option>
 				<md-option value="createdAsc">Uncovered Asc</md-option>
 			</md-select>
@@ -61,18 +61,18 @@
 				<div ng-show="!ctrl.checkingOwner && !ctrl.ownerAddress && ctrl.owner" class="ownerUnknown textDark textBold textMedium">??</div>
 			</div>
 			<br/>
-			<md-checkbox class="colorCheckbox water textDark textMedium" ng-model="ctrl.typeWater">Water</md-checkbox>
-			<md-checkbox class="colorCheckbox forest textDark textMedium" ng-model="ctrl.typeForest">Forest</md-checkbox>
-			<md-checkbox class="colorCheckbox fire textDark textMedium" ng-model="ctrl.typeFire">Fire</md-checkbox>
-			<md-checkbox class="colorCheckbox desert textDark textMedium" ng-model="ctrl.typeDesert">Desert</md-checkbox>
-			<md-checkbox class="colorCheckbox electric textDark textMedium" ng-model="ctrl.typeElectric">Electric</md-checkbox>
-			<md-checkbox class="colorCheckbox metal textDark textMedium" ng-model="ctrl.typeMetal">Metal</md-checkbox>
+			<md-checkbox class="colorCheckbox water textDark textMedium" ng-model="ctrl.typeWater" ng-change="ctrl.onTypeChange()">Water</md-checkbox>
+			<md-checkbox class="colorCheckbox forest textDark textMedium" ng-model="ctrl.typeForest" ng-change="ctrl.onTypeChange()">Forest</md-checkbox>
+			<md-checkbox class="colorCheckbox fire textDark textMedium" ng-model="ctrl.typeFire" ng-change="ctrl.onTypeChange()">Fire</md-checkbox>
+			<md-checkbox class="colorCheckbox desert textDark textMedium" ng-model="ctrl.typeDesert" ng-change="ctrl.onTypeChange()">Desert</md-checkbox>
+			<md-checkbox class="colorCheckbox electric textDark textMedium" ng-model="ctrl.typeElectric" ng-change="ctrl.onTypeChange()">Electric</md-checkbox>
+			<md-checkbox class="colorCheckbox metal textDark textMedium" ng-model="ctrl.typeMetal" ng-change="ctrl.onTypeChange()">Metal</md-checkbox>
 			<br/>
-			<md-checkbox class="colorCheckbox defence textDark textMedium" ng-model="ctrl.attrDefence">Defence</md-checkbox>
-			<md-checkbox class="colorCheckbox attack textDark textMedium" ng-model="ctrl.attrAttack">Attack</md-checkbox>
+			<md-checkbox class="colorCheckbox defence textDark textMedium" ng-model="ctrl.attrDefence" ng-change="ctrl.onAttributeChange()">Defence</md-checkbox>
+			<md-checkbox class="colorCheckbox attack textDark textMedium" ng-model="ctrl.attrAttack" ng-change="ctrl.onAttributeChange()">Attack</md-checkbox>
 			<br/>
-			<md-checkbox class="colorCheckbox longRange textDark textMedium" ng-model="ctrl.attrLongRange">Long Range</md-checkbox>
-			<md-checkbox class="colorCheckbox shortRange textDark textMedium" ng-model="ctrl.attrShortRange">Short Range</md-checkbox>
+			<md-checkbox class="colorCheckbox longRange textDark textMedium" ng-model="ctrl.attrLongRange" ng-change="ctrl.onAttributeChange()">Long Range</md-checkbox>
+			<md-checkbox class="colorCheckbox shortRange textDark textMedium" ng-model="ctrl.attrShortRange" ng-change="ctrl.onAttributeChange()">Short Range</md-checkbox>
 		</div>
 			
 	</div>

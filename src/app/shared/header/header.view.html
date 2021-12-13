@@ -20,8 +20,8 @@
 				{{ctrl.screenSize.sm?'':(ctrl.screenSize.md?'':'Uncover New')}}
 			</md-button>
 		</a>
-		<a href="/account" class="plain textDark">
-			<md-button class="nav quickButton" ng-class="{'highlight':ctrl.page=='account'}" ng-show="ctrl.loggedIn" ng-click="ctrl.goPath('/account')" aria-label="Account">
+		<a ng-href="{{'/search?owner=' + ctrl.accountAddress}}" href="" class="plain textDark">
+			<md-button class="nav quickButton" ng-show="ctrl.loggedIn && ctrl.accountAddress" ng-click="ctrl.goPath('/search?owner='+ctrl.accountAddress)" aria-label="Account">
 				<div class="buttonIcon account"></div>
 			</md-button>
 		</a>

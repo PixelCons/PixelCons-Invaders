@@ -3,14 +3,13 @@
 		.directive('appHeader', appHeader)
 		.controller('HeaderCtrl', HeaderCtrl);
 
-	HeaderCtrl.$inject = ['$scope', '$mdMedia', '$mdToast', '$mdMenu', '$timeout', '$location', '$window', 'web3Service', 'market'];
-	function HeaderCtrl($scope, $mdMedia, $mdToast, $mdMenu, $timeout, $location, $window, web3Service, market) {
+	HeaderCtrl.$inject = ['$scope', '$mdMedia', '$mdToast', '$mdMenu', '$timeout', '$location', '$window', '$route', 'web3Service', 'market'];
+	function HeaderCtrl($scope, $mdMedia, $mdToast, $mdMenu, $timeout, $location, $window, $route, web3Service, market) {
 		var _this = this;
 		_this.noWeb3 = false;
 		_this.loggedIn = false;
 		_this.web3error = false;
 		_this.waitingTransactions = [];
-		_this.account = null;
 		_this.setAccount = setAccount;
 		_this.getNetworkStyle = getNetworkStyle;
 		_this.goPath = goPath;
@@ -132,7 +131,17 @@
 
 		// Go to the specified path
 		function goPath(path) {
-			if ($location.path() == path) $window.document.getElementById('scrollTarget').scrollTop = 0;
+			if (path.indexOf($location.path()) == 0) {
+				
+				
+							//$location.path(path, false);
+							//$location.replace();
+					$timeout(function() {
+				$route.reload();
+						
+					}, 0);		
+				//$window.document.getElementById('scrollTarget').scrollTop = 0;
+			}
 		}
 
 		// Go to lookup details page
