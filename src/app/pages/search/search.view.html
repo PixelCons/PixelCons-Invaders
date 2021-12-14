@@ -5,12 +5,19 @@
 		<md-button class="topFilterButton filterButton textDark" ng-click="ctrl.filterOpen = !ctrl.filterOpen" aria-label="Filter">
 			<div class="buttonIcon filter"></div>
 			<accounticon ng-if="ctrl.ownerAddress" class="accountTitleIcon" address="ctrl.ownerAddress" border="2"></accounticon>
-			<span ng-if="ctrl.ownerAddress">{{ctrl.formatAddressString()}}</span>
+			<span ng-if="ctrl.ownerAddress">{{ctrl.getFilterTitleOwnerString()}}</span>
 			<md-progress-circular ng-if="ctrl.ownerAddressNameLoading" class="filterAddressLoading" md-diameter="14px" md-mode="indeterminate"></md-progress-circular>
-			<span ng-if="!ctrl.ownerAddress && !ctrl.ownerAddressName">Filter Invaders</span>
+			<span ng-class="{'shiftLeft':ctrl.ownerAddress}">{{ctrl.getFilterTitleString()}}</span>
 		</md-button>
-		<md-menu ng-if="ctrl.ownerAddress" md-position-mode="target-right target">
-			<md-button class="topFilterButton" ng-click="$mdOpenMenu()" aria-label="Share Account">
+		<md-button class="topFilterButton right" ng-click="" aria-label="Large View">
+			<div class="buttonIcon large"></div>
+		</md-button>
+		<md-button class="topFilterButton right" ng-click="" aria-label="Small View">
+			<div class="buttonIcon small"></div>
+		</md-button>
+		<div class="topFilterButtonDivider right"></div>
+		<md-menu md-position-mode="target-right target">
+			<md-button class="topFilterButton right" ng-click="$mdOpenMenu()" aria-label="Share Account">
 				<div class="buttonIcon share"></div>
 			</md-button>
 			<md-menu-content class="shareLinksContextMenu">
@@ -29,12 +36,6 @@
 				</md-menu-item>
 			</md-menu-content>
 		</md-menu>
-		<md-button class="topFilterButton right" ng-click="" aria-label="Large View">
-			<div class="buttonIcon large"></div>
-		</md-button>
-		<md-button class="topFilterButton right" ng-click="" aria-label="Small View">
-			<div class="buttonIcon small"></div>
-		</md-button>
 		<md-select ng-if="!ctrl.screenSize.sm" class="md-no-underline right" ng-model="ctrl.sortBy" ng-change="ctrl.onSortChange()" aria-label="Sort">
 			<md-option value="createdDesc">Uncovered Desc</md-option>
 			<md-option value="createdAsc">Uncovered Asc</md-option>

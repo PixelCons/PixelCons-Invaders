@@ -9,7 +9,9 @@
 		const levelMinDefault = 0;
 		const levelMaxDefault = 20;
 		const sortByDefault = 'createdDesc';
-		_this.formatAddressString = formatAddressString;
+		const realtimeFilterInPath = false;
+		_this.getFilterTitleOwnerString = getFilterTitleOwnerString;
+		_this.getFilterTitleString = getFilterTitleString;
 		_this.copyLink = copyLink;
 		_this.shareOnTwitter = shareOnTwitter;
 		_this.shareOnFacebook = shareOnFacebook;
@@ -71,18 +73,44 @@
 		}
 		
 		function updatePathParams() {
-			if (($routeParams.sortBy === undefined && _this.sortBy !== sortByDefault) || ($routeParams.sortBy !== undefined && _this.sortBy != $routeParams.sortBy)) {
-				$location.search('sortBy', (_this.sortBy !== sortByDefault) ? _this.sortBy : undefined).replace();
+			if(realtimeFilterInPath) {
+				let excludeTypes = getExcludeTypesPathParam();
+				let excludeAttributes = getExcludeAttributesPathParam();
+				if (($routeParams.owner === undefined && _this.ownerAddress) || ($routeParams.owner !== undefined && _this.ownerAddress != $routeParams.owner)) {
+					$location.search('owner', (_this.ownerAddress) ? _this.ownerAddress : undefined).replace();
+				}
+				if (($routeParams.lvlMin === undefined && _this.levelMin !== levelMinDefault) || ($routeParams.lvlMin !== undefined && _this.levelMin != $routeParams.lvlMin)) {
+					$location.search('lvlMin', (_this.levelMin !== levelMinDefault) ? _this.levelMin : undefined).replace();
+				}
+				if (($routeParams.lvlMax === undefined && _this.levelMax !== levelMaxDefault) || ($routeParams.lvlMax !== undefined && _this.levelMax != $routeParams.lvlMax)) {
+					$location.search('lvlMax', (_this.levelMax !== levelMaxDefault) ? _this.levelMax : undefined).replace();
+				}
+				if (($routeParams.excludeTypes === undefined && excludeTypes !== '') || ($routeParams.excludeTypes !== undefined && excludeTypes != $routeParams.excludeTypes)) {
+					$location.search('excludeTypes', (excludeTypes !== '') ? excludeTypes : undefined).replace();
+				}
+				if (($routeParams.excludeAttributes === undefined && excludeAttributes !== '') || ($routeParams.excludeAttributes !== undefined && excludeAttributes != $routeParams.excludeAttributes)) {
+					$location.search('excludeAttributes', (excludeAttributes !== '') ? excludeAttributes : undefined).replace();
+				}
+				if (($routeParams.sortBy === undefined && _this.sortBy !== sortByDefault) || ($routeParams.sortBy !== undefined && _this.sortBy != $routeParams.sortBy)) {
+					$location.search('sortBy', (_this.sortBy !== sortByDefault) ? _this.sortBy : undefined).replace();
+				}
 			}
-			if (($routeParams.lvlMin === undefined && _this.levelMin !== levelMinDefault) || ($routeParams.lvlMin !== undefined && _this.levelMin != $routeParams.lvlMin)) {
-				$location.search('lvlMin', (_this.levelMin !== levelMinDefault) ? _this.levelMin : undefined).replace();
-			}
-			if (($routeParams.lvlMax === undefined && _this.levelMax !== levelMaxDefault) || ($routeParams.lvlMax !== undefined && _this.levelMax != $routeParams.lvlMax)) {
-				$location.search('lvlMax', (_this.levelMax !== levelMaxDefault) ? _this.levelMax : undefined).replace();
-			}
-			if (($routeParams.owner === undefined && _this.ownerAddress) || ($routeParams.owner !== undefined && _this.ownerAddress != $routeParams.owner)) {
-				$location.search('owner', (_this.ownerAddress) ? _this.ownerAddress : undefined).replace();
-			}
+		}
+		
+		function getPathParams() {
+			let excludeTypes = getExcludeTypesPathParam();
+			let excludeAttributes = getExcludeAttributesPathParam();
+			let pathParams = '';
+			if (_this.ownerAddress) pathParams += (pathParams == '' ? '?' : '&') + 'owner=' + _this.ownerAddress;
+			if (_this.levelMin !== levelMinDefault) pathParams += (pathParams == '' ? '?' : '&') + 'lvlMin=' + _this.levelMin;
+			if (_this.levelMax !== levelMaxDefault) pathParams += (pathParams == '' ? '?' : '&') + 'lvlMax=' + _this.levelMax;
+			if (excludeTypes) pathParams += (pathParams == '' ? '?' : '&') + 'excludeTypes=' + excludeTypes;
+			if (excludeAttributes) pathParams += (pathParams == '' ? '?' : '&') + 'excludeAttributes=' + excludeAttributes;
+			if (_this.sortBy !== sortByDefault) pathParams += (pathParams == '' ? '?' : '&') + 'sortBy=' + _this.sortBy;
+			return pathParams;
+		}
+		
+		function getExcludeTypesPathParam() {
 			let excludeTypes = [];
 			if(!_this.typeWater) excludeTypes.push('water');
 			if(!_this.typeForest) excludeTypes.push('forest');
@@ -91,18 +119,19 @@
 			if(!_this.typeElectric) excludeTypes.push('electric');
 			if(!_this.typeMetal) excludeTypes.push('metal');
 			excludeTypes = excludeTypes.join(',');
-			if (($routeParams.excludeTypes === undefined && excludeTypes !== '') || ($routeParams.excludeTypes !== undefined && excludeTypes != $routeParams.excludeTypes)) {
-				$location.search('excludeTypes', (excludeTypes !== '') ? excludeTypes : undefined).replace();
-			}
+			if(excludeTypes && excludeTypes != '') return excludeTypes;
+			return null;
+		}
+				
+		function getExcludeAttributesPathParam() {
 			let excludeAttributes = [];
 			if(!_this.attrDefence) excludeAttributes.push('defence');
 			if(!_this.attrAttack) excludeAttributes.push('attack');
 			if(!_this.attrLongRange) excludeAttributes.push('longrange');
 			if(!_this.attrShortRange) excludeAttributes.push('shortrange');
 			excludeAttributes = excludeAttributes.join(',');
-			if (($routeParams.excludeAttributes === undefined && excludeAttributes !== '') || ($routeParams.excludeAttributes !== undefined && excludeAttributes != $routeParams.excludeAttributes)) {
-				$location.search('excludeAttributes', (excludeAttributes !== '') ? excludeAttributes : undefined).replace();
-			}
+			if(excludeAttributes && excludeAttributes != '') return excludeAttributes;
+			return null;
 		}
 		
 		function onOwnerChange(noWait) {
@@ -193,17 +222,29 @@
 			updatePathParams();
 		}
 		
-		// Returns the formatted address string for filter header
-		function formatAddressString(length) {
-			if(_this.ownerAddressNameLoading) return web3Service.compressString(_this.ownerAddress, 12);
-			let address = _this.ownerAddressName || _this.ownerAddress;
-			return web3Service.compressString(address, 16);
+		// Returns the owner portion of title for filter
+		function getFilterTitleOwnerString() {
+			if(_this.ownerAddressName) return _this.ownerAddressName;
+			return web3Service.compressString(_this.ownerAddress, 10);
+		}
+		
+		// Returns the title for the filter
+		function getFilterTitleString() {
+			const filterTitleStart = _this.ownerAddress ? ', ' : 'Filtered By ';
+			let filterTitle = filterTitleStart;
+			
+			if(_this.levelMin !== levelMinDefault ||  _this.levelMax !== levelMaxDefault) filterTitle += (filterTitle != filterTitleStart ? ', ' : '') + 'Level';
+			if(getExcludeTypesPathParam()) filterTitle += (filterTitle != filterTitleStart ? ', ' : '') + 'Types';
+			if(getExcludeAttributesPathParam()) filterTitle += (filterTitle != filterTitleStart ? ', ' : '') + 'Attributes';
+
+			if(filterTitle == filterTitleStart) return _this.ownerAddress ? '' : 'All Invaders';
+			return filterTitle;
 		}
 
 		// Copies share link to the clipboard
 		function copyLink() {
 			let copyText = document.getElementById("copyToClipboard");
-			copyText.value = document.location.origin + '/owner/' + _this.accountAddress;
+			copyText.value = document.location.origin + '/search' + getPathParams();
 			copyText.select();
 			document.execCommand("copy");
 		}
@@ -211,15 +252,15 @@
 		// Share this page on twitter
 		function shareOnTwitter() {
 			let url = "https://twitter.com/intent/tweet?url=";
-			url += encodeURI(document.location.origin + '/owner/' + _this.accountAddress);
-			url += '&text=' + encodeURI("Check out these PixelCons!");
+			url += encodeURI(document.location.origin + '/search' + getPathParams());
+			url += '&text=' + encodeURI("Check out these PixelCon Invaders!");
 			return url;
 		}
 
 		// Share this page on facebook
 		function shareOnFacebook() {
 			let url = "https://www.facebook.com/sharer/sharer.php?u="
-			url += encodeURI(document.location.origin + '/owner/' + _this.accountAddress);
+			url += encodeURI(document.location.origin + '/search' + getPathParams());
 			return url;
 		}
 		
