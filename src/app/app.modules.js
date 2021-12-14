@@ -19,17 +19,16 @@
 				controller: 'DetailsPageCtrl',
 				controllerAs: 'ctrl'
 			})
-			.when("/search", {
-				templateUrl: HTMLTemplates['page.search'],
-				controller: 'SearchPageCtrl',
+			.when("/explore", {
+				templateUrl: HTMLTemplates['page.explore'],
+				controller: 'ExplorePageCtrl',
 				controllerAs: 'ctrl',
 				reloadOnSearch: false
 			})
 			.when("/create", {
 				templateUrl: HTMLTemplates['page.create'],
 				controller: 'CreatePageCtrl',
-				controllerAs: 'ctrl',
-				reloadOnSearch: false
+				controllerAs: 'ctrl'
 			})
 			.when("/start", {
 				templateUrl: HTMLTemplates['page.start'],

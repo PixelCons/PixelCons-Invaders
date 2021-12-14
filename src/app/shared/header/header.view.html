@@ -8,9 +8,9 @@
 		</md-button>
 	</a>
 	<div layout="row" class="menuButtons">
-		<a href="/search" class="plain textDark">
-			<md-button class="nav" ng-class="{'highlight':ctrl.page=='browse'}" ng-click="ctrl.goPath('/search')" aria-label="Search">
-				<div class="buttonIcon search"></div>
+		<a href="/explore" class="plain textDark">
+			<md-button class="nav" ng-class="{'highlight':ctrl.page=='explore'}" ng-click="ctrl.goPath('/explore')" aria-label="Explore">
+				<div class="buttonIcon explore"></div>
 				{{ctrl.screenSize.sm?'':(ctrl.screenSize.md?'':'Invaders')}}
 			</md-button>
 		</a>
@@ -20,8 +20,8 @@
 				{{ctrl.screenSize.sm?'':(ctrl.screenSize.md?'':'Uncover New')}}
 			</md-button>
 		</a>
-		<a ng-href="{{'/search?owner=' + ctrl.accountAddress}}" href="" class="plain textDark">
-			<md-button class="nav quickButton" ng-show="ctrl.loggedIn && ctrl.accountAddress" ng-click="ctrl.goPath('/search?owner='+ctrl.accountAddress)" aria-label="Account">
+		<a ng-href="{{'/explore?owner=' + ctrl.accountAddress}}" href="" class="plain textDark">
+			<md-button class="nav quickButton" ng-show="ctrl.loggedIn && ctrl.accountAddress" ng-click="ctrl.goPath('/explore?owner='+ctrl.accountAddress)" aria-label="Account">
 				<div class="buttonIcon account"></div>
 			</md-button>
 		</a>

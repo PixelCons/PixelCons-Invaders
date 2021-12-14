@@ -1,0 +1,267 @@
+/* General */
+div.invadersExplorePage {
+	width: 100%;
+}
+div.invadersExplorePage div.topSpacer {
+	width: 100%;
+	height: 20px;
+}
+div.invadersExplorePage.sm div.topSpacer {
+	height: 10px;
+}
+div.invadersExplorePage div.bottomSpacer {
+	width: 100%;
+	height: 30px;
+}
+div.invadersExplorePage.sm div.bottomSpacer {
+	height: 20px;
+}
+
+/* Top Filter */
+div.invadersExplorePage div.topFilter {
+	width: calc(100% - 60px);
+	max-width: 1280px;
+	margin: 0 auto;
+	font-size: 0px;
+	padding: 0px 5px;
+	background-color: #80808093;
+}
+div.invadersExplorePage.sm div.topFilter {
+	width: calc(100% - 24px);
+}
+div.invadersExplorePage md-select {
+	display: inline-block;
+	vertical-align: middle;
+	margin: 7px 0px;
+	margin-right: 5px;
+	font-size: 14px;
+	color: #f2f2f2;
+}
+div.invadersExplorePage md-select:focus div.md-text {
+	color: #f2f2f2;
+}
+div.invadersExplorePage md-select div.md-text {
+	margin-left: 30px;
+}
+div.invadersExplorePage md-select .md-select-icon {
+	background-image: url(/img/icon_sort_w.svg);
+    width: 20px;
+    height: 20px;
+    color: #00000000;
+	position: absolute;
+}
+div.invadersExplorePage button.topFilterButton {
+    margin-left: 0px;
+    margin-right: 0px;
+    min-width: 0px;
+    height: 0px;
+    padding: 0px 4px;
+    min-height: 33px;
+}
+div.invadersExplorePage div.topFilterButtonDivider {
+	display: inline-block;
+	height: 30px;
+	width: 1px;
+	background-color: #f2f2f25c;
+	margin: 8px 0px;
+}
+div.invadersExplorePage button.filterButton {
+	text-transform: none;
+	max-width: calc(100% - 260px);
+	text-align: left;
+	text-overflow: ellipsis;
+}
+div.invadersExplorePage.sm button.filterButton {
+	max-width: calc(100% - 100px);
+}
+div.invadersExplorePage accounticon.accountTitleIcon {
+	display: inline-block;
+	vertical-align: middle;
+	width: 24px;
+	height: 24px;
+	margin-top: -4px;
+}
+div.invadersExplorePage .right {
+	float: right;
+}
+div.invadersExplorePage .shiftLeft {
+	margin-left: -4px;
+}
+div.invadersExplorePage button.topFilterButton .buttonIcon {
+	margin-top: 4px;
+}
+div.invadersExplorePage .buttonIcon.filter {
+	background-image: url(/img/icon_filter_w.svg);
+}
+div.invadersExplorePage .buttonIcon.share {
+	background-image: url(/img/icon_share_w.svg);
+}
+div.invadersExplorePage .buttonIcon.small {
+	background-image: url(/img/icon_small_w.svg);
+}
+div.invadersExplorePage .buttonIcon.large {
+	background-image: url(/img/icon_large_w.svg);
+}
+div.invadersExplorePage div.topFilter .moreFilter {
+	max-height: 0px;
+	width: 100%;
+	padding: 0px 0px;
+	overflow: hidden;
+	transition: max-height cubic-bezier(0.35, 0, 0.25, 1) 0.1s, padding cubic-bezier(0.35, 0, 0.25, 1) 0.1s;
+}
+div.invadersExplorePage div.topFilter.expanded .moreFilter {
+	max-height: 300px;
+	padding: 5px 0px;
+}
+
+/* Selects */
+div.invadersExplorePage div.levelSelect {
+	display: inline-block;
+	margin: 10px;
+	width: 155px;
+}
+div.invadersExplorePage input.levelInput {
+	background-color: unset;
+	border: none;
+	border-bottom: 1px solid #f2f2f2;
+	color: #f2f2f2;
+	width: 40px;
+}
+div.invadersExplorePage div.ownerSelect {
+	position: relative;
+	display: inline-block;
+	margin: 10px;
+	width: 310px;
+}
+div.invadersExplorePage input.ownerInput {
+	background-color: unset;
+	border: none;
+	border-bottom: 1px solid #f2f2f2;
+	color: #f2f2f2;
+	width: 225px;
+}
+div.invadersExplorePage accounticon.ownerIcon {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+	width: 20px;
+	height: 20px;
+}
+div.invadersExplorePage md-progress-circular.ownerLoading {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+}
+div.invadersExplorePage md-progress-circular.filterAddressLoading {
+	display: inline-block;
+}
+div.invadersExplorePage md-progress-circular svg path {
+	stroke: #f2f2f2;
+}
+div.invadersExplorePage div.ownerUnknown {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+	width: 20px;
+	height: 20px;
+}
+
+/* Checkbox */
+div.invadersExplorePage md-checkbox.colorCheckbox {
+	color: #a2a2a2;
+	margin: 10px;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox div.md-icon {
+	border-color: #f2f2f2;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox .md-label {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked div.md-icon {
+	border-color: #f2f2f2;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked {
+	color: #f2f2f2;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.water div.md-icon {
+    background-color: #29ADFF;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.water div.md-icon {
+    background-color: #29ADFFD1;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.forest div.md-icon {
+    background-color: #00E756;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.forest div.md-icon {
+    background-color: #00E756D1;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.fire div.md-icon {
+    background-color: #FF004D;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.fire div.md-icon {
+    background-color: #FF004DD1;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.desert div.md-icon {
+    background-color: #FFA300;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.desert div.md-icon {
+    background-color: #FFA300D1;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.electric div.md-icon {
+    background-color: #FFFF27;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.electric div.md-icon {
+    background-color: #FFFF27D1;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.metal div.md-icon {
+    background-color: #FFF1E8;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.metal div.md-icon {
+    background-color: #FFF1E8D1;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.defence div.md-icon {
+    background-color: #C2C3C3;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.defence div.md-icon {
+    background-color: #C2C3C3D1;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.attack div.md-icon {
+    background-color: #83769C;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.attack div.md-icon {
+    background-color: #83769CD1;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.longRange div.md-icon {
+    background-color: #5F574F;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.longRange div.md-icon {
+    background-color: #5F574FD1;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.shortRange div.md-icon {
+    background-color: #1D2B53;
+}
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.shortRange div.md-icon {
+    background-color: #1D2B53D1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

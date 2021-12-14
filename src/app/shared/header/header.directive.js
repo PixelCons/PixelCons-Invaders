@@ -32,8 +32,7 @@
 
 		// Watch for path changes
 		$scope.$watch(function () { return $location.path(); }, function (value) {
-			if (value.indexOf('/search') == 0) _this.page = 'browse';
-			else if (value.indexOf('/account') == 0) _this.page = 'account';
+			if (value.indexOf('/explore') == 0) _this.page = 'explore';
 			else if (value.indexOf('/create') == 0) _this.page = 'create';
 			else if (value.indexOf('/details') == 0) _this.page = 'details';
 			else _this.page = 'other';
@@ -51,8 +50,8 @@
 		};
 
 		// Configure user account icon
-		updateUserAccountIcon();
-		function updateUserAccountIcon() {
+		updateUserAccount();
+		function updateUserAccount() {
 			let address = web3Service.getActiveAccount();
 			if (address) {
 				_this.accountAddress = address;
@@ -132,15 +131,9 @@
 		// Go to the specified path
 		function goPath(path) {
 			if (path.indexOf($location.path()) == 0) {
-				
-				
-							//$location.path(path, false);
-							//$location.replace();
-					$timeout(function() {
-				$route.reload();
-						
-					}, 0);		
-				//$window.document.getElementById('scrollTarget').scrollTop = 0;
+				$timeout(function() {
+					$route.reload();
+				}, 0);
 			}
 		}
 
@@ -175,7 +168,7 @@
 			updateState();
 		}, $scope);
 		web3Service.onAccountDataChange(function () {
-			updateUserAccountIcon();
+			updateUserAccount();
 		}, $scope);
 		web3Service.onWaitingTransactionsChange(function (transactionData) {
 			updateTransactionIndicator(transactionData);

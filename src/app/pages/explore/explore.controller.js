@@ -1,13 +1,13 @@
 (function () {
 	angular.module('App')
-		.controller('SearchPageCtrl', SearchPageCtrl);
+		.controller('ExplorePageCtrl', ExplorePageCtrl);
 
-	SearchPageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', '$timeout', 'web3Service', 'coreContract'];
-	function SearchPageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, $timeout, web3Service, coreContract) {
+	ExplorePageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', '$timeout', 'web3Service', 'coreContract'];
+	function ExplorePageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, $timeout, web3Service, coreContract) {
 		var _this = this;
 		var ownerCheckTimeout;
-		const levelMinDefault = 0;
-		const levelMaxDefault = 20;
+		const levelMinDefault = null;
+		const levelMaxDefault = null;
 		const sortByDefault = 'createdDesc';
 		const realtimeFilterInPath = false;
 		_this.getFilterTitleOwnerString = getFilterTitleOwnerString;
@@ -192,7 +192,7 @@
 					if(isNaN(_this.levelMin)) _this.levelMin = _this.lastLevelMin;
 					if(_this.levelMin < 0) _this.levelMin = 0;
 					if(_this.levelMin > 30) _this.levelMin = 30;
-					if(_this.levelMax < _this.levelMin) _this.levelMax = _this.levelMin;
+					if(_this.levelMax != null && _this.levelMax < _this.levelMin) _this.levelMax = _this.levelMin;
 				}
 				_this.lastLevelMin = _this.levelMin;
 			}
@@ -203,7 +203,7 @@
 					if(isNaN(_this.levelMax)) _this.levelMax = _this.lastLevelMax;
 					if(_this.levelMax < 0) _this.levelMax = 0;
 					if(_this.levelMax > 30) _this.levelMax = 30;
-					if(_this.levelMax < _this.levelMin) _this.levelMin = _this.levelMax;
+					if(_this.levelMin != null && _this.levelMax < _this.levelMin) _this.levelMin = _this.levelMax;
 				}
 				_this.lastLevelMax = _this.levelMax;
 			}
@@ -244,7 +244,7 @@
 		// Copies share link to the clipboard
 		function copyLink() {
 			let copyText = document.getElementById("copyToClipboard");
-			copyText.value = document.location.origin + '/search' + getPathParams();
+			copyText.value = document.location.origin + '/explore' + getPathParams();
 			copyText.select();
 			document.execCommand("copy");
 		}
@@ -252,7 +252,7 @@
 		// Share this page on twitter
 		function shareOnTwitter() {
 			let url = "https://twitter.com/intent/tweet?url=";
-			url += encodeURI(document.location.origin + '/search' + getPathParams());
+			url += encodeURI(document.location.origin + '/explore' + getPathParams());
 			url += '&text=' + encodeURI("Check out these PixelCon Invaders!");
 			return url;
 		}
@@ -260,7 +260,7 @@
 		// Share this page on facebook
 		function shareOnFacebook() {
 			let url = "https://www.facebook.com/sharer/sharer.php?u="
-			url += encodeURI(document.location.origin + '/search' + getPathParams());
+			url += encodeURI(document.location.origin + '/explore' + getPathParams());
 			return url;
 		}
 		
@@ -277,235 +277,19 @@
 		
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		const maxInPage = 50;
-		const minGrade = 8;
-		_this.pixelcons = [];
-		_this.filter = {
-			searchText: $routeParams.search ? $routeParams.search : '',
-			sortBy: 'dateCreated',
-			sortDesc: $routeParams.desc == 'true'
-		}
-		_this.displayHeight = '';
-		_this.currPage = 0;
-		_this.setSortOrder = setSortOrder;
-		_this.checkUpdateData = checkUpdateData;
-		_this.updatePage = updatePage;
-		_this.disableFilters = false;
-
-		var loadedFilter = {};
-
-		// Database data
-		var dirtyDatabaseData = false;
-		var pixelconCount;
-		var pixelconNames;
-		var pixelconFilterGrades;
-		var pixelconFilterGradeMax;
-		var pixelconFilterCount;
-
-		// Watch for screen size changes
-		_this.screenSize = {};
-		$scope.$watch(function () { return $mdMedia('gt-md'); }, function (lg) { _this.screenSize['lg'] = lg; });
-		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
-		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
-
-		// Fetch database to search through
-		fetchDatabaseData();
-		function fetchDatabaseData() {
-			dirtyDatabaseData = false;
-			_this.grabbingData = true;
-			_this.loading = true;
-			_this.currPage = 0;
-			_this.pixelcons = [];
-
-			coreContract.getTotalPixelcons().then(function (total) {
-				pixelconCount = total;
-
-				_this.grabbingData = false;
-				let page = $routeParams.page ? parseInt($routeParams.page) : null;
-				checkUpdateData(true, page);
-			}, function (reason) {
-				_this.grabbingData = false;
-				_this.loading = false;
-				_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + reason);
-			});
-		}
-
-		// Check if data parameters have changed
-		function checkUpdateData(forceUpdate, gotoPage) {
-			web3Service.awaitState(function () {
-				if (_this.error) return;
-				if (dirtyDatabaseData) {
-					fetchDatabaseData();
-					return;
-				}
-
-				//update url parameters
-				if (($routeParams.search === undefined && _this.filter.searchText) || ($routeParams.search !== undefined && _this.filter.searchText != $routeParams.search)) {
-					$location.search('search', _this.filter.searchText ? _this.filter.searchText : undefined).replace();
-				}
-				if (($routeParams.desc === undefined && _this.filter.sortDesc) || ($routeParams.desc !== undefined && _this.filter.sortDesc == ($routeParams.desc != 'true'))) {
-					$location.search('desc', (_this.filter.sortDesc) ? 'true' : undefined).replace();
-				}
-
-				//name grading related filter changes?
-				if (forceUpdate || _this.filter.searchText != loadedFilter.searchText) {
-					loadedFilter = JSON.parse(JSON.stringify(_this.filter));
-
-					// get list of names or just grade?
-					if (loadedFilter.searchText) fetchNames(gotoPage);
-					else gradeNames(gotoPage);
-					return;
-				}
-
-				//other filter parameters changed?
-				let needToUpdate = false;
-				for (let i in _this.filter) {
-					if (_this.filter[i] != loadedFilter[i]) {
-						needToUpdate = true;
-						break;
-					}
-				}
-				if (needToUpdate) {
-					loadedFilter = JSON.parse(JSON.stringify(_this.filter));
-					updatePage(1);
-				}
-			}, true);
-		}
-
-		// Grades the database names based on filter data
-		function fetchNames(gotoPage) {
-			if (!pixelconNames) {
-				_this.grabbingData = true;
-				_this.loading = true;
-				_this.currPage = 0;
-				_this.pixelcons = [];
-
-				coreContract.getAllNames().then(function (names) {
-					_this.grabbingData = false;
-					pixelconNames = names;
-					pixelconCount = pixelconNames.length;
-					gradeNames(gotoPage);
-				});
-			} else {
-				gradeNames(gotoPage);
-			}
-		}
-
-		// Grades the database names based on filter data
-		function gradeNames(gotoPage) {
-			_this.loading = true;
-			_this.currPage = 0;
-
-			pixelconFilterCount = 0;
-			pixelconFilterGradeMax = 0;
-			pixelconFilterGrades = new Uint8Array(pixelconCount);
-
-			//all
-			for (let i = 0; i < pixelconCount; i++) {
-				let grade = 200;
-				if (grade > minGrade) pixelconFilterCount++;
-				if (grade > pixelconFilterGradeMax) pixelconFilterGradeMax = grade;
-				pixelconFilterGrades[i] = grade;
-			}
-
-			_this.totalFound = pixelconFilterCount;
-			updatePage(gotoPage ? gotoPage : 1);
-		}
-
-		// Updates data to be displayed based on paging details
-		function updatePage(page) {
-			let scrollTarget = $window.document.getElementById('scrollTarget');
-			let resultsCard = $window.document.getElementById('searchPagePixelconWindow');
-			if (scrollTarget && resultsCard && resultsCard.offsetHeight < scrollTarget.offsetHeight) {
-				_this.displayHeight = resultsCard.offsetHeight + 'px';
-			} else {
-				_this.displayHeight = '';
-			}
-			$location.search('page', (page > 1) ? page : undefined).replace();
-
-			_this.loading = true;
-			_this.currPage = 0;
-			_this.pixelcons = [];
-
-			//loop from high score to low score, until page slots are filled
-			let indexes = [];
-			let startIndex = (page - 1) * maxInPage;
-			if (loadedFilter.sortDesc) {
-				//all desc
-				for (let grade = pixelconFilterGradeMax; grade > minGrade && indexes.length < maxInPage; grade--) {
-					for (let i = pixelconFilterGrades.length - 1; i >= 0 && indexes.length < maxInPage; i--) {
-						if (pixelconFilterGrades[i] == grade) {
-							if (startIndex > 0) startIndex--;
-							else indexes.push(i);
-						}
-					}
-				}
-			} else {
-				//all asc
-				for (let grade = pixelconFilterGradeMax; grade > minGrade && indexes.length < maxInPage; grade--) {
-					for (let i = 0; i < pixelconFilterGrades.length && indexes.length < maxInPage; i++) {
-						if (pixelconFilterGrades[i] == grade) {
-							if (startIndex > 0) startIndex--;
-							else indexes.push(i);
-						}
-					}
-				}
-			}
-
-			//get the details for the pixelcon indexes
-			_this.error = null;
-			_this.currPage = page;
-			_this.maxPage = Math.ceil(pixelconFilterCount / maxInPage);
-			coreContract.fetchPixelconsByIndexes(indexes, {asynchronousLoad: true}).then(function (data) {
-				_this.loading = false;
-				_this.pixelcons = data;
-				_this.displayHeight = '';
-			}, function (reason) {
-				_this.loading = false;
-				_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + reason);
-				_this.currPage = 0;
-				_this.displayHeight = '';
-			});
-		}
-
-		// Set the sort order
-		function setSortOrder(desc) {
-			_this.filter.sortDesc = desc;
-			checkUpdateData();
-		}
-
 		// Listen for account data changes
 		web3Service.onAccountDataChange(function () {
-			checkUpdateData();
+			//checkUpdateData();
 		}, $scope, true);
 
 		// Listen for network data changes
 		web3Service.onNetworkChange(function () {
-			if(_this.error) $route.reload();
+			//if(_this.error) $route.reload();
 		}, $scope, true);
 
 		// Listen for transactions
 		web3Service.onWaitingTransactionsChange(function (transactionData) {
-			dirtyDatabaseData = transactionData && transactionData.success;
+			//dirtyDatabaseData = transactionData && transactionData.success;
 		}, $scope);
 	}
 }());

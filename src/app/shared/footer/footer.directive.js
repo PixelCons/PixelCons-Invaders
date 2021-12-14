@@ -8,7 +8,7 @@
 		var _this = this;
 		_this.tip = tip;
 		_this.openSettings = openSettings;
-		checkAccount();
+		_this.accountAddress = null;
 
 		// Watch for screen size changes
 		_this.screenSize = {};
@@ -42,14 +42,14 @@
 		}
 
 		// Account change
-		function checkAccount() {
-			let web3state = web3Service.getState();
-			_this.noWeb3 = (web3state == "not_enabled" || web3Service.isReadOnly());
+		updateUserAccount();
+		function updateUserAccount() {
+			_this.accountAddress = web3Service.getActiveAccount();
 		}
 
 		// Listen for account data changes
 		web3Service.onAccountDataChange(function () {
-			checkAccount();
+			updateUserAccount();
 		}, $scope);
 	}
 
