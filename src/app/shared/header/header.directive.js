@@ -56,14 +56,8 @@
 			if (address) {
 				_this.accountAddress = address;
 				_this.userAccountId = web3Service.compressString(address, 16);
-				_this.userIcon = blockies.create({
-					seed: address.toLowerCase(),
-					size: 8,
-					scale: 6
-				}).toDataURL();
 			} else {
 				_this.accountAddress = null;
-				_this.userIcon = '';
 				_this.userAccountId = '';
 			}
 		};

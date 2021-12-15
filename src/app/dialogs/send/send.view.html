@@ -1,4 +1,4 @@
-<md-dialog class="sendDialog colorLight" ng-class="ctrl.screenSize" aria-label="Send PixelCon">
+<md-dialog class="sendDialog colorDark" ng-class="ctrl.screenSize" aria-label="Send PixelCon">
 	
 	<!-- Header -->
 	<div class="dialogTitle" ng-class="{'sendEthDialogTitle': ctrl.ethMode}">{{ctrl.title}}</div>
@@ -11,12 +11,12 @@
 	
 	<!-- No Account Send View -->
 	<div class="view" ng-if="ctrl.currView=='sendEthError'" ng-cloak>
-		<div class="infoText noAccountTitle">
+		<div class="infoText noAccountTitle textBlack">
 			<b>You can tip the Devs at the following Ethereum Address:</b>
 			<br/><br/>
-			<div class="addressFont textLight">{{ctrl.toAddress}}</div>
-			<br/><br/>
-			<div class="textMedium textDark">Thank You!</div>
+			<div class="addressFont textLighter">{{ctrl.toAddress}}</div>
+			<br/>
+			<div class="textMedium">Thank You!</div>
 		</div>
 	</div>
 	
@@ -35,7 +35,7 @@
 			<input md-autofocus ng-model="ctrl.toAddress" ng-change="ctrl.checkValid()" placeholder="Receiving Address"/>
 		</md-input-container>
 		<div class="actionButtons">
-			<div class="note textLight">1 <span class="textSmall">PixelCon</span></div>
+			<div class="note textLighter">1 <span class="textSmall">PixelCon</span></div>
 			<md-button ng-disabled="!ctrl.canSend" ng-click="ctrl.sendPixelcon()">Send</md-button>
 		</div>
 		<div class="textNote termsNote">By sending this PixelCon, you agree to the <a class="light link textDark" ng-click="ctrl.closeDialog()" href="/terms">Terms of Use</a></div>
@@ -44,7 +44,7 @@
 	<!-- Send Eth View -->
 	<div class="view" ng-if="ctrl.currView=='sendEth'" ng-cloak>
 		<div class="infoText sendEthTitle">Developer Address:</div>
-		<div class="addressFont textLight">{{ctrl.toAddress}}</div>
+		<div class="addressFont textLighter">{{ctrl.toAddress}}</div>
 		<md-input-container md-no-float class="amountInput md-block">
 			<input md-autofocus ng-model="ctrl.sendAmount" ng-change="ctrl.checkValidAmount()" placeholder="Amount (Eth)" type="number" step="0.001"/>
 		</md-input-container>

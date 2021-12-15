@@ -284,20 +284,12 @@ div.headerDropdownIconCollection pixelcon {
 	height: 14px;
 	margin: 1px;
 }
-div.headerDropdownAccountIcon {
+accounticon.headerDropdownAccountIcon {
 	position: relative;
 	display: inline-block;
 	width: 36px;
 	height: 36px;
-	padding: 3px;
 	vertical-align: top;
-	border-radius: 4px;
-	background-color: #ffffff;
-}
-div.headerDropdownAccountIcon img.headerAccountActivityIcon {
-	display: inline-block;
-	width: 100%;
-	height: 100%;
 }
 div.header .tooltip {
 	position: absolute;

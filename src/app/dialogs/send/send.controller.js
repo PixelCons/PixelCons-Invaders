@@ -23,7 +23,7 @@
 			_this.currView = 'loading';
 			if (_this.ethMode) {
 				_this.title = 'Tip the Devs!';
-				_this.toAddress = '0x9f2fedFfF291314E5a86661e5ED5E6f12e36dd37';
+				_this.toAddress = 'PixelCons.eth';
 
 				let activeAccount = web3Service.getActiveAccount();
 				if (activeAccount) {

@@ -57,28 +57,26 @@
 	<md-menu ng-if="ctrl.loggedIn && ctrl.accountAddress" md-position-mode="target-right target">
 		<div class="accountIcon colorDark clickable crispImage md-whiteframe-1dp" ng-click="ctrl.showActivityMenu($mdOpenMenu)">
 			<div class="iconFill" ng-mouseenter="ctrl.showActivityMenu($mdOpenMenu)" ng-mouseleave="ctrl.cancelActivityMenu()">
-				<img class="iconFill" ng-src="{{ctrl.userIcon}}"/>
+				<accounticon class="iconFill" address="ctrl.accountAddress" border="0"></accounticon>
 				<img ng-show="ctrl.waitingTransactions.length>0" class="iconFillOverlay crispImage" src="img/loading.gif"/>
 			</div>
 			<div class="tooltip" ng-class="{'hidden':ctrl.waitingTransactions.length==0}">Processing...</div>
 		</div>
 		<md-menu-content class="headerDropdown textMedium textNotSelectable" width="3" ng-mouseleave="ctrl.hideActivityMenu()">
 			<div ng-if="ctrl.accountAddress">
-				<a ng-href="{{ctrl.goDetails()}}" target="_blank" class="plain textDark">
+				<a ng-href="{{ctrl.goDetails()}}" target="_blank" class="plain textBlack">
 					<div class="textCenter clickable">
-						<div class="headerDropdownAccountIcon md-whiteframe-1dp">
-							<img class="headerAccountActivityIcon" ng-src="{{ctrl.userIcon}}"/>
-						</div>
+						<accounticon class="headerDropdownAccountIcon md-whiteframe-1dp" address="ctrl.accountAddress" border="2"></accounticon>
 						<div class="headerDropdownTextTop">
-							<div class="textLarge textDark textBold">Account Activity</div><br/>
-							<div class="textSmall textDark textBold">{{ctrl.userAccountId}}</div>
+							<div class="textLarge textBlack textBold">Account Activity</div><br/>
+							<div class="textSmall textBlack textBold">{{ctrl.userAccountId}}</div>
 						</div>
 						<div class="headerDropdownButtonLink"></div>
 					</div>
 				</a>
 				<md-divider></md-divider>
 				<div class="textCenter">
-					<div class="headerDropdownText textLight" ng-show="ctrl.waitingTransactions.length==0">No Pending Transactions</div>
+					<div class="headerDropdownText textLighter" ng-show="ctrl.waitingTransactions.length==0">No Pending Transactions</div>
 				</div>
 				<md-button style="display:none" ng-click="" aria-label="null"></md-button>
 				<div ng-repeat="transaction in ctrl.waitingTransactions track by $index" class="headerDropdownRow">
@@ -89,7 +87,7 @@
 						<pixelcon ng-if="transaction.params.pixelconIds[2]" class="md-whiteframe-1dp" id="transaction.params.pixelconIds[2]"></pixelcon>
 						<pixelcon ng-if="transaction.params.pixelconIds[3]" class="md-whiteframe-1dp" id="transaction.params.pixelconIds[3]"></pixelcon>
 					</div>
-					<div class="headerDropdownTextItem textLight">{{transaction.description}}</div>
+					<div class="headerDropdownTextItem textLighter">{{transaction.description}}</div>
 					<md-button class="headerDropdownButton md-primary" ng-click="">
 						<div class="networkBadge" ng-style="ctrl.getNetworkStyle(transaction.chainId)"></div>
 						<span>View</span>
@@ -97,7 +95,7 @@
 					</md-button>
 				</div>
 				<div class="textCenter">
-					<a class="light textSmall textDark textBold" href="/start" ng-click="ctrl.hideActivityMenu()">Get Started</a>
+					<a class="light textSmall textLighter textBold" href="/start" ng-click="ctrl.hideActivityMenu()">Get Started</a>
 				</div>
 			</div>
 		</md-menu-content>
