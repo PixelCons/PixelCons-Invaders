@@ -620,7 +620,7 @@
 			_contractServices[name] = service;
 		}
 
-		// Registers a contract service
+		// Retrieves a contract service
 		function getContractService(name) {
 			return _contractServices[name];
 		}

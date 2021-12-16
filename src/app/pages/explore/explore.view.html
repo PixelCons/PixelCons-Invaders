@@ -38,14 +38,18 @@
 			</md-menu-content>
 		</md-menu>
 		<md-select ng-if="!ctrl.screenSize.sm" class="md-no-underline right" ng-model="ctrl.sortBy" ng-change="ctrl.onSortChange()" aria-label="Sort">
-			<md-option value="createdDesc">Uncovered Desc</md-option>
-			<md-option value="createdAsc">Uncovered Asc</md-option>
+			<md-option value="createdDesc">Date Desc</md-option>
+			<md-option value="createdAsc">Date Asc</md-option>
+			<md-option value="levelDesc">Level Desc</md-option>
+			<md-option value="levelAsc">Level Asc</md-option>
 		</md-select>
 		
 		<div class="moreFilter">
 			<md-select ng-if="ctrl.screenSize.sm" class="md-no-underline" ng-model="ctrl.sortBy" ng-change="ctrl.onSortChange()" aria-label="Sort">
-				<md-option value="createdDesc">Uncovered Desc</md-option>
-				<md-option value="createdAsc">Uncovered Asc</md-option>
+			<md-option value="createdDesc">Date Desc</md-option>
+			<md-option value="createdAsc">Date Asc</md-option>
+			<md-option value="levelDesc">Level Desc</md-option>
+			<md-option value="levelAsc">Level Asc</md-option>
 			</md-select>
 			<br/>
 			<div class="levelSelect textDark textMedium">
@@ -82,9 +86,11 @@
 	
 	
 	
+	<div class="invadersContainer">
 	
+		<div class="invader" ng-repeat="invader in ctrl.invaders track by $index"></div>
 	
-	
+	</div>
 	
 	
 	

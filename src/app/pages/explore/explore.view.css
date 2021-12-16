@@ -251,8 +251,18 @@ div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.shortRange div.md-i
 
 
 
+div.invadersExplorePage div.invadersContainer {
+	
+}
 
 
+div.invadersExplorePage div.invadersContainer div.invader {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	margin: 5px;
+	background-color: #000;
+}
 
 
 

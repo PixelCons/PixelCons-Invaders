@@ -38,6 +38,12 @@
 		_this.attrAttack = true;
 		_this.attrLongRange = true;
 		_this.attrShortRange = true;
+
+		// Watch for screen size changes
+		_this.screenSize = {};
+		$scope.$watch(function () { return $mdMedia('gt-md'); }, function (lg) { _this.screenSize['lg'] = lg; });
+		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
+		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 		
 		loadPathParams();
 		function loadPathParams() {
@@ -132,6 +138,14 @@
 			excludeAttributes = excludeAttributes.join(',');
 			if(excludeAttributes && excludeAttributes != '') return excludeAttributes;
 			return null;
+		}
+		
+		loadInvaders();
+		function loadInvaders() {
+			coreContract.fetchAllInvaders().then(function(invaders) {
+				console.log('returned')
+				_this.invaders = invaders;
+			});
 		}
 		
 		function onOwnerChange(noWait) {
