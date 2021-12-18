@@ -518,7 +518,7 @@
 					invader += grid[y][x];
 				}
 			}
-			return invader;
+			return '0x' + invader;
 		}
 		
 		var randomIndex = 0;

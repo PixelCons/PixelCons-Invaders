@@ -160,7 +160,7 @@
 			disabled: true
 		}];
 		for(let i=0; i<_this.showcaseList.length; i++) {
-			_this.showcaseList[i].image = decoder.generateTiledImage(_this.showcaseList[i].pixelconIds, 5, 4, 8, _this.showcaseList[i].imageBackground, false, false, false);
+			_this.showcaseList[i].image = '';
 			_this.showcaseList[i].addressIcon = blockies.create({
 				seed: _this.showcaseList[i].address.toLowerCase(),
 				size: 8,

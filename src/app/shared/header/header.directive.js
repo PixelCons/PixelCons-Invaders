@@ -33,7 +33,7 @@
 		// Watch for path changes
 		$scope.$watch(function () { return $location.path(); }, function (value) {
 			if (value.indexOf('/explore') == 0) _this.page = 'explore';
-			else if (value.indexOf('/create') == 0) _this.page = 'create';
+			else if (value.indexOf('/mint') == 0) _this.page = 'mint';
 			else if (value.indexOf('/details') == 0) _this.page = 'details';
 			else _this.page = 'other';
 		});

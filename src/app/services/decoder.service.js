@@ -4,22 +4,24 @@
 
 	decoder.$inject = ['$q', '$timeout'];
 	function decoder($q, $timeout) {
+		const maxImageSize = 256;
+		const invaderScale = 3;
+		const invaderSize = invaderScale*10;
+		const invadersPerWidth = Math.floor(maxImageSize / invaderSize);
+		const invadersPerPanel = invadersPerWidth * invadersPerWidth;
 		
 		//Setup functions
-		this.decodePNG = decodePNG;
-		this.encodePNG = encodePNG;
-		this.generateTiledImage = generateTiledImage;
+		this.generateInvadersPanel = generateInvadersPanel;
 		this.generateDisplayImage = generateDisplayImage;
+		this.getPanelStyleRules = getPanelStyleRules;
 		
 		//Data
 		var loadImage_cache = {};
-		var image_cache = [];
+		this.invadersPerWidth = invadersPerWidth;
+		this.invadersPerPanel = invadersPerPanel;
 		
 		//Configuration
-		const qrCodeImageLink = document.location.origin + '/_'
-		const maxCacheImages = 500;
-		const frameColorDist = 0.05;
-		const maxColorDist = 0.1;
+		const qrCodeImageLink = document.location.origin + '/_';
 		const colorPalette = {
 			'0': [0,0,0],		//#000000
 			'1': [29,43,83],	//#1D2B53
@@ -38,171 +40,42 @@
 			'e': [255,119,168],	//#FF77A8
 			'f': [255,204,170],	//#FFCCAA
 		}
-		const colorPaletteFaded = {
-			'0': [164,164,164],	//#A4A4A4
-			'1': [172,175,185],	//#ACAFB9
-			'2': [196,174,185],	//#C4AEB9
-			'3': [164,199,185],	//#A4C7B9
-			'4': [208,185,178],	//#D0B9B2
-			'5': [188,186,184],	//#BCBAB8
-			'6': [214,214,215],	//#D6D6D7
-			'7': [229,226,223],	//#E5E2DF
-			'8': [229,164,184],	//#E5A4B8
-			'9': [229,206,164],	//#E5CEA4
-			'a': [229,229,174],	//#E5E5AE
-			'b': [164,223,186],	//#A4DFBA
-			'c': [175,208,229],	//#AFD0E5
-			'd': [198,194,204],	//#C6C2CC
-			'e': [229,195,207],	//#E5C3CF
-			'f': [229,216,208],	//#E5D8D0
-		}
-		const defaultBackgroundIds = ['0x0128218101298221122898101828982112899921289aa98229aaaa9212888821','0x0000000008878780088677800888888008777780087777800266662000000000','0x11112121212112921191112129a9211111911212112129212111121111121112','0x0000000000aaa900aa99949aa0aaa90a90aaa909099aa49000094000009aa400','0x6000000dd70000dd06700dd00067dd0000067000011d6cc010100c0c111006cc','0x00001000000001000000110000066600d6722270d0d777601ddd6660001d6610','0x7600000067600000067600400067d090000d7d900000d930004993b30000003b','0x7600000067600000067600400067d090000d7d900000d9200049928200000028','0x0000000000770000066700000776d990000d6999000444990002444400002442',
-			'0x0008800000878800000880000071160007100160070000600070060000066000','0x00000000000000000866a66d01d76d10047dd642046dc6420446644200000000','0x00b3b300000b300000ee28000e8e88800ee88280028288200028820000022000','0x000008880008899900899aaa089aabbb089abccc89abccdd89abcd0089abcd00','0x00ee00000efa9000eea7dd00299ccdd014dcccdf11ddccf7011ddfff00114442','0x000cc00000c7cc00000cc0000071160007100160070000600070060000066000','0x00000000077777a00a100a900a400a900a747a900aa40a900aa77a9000000000','0x001282100128a811128a988228aaaaa88aaaaa822889a821118a821001282100','0x00110000019a100019a100001aa100101aa911a119aaaa91019aa91000111100','0x00f6aa000fec9970feec977777e0077777700e777779ceef0799cef000aa6f00',
-			'0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000','0x0000000000e777e00ee777ee088eee88008eee800008e8000000e00000000000','0x00000000070000700cd66dc006d77d600d622dd001688d1000d6d10000000000','0x0d777d00677777607767767d767007076d6007070677707d000d776000006770','0x00028000028880000027770004970700004977700002877000028777000d7777','0x0000000000822200082002800800008002800820002aa200000aa00000000000','0x000000000cc7c7c00cc677c00cccccc00c7777c00c7777c00d6666d000000000','0x0000000000c777c00cc777cc066ccc66006ccc600006c6000000c00000000000','0x0000000000ddd6000d100d700d100d60b1110b7bb1010bb33111033300000000','0x0000000000ddd6000d100d700d100d60811108e8810108822111022200000000',
-			'0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0','0x00ee00000efa9000eea7ee0089988ee0142888ef112288f701122fff00114442','0x00000000000000000a0aa0900cabba80099999400aaaaa900000000000000000','0x0000000000c111000c1001c00c0000c001c00c10001aa100000aa00000000000','0x9444444094444440a9999990412121206161616070707070767676706dddddd0','0x00b3b300000b300000ee28000e8e88800ee88280028288200028820000022000','0x7600000067600000067600400067d090000d7d900000d9d000499dcd000000dc','0x0dccccd0dc7ccccdcdccccdcc70cc70ccd0cc0dc0cccccc000cddc00000cc000','0x0188881018e77e818e7887e887877878878778788e7887e818e77e8101888810','0x00d000d0000d0d00dddddd99d7600844d6000c44d0006d44d0067d44dddddd44',
-			'0x00ee00000efa4000eea79900244aa990149aaa9f1199aaf701199fff00114442','0x0000000000b777b00bb777bb033bbb33003bbb300003b3000000b00000000000','0x000000000e807600e7e767608e87776008877600008760000006000000000000','0x7600000067600000067600400067d090000d7d900000d940004994a40000004a','0x000001dd0992010d42a90d000079000000a49a790074444000a94a90004aa940','0x00ee00000efa9000eea73300299bb330143bbb3f1133bbf701133fff00114442','0x00000000004994000097a900009aa9000099990009a7aa900009400000000000','0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1','0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400','0x11111110111fffe000010010fdf00e00ffffff200effeee00e2fffe00ee22000'];
 		
-		//Fetches PNG file and decodes data into pixelcon ids
-		function decodePNG(file) {
-			return $q(function (resolve, reject) {
-				const fr = new FileReader();
-				fr.readAsArrayBuffer(file);
-				fr.onerror = function() {
-					reject("Failed to load file");
-				}
-				fr.onloadend = function() {
-					try {
-						if(fr.result) {
-							let img = UPNG.decode(fr.result);
-							let rgba = new Uint8Array(UPNG.toRGBA8(img)[0]);
-							
-							//check if the image seems to have a frame
-							let frameDetails = getFrameDetails(img.width, img.height, rgba);
-							if(frameDetails) {
-								
-								//loop through the rows and columns and fill id data
-								let ids = [];
-								for(let r=0; r<frameDetails.rows.length; r++) {
-									let rStart = frameDetails.rows[r][0];
-									let rLength = frameDetails.rows[r][1] - frameDetails.rows[r][0];
-									for(let c=0; c<frameDetails.cols.length; c++) {
-										let cStart = frameDetails.cols[c][0];
-										let cLength = frameDetails.cols[c][1] - frameDetails.cols[c][0];
-										let id = getPixelconIdFromBuffer(cStart, rStart, cLength, rLength, img.width, img.height, rgba);
-										if(id) ids.push(id);
-									}
-								}
-								if(ids.length > 0) resolve(ids);
-								else reject("Failed to decode file");
-							} else {
-								
-								//simple image
-								let id = getPixelconIdFromBuffer(0, 0, img.width, img.height, img.width, img.height, rgba);
-								if(id) resolve([id]);
-								else reject("Failed to decode file");
-							}
-						} else reject("Failed to load file");
-					} catch(err) {
-						if(err == 'The input is not a PNG file!') reject("The given file is not a PNG file");
-						else reject("Failed to decode file");
-					}
-				}
-			});
-		}
-		
-		//Creates a PNG image from the given pixelcon id
-		function encodePNG(id, large) {
-			let cacheKey = 'encodePNG(' + id + ',' + large + ')';
-			let cached = getFromCache(image_cache, cacheKey);
-			if(cached) return cached;
-			
+		//Generates a panel of invaders
+		function generateInvadersPanel(invaders, offset) {
 			let canvas = document.createElement('canvas');
-			if(large) {
-				const scale = 2;
-				const pixelconScale = 15 * scale;
-				canvas.width = (265 * scale);
-				canvas.height = (175 * scale);
-				let ctx = canvas.getContext("2d");
-				ctx.fillStyle = "#000000";
-				ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-				id = formatId(id);
-				if (id) {
-					const offsetX = Math.round((canvas.width-(pixelconScale*8))/2);
-					const offsetY = Math.round((canvas.height-(pixelconScale*8))/2);
-					for (let y = 0; y < 8; y++) {
-						for (let x = 0; x < 8; x++) {
-							let index = y * 8 + x;
-							ctx.fillStyle = getPaletteColorInHex(id[index]);
-							ctx.fillRect(offsetX + (x * pixelconScale), offsetY + (y * pixelconScale), pixelconScale, pixelconScale);
-						}
-					}
-				}
-			
-			} else {
-				const scale = 3;
-				canvas.width = (8 * scale);
-				canvas.height = (8 * scale);
-				let ctx = canvas.getContext("2d");
-				ctx.fillStyle = "#000000";
-				ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-				id = formatId(id);
-				if (id) {
-					for (let y = 0; y < 8; y++) {
-						for (let x = 0; x < 8; x++) {
-							let index = y * 8 + x;
-							ctx.fillStyle = getPaletteColorInHex(id[index]);
-							ctx.fillRect(x * scale, y * scale, scale, scale);
-						}
-					}
-				}
-			}
-
-			let data = canvas.toDataURL('image/png');
-			canvas.remove();
-			
-			addToCache(image_cache, cacheKey, data, maxCacheImages);
-			return data;
-		}
-		
-		//Creates a PNG image from the given pixelcon ids
-		function generateTiledImage(ids, rows, columns, scale, background, padIds, useFaded, offsetImage) {
-			ids = scrambleList(ids);
-			if(padIds) {
-				let mixOrder = [];
-				let mixedIds = defaultBackgroundIds.concat([]);
-				for(let i=0; i<mixedIds.length; i++) mixOrder.push(i);
-				mixOrder = scrambleList(mixOrder);
-				for(let i=0; i<ids.length && i<mixedIds.length; i++) mixedIds[mixOrder[i]] = ids[i];
-				ids = mixedIds;
-			}
-			
-			let canvas = document.createElement('canvas');
-			canvas.width = (columns * 10 * scale);
-			canvas.height = (rows * 10 * scale);
+			canvas.width = invadersPerWidth * invaderSize;
+			canvas.height = invadersPerWidth * invaderSize;
 			let ctx = canvas.getContext("2d");
-			ctx.fillStyle = background ? background : (useFaded ? "#B1B1B1" : "#000000");
-			ctx.fillRect(0, 0, columns * 10 * scale, rows * 10 * scale);
 			
-			for (let i = 0; i < rows*columns; i++) {
-				let y = Math.floor(i / columns);
-				let x = i - (y * columns);
-				y = (y * 10);
-				x = (x * 10);
-				let id = formatId(ids[i % ids.length]);
-				if (id) {
-					for (let py = 0; py < 8; py++) {
-						for (let px = 0; px < 8; px++) {
-							let index = py * 8 + px;
-							ctx.fillStyle = getPaletteColorInHex(id[index], useFaded);
-							ctx.fillRect((px + x + 1) * scale, (py + y + 1) * scale, scale, scale);
+			for(let i=0; i<invadersPerPanel; i++) {
+				const invaderIndex = offset + i;
+				if(invaderIndex < invaders.length) {
+					const id = formatId(invaders[invaderIndex].id);
+					const invaderPanelIndex = invaderIndex % invadersPerPanel;
+					const offsetX = (invaderPanelIndex % invadersPerWidth) * invaderSize
+					const offsetY = Math.floor(invaderPanelIndex/invadersPerWidth) * invaderSize;
+					
+					ctx.fillStyle = '#000000';
+					for (let y = 0; y < 8; y++) {
+						for (let x = 0; x < 8; x++) {
+							let index = y * 8 + x;
+							if(id[index] != '0') {
+								ctx.fillRect(offsetX + (((x+1) * invaderScale)-1), offsetY + (((y+1) * invaderScale)-1), invaderScale+2, invaderScale+2);
+							}
+						}
+					}
+					for (let y = 0; y < 8; y++) {
+						for (let x = 0; x < 8; x++) {
+							let index = y * 8 + x;
+							if(id[index] != '0') {
+								ctx.fillStyle = getPaletteColorInHex(id[index]);
+								ctx.fillRect(offsetX + ((x+1) * invaderScale), offsetY + ((y+1) * invaderScale), invaderScale, invaderScale);
+							}
 						}
 					}
 				}
 			}
-
-			if(offsetImage) canvas = shiftCanvas(canvas, Math.round(scale*2), Math.round(scale*2));
 			let data = canvas.toDataURL('image/png');
 			canvas.remove();
 			return data;
@@ -316,168 +189,44 @@
 			return data;
 		}
 		
+		//Gets the desired number of css rules
+		function getPanelStyleRules(cssPageSelector, count) {
+			let styleSheet = null;
+			let styleSheetRules = [];
+			for(let i=0; i<document.styleSheets.length; i++) {
+				if(document.styleSheets[i].href && (document.styleSheets[i].href.indexOf('style.min.css') > -1 || document.styleSheets[i].href.indexOf('style.css') > -1)) {
+					styleSheet = document.styleSheets[i];
+					break;
+				}
+			}
+			if(styleSheet) {
+				for(let i=0; i<count; i++) {
+					const panelSelector = cssPageSelector + ' .panel' + i;
+					let foundRule = null;
+					for(let j=0; j<styleSheet.cssRules.length; j++) {
+						if(styleSheet.cssRules[j].selectorText == panelSelector) {
+							foundRule = styleSheet.cssRules[j];
+							break;
+						}
+					}
+					if(foundRule) {
+						styleSheetRules.push(foundRule);
+					} else {
+						let index = styleSheet.insertRule(panelSelector + ' { background-size: 100%; }');
+						styleSheetRules.push(styleSheet.cssRules[index]);
+					}
+				}
+			}
+			return styleSheetRules;
+		}
+		
 		///////////
 		// Utils //
 		///////////
 		
-		//Determines details of an image frame
-		function getFrameDetails(w, h, buf) {
-			let frameColor = getFrameColor(w, h, buf);
-			if(frameColor) {
-				let start;
-				let end;
-				let frameDetails = {
-					color: frameColor,
-					cols: [],
-					rows: []
-				};
-				
-				//fill columns
-				start = 0;
-				end = 0;
-				for(let x=0; x<w; x++) {
-					if(start <= end) { //on border
-						if(!verifyVerticalColor(x, frameColor, w, h, buf)) { //start of image
-							start = x;
-						}
-					} else { //on image
-						if(verifyVerticalColor(x, frameColor, w, h, buf)) {//end of image
-							end = x;
-							frameDetails.cols.push([start, end])
-						}
-					}
-				}
-				
-				//fill rows
-				start = 0;
-				end = 0;
-				for(let y=0; y<h; y++) {
-					if(start <= end) { //on border
-						if(!verifyHorizontalColor(y, frameColor, w, h, buf)) { //start of image
-							start = y;
-						}
-					} else { //on image
-						if(verifyHorizontalColor(y, frameColor, w, h, buf)) {//end of image
-							end = y;
-							frameDetails.rows.push([start, end])
-						}
-					}
-				}
-				
-				return frameDetails;
-			}
-			return null;
-		}
-		
-		//Shifts the pixels of a given canvas
-		function shiftCanvas(canvas, x, y) {
-			let canvas2 = document.createElement('canvas');
-			canvas2.width = canvas.width;
-			canvas2.height = canvas.height;
-			
-			let ctx = canvas2.getContext("2d");
-			ctx.drawImage(canvas, 0, 0, canvas.width - x, canvas.height - y, x, y, canvas.width - x, canvas.height - y);
-			ctx.drawImage(canvas, canvas.width - x, 0, x, canvas.height - y, 0, y, x, canvas.height - y);
-			ctx.drawImage(canvas, 0, canvas.height - y, canvas.width - x, y, x, 0, canvas.width - x, y);
-			ctx.drawImage(canvas, canvas.width - x, canvas.height - y, x, y, 0, 0, x, y);
-			
-			return canvas2;
-		}
-		
-		//Verifies if the given color goes all the way along the vertical
-		function verifyVerticalColor(x, color, w, h, buf) {
-			for(let y=0; y<h; y++) {
-				if(getColorDistance(color, getColorAtPosition(x, y, w, h, buf)) > 0) return false;
-			}
-			return true;
-		}
-		
-		//Verifies if the given color goes all the way along the horizontal
-		function verifyHorizontalColor(y, color, w, h, buf) {
-			for(let x=0; x<w; x++) {
-				if(getColorDistance(color, getColorAtPosition(x, y, w, h, buf)) > 0) return false;
-			}
-			return true;
-		}
-		
-		//Searches for a common frame color from given image
-		function getFrameColor(w, h, buf) {
-			let frameColor = getColorAtPosition(0, 0, w, h, buf);
-			if(getPaletteColor(frameColor, frameColorDist) !== null) return null;
-			
-			//verify the border is all the same color
-			for(let x=0; x<w; x++) {
-				if(getColorDistance(frameColor, getColorAtPosition(x, 0, w, h, buf)) > 0
-					|| getColorDistance(frameColor, getColorAtPosition(x, h-1, w, h, buf)) > 0) {
-					return null;
-				}
-			}
-			for(let y=0; y<h; y++) {
-				if(getColorDistance(frameColor, getColorAtPosition(0, y, w, h, buf)) > 0
-					|| getColorDistance(frameColor, getColorAtPosition(w-1, y, w, h, buf)) > 0) {
-					return null;
-				}
-			}
-			
-			return frameColor;
-		}
-		
-		//Samples the buffer from the given position and size
-		function getPixelconIdFromBuffer(sx, sy, sw, sh, w, h, buf) {
-			if(w >= 8 && h >= 8) {
-				let dx = sw/8;
-				let dy = sh/8;
-				
-				let id = '0x';
-				for(let y=0; y<8; y++) {
-					for(let x=0; x<8; x++) {
-						let color = getColorAtPosition(sx + Math.floor(dx*x + dx/2), sy + Math.floor(dy*y + dy/2), w, h, buf);
-						color = getPaletteColor(color, maxColorDist);
-						if(!color) return null;
-						id += color;
-					}
-				}
-				if(id == '0x0000000000000000000000000000000000000000000000000000000000000000') return null;
-				return id;
-			}
-			
-			return null;
-		}
-		
-		//Gets the closest palette color from the given color
-		function getColorAtPosition(x, y, w, h, buf) {
-			let index = (y*w + x)*4;
-			return [buf[index+0], buf[index+1], buf[index+2]];
-		}
-		
-		//Gets the closest palette color from the given color
-		function getPaletteColor(color, maxDist) {
-			let bestColor = null;
-			let bestColorDistance = 1.0;
-			for(let h in colorPalette) {
-				let cpColor = colorPalette[h];
-				let distance = getColorDistance(color, cpColor);
-				if(distance < bestColorDistance && distance < maxDist) {
-					bestColorDistance = distance;
-					bestColor = h;
-				}
-			}
-			return bestColor;
-		}
-
-		//Gets the distance between two colors (0.0 - 1.0)
-		function getColorDistance(c1, c2) {
-			let d = [c1[0]-c2[0], c1[1]-c2[1], c1[2]-c2[2]];
-			let dist = Math.sqrt(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
-			let max = Math.sqrt(255*255 + 255*255 + 255*255);
-			
-			return dist/max;
-		}
-		
 		//Gets the palette color represented as a hex string
-		function getPaletteColorInHex(color, useFaded) {
+		function getPaletteColorInHex(color) {
 			let rgb = colorPalette[color];
-			if(useFaded) rgb = colorPaletteFaded[color];
 			let r = (rgb[0]).toString(16).padStart(2,'0').toUpperCase();
 			let g = (rgb[1]).toString(16).padStart(2,'0').toUpperCase();
 			let b = (rgb[2]).toString(16).padStart(2,'0').toUpperCase();
@@ -506,20 +255,6 @@
 		function getDateStr(millis) {
 			let d = new Date(millis);
 			return (''+(d.getMonth()+1)).padStart(2,'0') + '/' + d.getFullYear();
-		}
-		
-		//Scrambles the given list in a repeatable way
-		function scrambleList(list) {
-			list = JSON.parse(JSON.stringify(list));
-			let seed = 123456789;
-			list.sort(function(a,b) {
-				seed = (1103515245 * seed + 12345) % 2147483648;
-				let v1 = seed;
-				seed = (1103515245 * seed + 12345) % 2147483648;
-				let v2 = seed;
-				return v1-v2;
-			});
-			return list;
 		}
 		
 		//Loads the given image

@@ -20,7 +20,7 @@
 		// Generates the image
 		function generateImage() {
 			_this.large = (_this.large === true || _this.large == 'true');
-			_this.pixelconImage = decoder.encodePNG(_this.id, _this.large);
+			_this.pixelconImage = '';//decoder.encodePNG(_this.id, _this.large);
 		}
 	}
 

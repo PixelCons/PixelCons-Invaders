@@ -1,33 +1,33 @@
 /* General */
-div.pixelconCreatePage {
+div.invadersMintPage {
 	width: 100%;
 }
-div.pixelconCreatePage div.topSpacer {
+div.invadersMintPage div.topSpacer {
 	width: 100%;
 	height: 20px;
 }
-div.pixelconCreatePage.sm div.topSpacer {
+div.invadersMintPage.sm div.topSpacer {
 	height: 10px;
 }
-div.pixelconCreatePage div.bottomSpacer {
+div.invadersMintPage div.bottomSpacer {
 	width: 100%;
 	height: 20px;
 }
-div.pixelconCreatePage.sm div.bottomSpacer {
+div.invadersMintPage.sm div.bottomSpacer {
 	height: 10px;
 }
 
 /* Card Container */
-div.pixelconCreatePage div.createCard {
+div.invadersMintPage div.createCard {
 	width: 1000px;
 	max-width: calc(100% - 60px);
 	border-radius: 15px;
 	margin: 0 auto;
 }
-div.pixelconCreatePage.sm div.createCard {
+div.invadersMintPage.sm div.createCard {
 	max-width: calc(100% - 16px);
 }
-div.pixelconCreatePage div.loading {
+div.invadersMintPage div.loading {
 	position: absolute;
 	top: calc(50% - 50px);
 	left: calc(50% - 50px);
@@ -36,7 +36,7 @@ div.pixelconCreatePage div.loading {
 	padding: 10px;
 	border-radius: 15px;
 }
-div.pixelconCreatePage div.error {
+div.invadersMintPage div.error {
 	position: absolute;
 	text-align: center;
 	left: 50%;
@@ -50,17 +50,17 @@ div.pixelconCreatePage div.error {
 }
 
 /* Card Tabs */
-div.pixelconCreatePage div.createTabContainer {
+div.invadersMintPage div.createTabContainer {
 	position: relative;
 	width: 100%;
 	height: 40px;
 	border-radius: 15px;
 	overflow: visible;
 }
-div.pixelconCreatePage.sm div.createTabContainer {
+div.invadersMintPage.sm div.createTabContainer {
 	height: 36px;
 }
-div.pixelconCreatePage div.createTabContainer div.tabBackground {
+div.invadersMintPage div.createTabContainer div.tabBackground {
 	position: absolute;
 	width: 100%;
 	height: 100px;
@@ -70,7 +70,7 @@ div.pixelconCreatePage div.createTabContainer div.tabBackground {
 	border-radius: 15px;
 	font-size: 0px;
 }
-div.pixelconCreatePage div.createTabContainer div.tab {
+div.invadersMintPage div.createTabContainer div.tab {
 	box-sizing: border-box;
 	display: inline-block;
 	height: 100%;
@@ -82,47 +82,47 @@ div.pixelconCreatePage div.createTabContainer div.tab {
 	border-style: none;
 	transition: background-color cubic-bezier(0.35, 0, 0.25, 1) 0.08s;
 }
-div.pixelconCreatePage.sm div.createTabContainer div.tab {
+div.invadersMintPage.sm div.createTabContainer div.tab {
 	padding: 0px 10px;
 	line-height: 36px;
 }
-div.pixelconCreatePage div.createTabContainer div.tab:hover {
+div.invadersMintPage div.createTabContainer div.tab:hover {
 	background-color: #d0d0d0
 }
-div.pixelconCreatePage div.createTabContainer div.tab.highlight {
+div.invadersMintPage div.createTabContainer div.tab.highlight {
 	background-color: #f7f7f7;
 	border-color: #cacaca;
 	border-style: solid;
 	font-weight: 600;
 }
-div.pixelconCreatePage div.createTabContainer div.tab.disabled {
+div.invadersMintPage div.createTabContainer div.tab.disabled {
 	display: none;
 }
-div.pixelconCreatePage div.createTabContainer div.tab.roundLeftCorner {
+div.invadersMintPage div.createTabContainer div.tab.roundLeftCorner {
 	border-top-left-radius: 15px;
 }
-div.pixelconCreatePage div.createTabContainer div.tab.roundRightCorner {
+div.invadersMintPage div.createTabContainer div.tab.roundRightCorner {
 	border-top-right-radius: 15px;
 }
-div.pixelconCreatePage div.createTabContainer div.tab.rightBorder {
+div.invadersMintPage div.createTabContainer div.tab.rightBorder {
 	border-width: 0px 2px 0px 0px;
 }
-div.pixelconCreatePage div.createTabContainer div.tab.leftBorder {
+div.invadersMintPage div.createTabContainer div.tab.leftBorder {
 	border-width: 0px 0px 0px 2px;
 }
-div.pixelconCreatePage div.createTabContainer div.tab.leftRightBorder {
+div.invadersMintPage div.createTabContainer div.tab.leftRightBorder {
 	border-width: 0px 2px 0px 2px;
 }
 
 /* Create Window */
-div.pixelconCreatePage div.createWindow {
+div.invadersMintPage div.createWindow {
 	position: relative;
 	width: 100%;
 	min-height: 300px;
 	border-radius: 15px;
 	text-align: center;
 }
-div.pixelconCreatePage div.windowSectionLabel {
+div.invadersMintPage div.windowSectionLabel {
 	display: inline-block;
 	width: 100%;
 	text-align: left;
@@ -132,26 +132,26 @@ div.pixelconCreatePage div.windowSectionLabel {
 	opacity: 0.75;
 	filter: alpha(opacity=75);
 }
-div.pixelconCreatePage div.windowSectionLabel.topLabel {
+div.invadersMintPage div.windowSectionLabel.topLabel {
 	padding-top: 10px;
 }
 
 /* Canvas Tab */
-div.pixelconCreatePage div.pixelconCanvas {
+div.invadersMintPage div.pixelconCanvas {
 	display: inline-block;
 	padding: 30px 38px 38px 30px;
 	width: 320px;
 	height: 320px;
 }
-div.pixelconCreatePage.sm div.pixelconCanvas {
+div.invadersMintPage.sm div.pixelconCanvas {
 	width: 256px;
 	height: 256px;
 }
-div.pixelconCreatePage.lg div.pixelconCanvas {
+div.invadersMintPage.lg div.pixelconCanvas {
 	width: 384px;
 	height: 384px;
 }
-div.pixelconCreatePage div.pixelconCanvasGrid {
+div.invadersMintPage div.pixelconCanvasGrid {
 	width: 100%;
 	height: 100%;
 	display: grid;
@@ -160,22 +160,22 @@ div.pixelconCreatePage div.pixelconCanvasGrid {
 	grid-row-gap: 1px;
 	grid-column-gap: 1px;
 }
-div.pixelconCreatePage div.pixelconPalette {
+div.invadersMintPage div.pixelconPalette {
 	position: relative;
 	display: inline-block;
 	vertical-align: text-top;
 	width: 316px;
 	height: 94px;
 }
-div.pixelconCreatePage.sm div.pixelconPalette {
+div.invadersMintPage.sm div.pixelconPalette {
 	width: 256px;
 	height: 64px;
 }
-div.pixelconCreatePage.lg div.pixelconPalette {
+div.invadersMintPage.lg div.pixelconPalette {
 	width: 288px;
 	height: 72px;
 }
-div.pixelconCreatePage div.pixelconPaletteGrid {
+div.invadersMintPage div.pixelconPaletteGrid {
 	position: absolute;
 	top: 0px;
 	left: calc(50% - 128px);
@@ -185,55 +185,55 @@ div.pixelconCreatePage div.pixelconPaletteGrid {
 	grid-template-columns: repeat(8, 12.5%);
 	grid-template-rows: repeat(2, 50%);
 }
-div.pixelconCreatePage div.canvasPixel {
+div.invadersMintPage div.canvasPixel {
 	cursor: pointer;
 }
-div.pixelconCreatePage div.palettePixel {
+div.invadersMintPage div.palettePixel {
 	cursor: pointer;
 	margin: 2px;
 }
-div.pixelconCreatePage div.palettePixel.selected {
+div.invadersMintPage div.palettePixel.selected {
 	margin: 0px;
 	border: 2px;
 	border-style: solid;
 	border-color: #ffffff;
 }
-div.pixelconCreatePage div.idText {
+div.invadersMintPage div.idText {
 	font-size: 11px;
 	font-family: monospace;
 	font-weight: bold;
 	text-align: center;
 }
-div.pixelconCreatePage.lg div.idText {
+div.invadersMintPage.lg div.idText {
 	font-size: 12px;
 }
-div.pixelconCreatePage.sm div.idText {
+div.invadersMintPage.sm div.idText {
 	font-size: 8px;
 }
 
 /* Collection Tab */
-div.pixelconCreatePage div.displayTable {
+div.invadersMintPage div.displayTable {
 	width: 100%;
 	text-align: center;
 	margin-top: 10px;
 }
-div.pixelconCreatePage .pixelconCard {
+div.invadersMintPage .pixelconCard {
 	display: inline-block;
 	position: relative;
 	margin: 12px;
 	margin-bottom: 20px;
 }
-div.pixelconCreatePage.md .pixelconCard {
+div.invadersMintPage.md .pixelconCard {
 	margin: 9px;
 	margin-bottom: 18px;
 }
-div.pixelconCreatePage.sm .pixelconCard {
+div.invadersMintPage.sm .pixelconCard {
 	margin: 6px;
 	margin-bottom: 16px;
 }
 
 /* Advanced Tab */
-div.pixelconCreatePage div.fileUpload {
+div.invadersMintPage div.fileUpload {
 	position: relative;
 	display: inline-block;
 	width: calc(100% - 40px);
@@ -248,11 +248,11 @@ div.pixelconCreatePage div.fileUpload {
 	opacity: 0.7;
 	filter: alpha(opacity=70);
 }
-div.pixelconCreatePage div.fileUpload:hover {
+div.invadersMintPage div.fileUpload:hover {
 	opacity: 0.9;
 	filter: alpha(opacity=90);
 }
-div.pixelconCreatePage input.uploadInput {
+div.invadersMintPage input.uploadInput {
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -263,20 +263,20 @@ div.pixelconCreatePage input.uploadInput {
 	filter: alpha(opacity=0);
 	cursor: pointer;
 }
-div.pixelconCreatePage div.alreadyCreatedPixelconContainer {
+div.invadersMintPage div.alreadyCreatedPixelconContainer {
 	box-sizing: border-box;
 	padding: 0px 20px 15px 20px;
 	width: 100%;
 	text-align: center;
 }
-div.pixelconCreatePage div.alreadyCreatedPixelcon {
+div.invadersMintPage div.alreadyCreatedPixelcon {
 	position: relative;
 	width: 32px;
 	height: 32px;
 	display: inline-block;
 	margin: 2px;
 }
-div.pixelconCreatePage div.alreadyCreatedPixelconCover {
+div.invadersMintPage div.alreadyCreatedPixelconCover {
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -284,7 +284,7 @@ div.pixelconCreatePage div.alreadyCreatedPixelconCover {
 	width: 100%;
 	height: 100%;
 }
-div.pixelconCreatePage div.alreadyCreatedPixelconGotoIcon {
+div.invadersMintPage div.alreadyCreatedPixelconGotoIcon {
 	display: none;
 	position: absolute;
 	left: 0px;
@@ -298,31 +298,31 @@ div.pixelconCreatePage div.alreadyCreatedPixelconGotoIcon {
 	opacity: 0.8;
 	filter: alpha(opacity=80);
 }
-div.pixelconCreatePage div.alreadyCreatedPixelcon:hover div.alreadyCreatedPixelconGotoIcon {
+div.invadersMintPage div.alreadyCreatedPixelcon:hover div.alreadyCreatedPixelconGotoIcon {
 	display: inline-block;
 }
-div.pixelconCreatePage div.advancedPixelconContainer {
+div.invadersMintPage div.advancedPixelconContainer {
 	box-sizing: border-box;
 	padding: 0px 10px 20px 10px;
 	width: 100%;
 	text-align: center;
 	font-size: 0px;
 }
-div.pixelconCreatePage div.advancedPixelcon {
+div.invadersMintPage div.advancedPixelcon {
 	position: relative;
 	width: 88px;
 	height: 123px;
 	display: inline-block;
 	margin: 10px;
 }
-div.pixelconCreatePage div.advancedPixelconImage {
+div.invadersMintPage div.advancedPixelconImage {
 	position: absolute;
 	top: 0px;
 	left: 0px;
 	width: 88px;
 	height: 88px;
 }
-div.pixelconCreatePage button.advancedCreateButton {
+div.invadersMintPage button.advancedCreateButton {
 	position: absolute;
 	margin: 0px;
 	height: 30px;
@@ -336,21 +336,21 @@ div.pixelconCreatePage button.advancedCreateButton {
 }
 
 /* Card Details */
-div.pixelconCreatePage div.actions {
+div.invadersMintPage div.actions {
 	margin: 0px 10px;
 	min-height: 50px;
 }
-div.pixelconCreatePage div.info {
+div.invadersMintPage div.info {
 	padding: 10px 0px;
 	text-align: center;
 }
-div.pixelconCreatePage .buttonContainer {
+div.invadersMintPage .buttonContainer {
 	height: 50px;
 }
-div.pixelconCreatePage .actionButton {
+div.invadersMintPage .actionButton {
 	margin: 1px;
 }
-div.pixelconCreatePage .startButton {
+div.invadersMintPage .startButton {
 	margin-bottom: 0px;
 	max-height: 30px;
 	min-height: 30px;

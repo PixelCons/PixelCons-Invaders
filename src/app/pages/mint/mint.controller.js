@@ -1,10 +1,32 @@
 (function () {
 	angular.module('App')
-		.controller('CreatePageCtrl', CreatePageCtrl);
+		.controller('MintPageCtrl', MintPageCtrl);
 
-	CreatePageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$routeParams', '$mdToast', '$location', '$window', '$sce', 'web3Service', 'coreContract', 'decoder'];
-	function CreatePageCtrl($scope, $mdMedia, $mdDialog, $routeParams, $mdToast, $location, $window, $sce, web3Service, coreContract, decoder) {
+	MintPageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$routeParams', '$mdToast', '$location', '$window', '$sce', 'web3Service', 'coreContract', 'decoder'];
+	function MintPageCtrl($scope, $mdMedia, $mdDialog, $routeParams, $mdToast, $location, $window, $sce, web3Service, coreContract, decoder) {
 		var _this = this;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*
 		_this.setPixel = setPixel;
 		_this.setColor = setColor;
 		_this.clear = clear;
@@ -347,5 +369,7 @@
 
 		// Listen for transactions
 		web3Service.onWaitingTransactionsChange(checkReload, $scope);
+		
+		*/
 	}
 }());

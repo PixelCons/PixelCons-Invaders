@@ -2,8 +2,8 @@
 	angular.module('App')
 		.controller('ExplorePageCtrl', ExplorePageCtrl);
 
-	ExplorePageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', '$timeout', 'web3Service', 'coreContract'];
-	function ExplorePageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, $timeout, web3Service, coreContract) {
+	ExplorePageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', '$timeout', 'decoder', 'web3Service', 'coreContract'];
+	function ExplorePageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, $timeout, decoder, web3Service, coreContract) {
 		var _this = this;
 		var ownerCheckTimeout;
 		const levelMinDefault = null;
@@ -288,126 +288,21 @@
 		
 		
 		
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		const maxImageSize = 256;
-		const invaderScale = 3;
-		const invaderSize = invaderScale*10;
-		const invadersPerWidth = Math.floor(maxImageSize / invaderSize);
-		const invadersPerPanel = invadersPerWidth * invadersPerWidth;
-		
-		//style sheets
-		var generatorStyleSheet = null;
-		var generatorStyleSheetRules = [];
-		function getStyleSheet() {
-			if(generatorStyleSheet) return generatorStyleSheet;
-			for(let i=0; i<document.styleSheets.length; i++) {
-				if(document.styleSheets[i].href && (document.styleSheets[i].href.indexOf('style.min.css') > -1 || document.styleSheets[i].href.indexOf('style.css') > -1)) {
-					generatorStyleSheet = document.styleSheets[i];
-					break;
-				}
-			}
-			return generatorStyleSheet;
-		}
-		function getStyleSheetRules(numItems) {
-			const numPanels = Math.ceil(numItems / invadersPerPanel);
-			if(generatorStyleSheetRules.length == numPanels) return generatorStyleSheetRules;
-			let styleSheet = getStyleSheet();
-			if(styleSheet) {
-				for(let i=generatorStyleSheetRules.length; i<numPanels; i++) {
-					const panelSelector = '.invadersExplorePage .panel' + i;
-					let foundRule = null;
-					for(let j=0; j<styleSheet.cssRules.length; j++) {
-						if(styleSheet.cssRules[j].selectorText == panelSelector) {
-							foundRule = styleSheet.cssRules[j];
-							break;
-						}
-					}
-					if(foundRule) {
-						foundRule.style.backgroundSize = invadersPerWidth + '00%';
-						generatorStyleSheetRules.push(foundRule);
-					} else {
-						let index = styleSheet.insertRule(panelSelector + ' { background-size:' + invadersPerWidth + '00%; }');
-						generatorStyleSheetRules.push(styleSheet.cssRules[index]);
-					}
-				}
-			}
-			return generatorStyleSheetRules;
-		}
-		
-		//drawing
-		function getPaletteColorInHex(color) {
-			const colorPalette = {
-				'0': [0,0,0],		//#000000
-				'1': [29,43,83],	//#1D2B53
-				'2': [126,37,83],	//#7E2553
-				'3': [0,135,81],	//#008751
-				'4': [171,82,54],	//#AB5236
-				'5': [95,87,79],	//#5F574F
-				'6': [194,195,195],	//#C2C3C7
-				'7': [255,241,232],	//#FFF1E8
-				'8': [255,0,77],	//#FF004D
-				'9': [255,163,0],	//#FFA300
-				'a': [255,255,39],	//#FFFF27
-				'b': [0,231,86],	//#00E756
-				'c': [41,173,255],	//#29ADFF
-				'd': [131,118,156],	//#83769C
-				'e': [255,119,168],	//#FF77A8
-				'f': [255,204,170],	//#FFCCAA
-			}
-			let rgb = colorPalette[color];
-			let r = (rgb[0]).toString(16).padStart(2,'0').toUpperCase();
-			let g = (rgb[1]).toString(16).padStart(2,'0').toUpperCase();
-			let b = (rgb[2]).toString(16).padStart(2,'0').toUpperCase();
-			let hex = '#' + r + g + b;
-			return (hex == '#000000') ? (hex + '00') : (hex + 'FF');
-		}
-		function drawInvaderPanel(invaders, offset) {
-			let canvas = document.createElement('canvas');
-			canvas.width = invadersPerWidth * invaderSize;
-			canvas.height = invadersPerWidth * invaderSize;
-			let ctx = canvas.getContext("2d");
-			
-			for(let i=0; i<invadersPerPanel && invaders; i++) {
-				const invaderIndex = offset + i;
-				if(invaderIndex < invaders.length) {
-					const invaderPanelIndex = invaderIndex % invadersPerPanel;
-					const offsetX = (invaderPanelIndex % invadersPerWidth) * invaderSize
-					const offsetY = Math.floor(invaderPanelIndex/invadersPerWidth) * invaderSize;
-					for (let y = 0; y < 8; y++) {
-						for (let x = 0; x < 8; x++) {
-							let index = y * 8 + x;
-							ctx.fillStyle = (invaders[invaderIndex].id[index] == '0') ? '#00000000' : '#000000FF';
-							ctx.fillRect(offsetX + (((x+1) * invaderScale)-1), offsetY + (((y+1) * invaderScale)-1), invaderScale+2, invaderScale+2);
-						}
-					}
-					for (let y = 0; y < 8; y++) {
-						for (let x = 0; x < 8; x++) {
-							let index = y * 8 + x;
-							ctx.fillStyle = getPaletteColorInHex(invaders[invaderIndex].id[index]);
-							ctx.fillRect(offsetX + ((x+1) * invaderScale), offsetY + ((y+1) * invaderScale), invaderScale, invaderScale);
-						}
-					}
-				}
-			}
-			return canvas.toDataURL('image/png');
-		}
-		
-		
-		
-		//generate
+		// Generates images and adds class and offset details to the invader objects
 		function addInvaderImageData(invaders) {
-			const numPanels = Math.ceil(invaders.length / invadersPerPanel);
-			let cssRules = getStyleSheetRules(invaders.length);
-			if(cssRules) {
+			const numPanels = Math.ceil(invaders.length / decoder.invadersPerPanel);
+			let cssRules = decoder.getPanelStyleRules('.invadersExplorePage', numPanels);
+			if(cssRules && cssRules.length == numPanels) {
 				for(let i=0; i<numPanels; i++) {
-					let panelImage = drawInvaderPanel(invaders, i*invadersPerPanel);
+					let panelImage = decoder.generateInvadersPanel(invaders, i*decoder.invadersPerPanel);
+					cssRules[i].style.backgroundSize = decoder.invadersPerWidth + '00%';
 					cssRules[i].style.backgroundImage = 'url("' + panelImage + '")';
-					for(let j=0; j<invadersPerPanel; j++) {
-						const invaderIndex = (i*invadersPerPanel)+j;
+					for(let j=0; j<decoder.invadersPerPanel; j++) {
+						const invaderIndex = (i*decoder.invadersPerPanel)+j;
 						if(invaderIndex < invaders.length) {
-							const invaderPanelIndex = invaderIndex % invadersPerPanel;
-							const offsetX = ((invaderPanelIndex % invadersPerWidth) / (invadersPerWidth - 1)) * 100;
-							const offsetY = (Math.floor(invaderPanelIndex/invadersPerWidth) / (invadersPerWidth - 1)) * 100;
+							const invaderPanelIndex = invaderIndex % decoder.invadersPerPanel;
+							const offsetX = ((invaderPanelIndex % decoder.invadersPerWidth) / (decoder.invadersPerWidth - 1)) * 100;
+							const offsetY = (Math.floor(invaderPanelIndex/decoder.invadersPerWidth) / (decoder.invadersPerWidth - 1)) * 100;
 							
 							invaders[invaderIndex].panelClass = 'panel' + i;
 							invaders[invaderIndex].panelOffset = offsetX + '% ' + offsetY + '%';
@@ -417,13 +312,6 @@
 			}				
 			return invaders;
 		}
-		
-		
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		
-		
-		
 		
 		// Listen for account data changes
 		web3Service.onAccountDataChange(function () {

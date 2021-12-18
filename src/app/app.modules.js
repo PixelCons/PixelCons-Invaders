@@ -25,9 +25,9 @@
 				controllerAs: 'ctrl',
 				reloadOnSearch: false
 			})
-			.when("/create", {
-				templateUrl: HTMLTemplates['page.create'],
-				controller: 'CreatePageCtrl',
+			.when("/mint", {
+				templateUrl: HTMLTemplates['page.mint'],
+				controller: 'MintPageCtrl',
 				controllerAs: 'ctrl'
 			})
 			.when("/start", {
