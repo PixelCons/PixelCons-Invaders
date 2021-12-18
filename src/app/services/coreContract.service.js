@@ -494,7 +494,9 @@
 					invaderGrid[y][7-x] = invaderGrid[y][x];
 				}
 			}
-			return gridToId(invaderGrid);
+			return {
+				id: gridToId(invaderGrid)
+			}
 		}
 		
 		function getColorsTri() {

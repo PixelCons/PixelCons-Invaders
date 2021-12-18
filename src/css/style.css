@@ -299,6 +299,11 @@ a.buttonLink {
 	height: 100%;
 }
 
+/* Spinner */
+md-progress-circular svg path {
+	stroke: #f2f2f2;
+}
+
 /* Image expand */
 .imageExpandContainer {
 	position: absolute;
