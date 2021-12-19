@@ -285,9 +285,6 @@
 			return url;
 		}
 		
-		
-		
-		
 		// Generates images and adds class and offset details to the invader objects
 		function addInvaderImageData(invaders) {
 			const numPanels = Math.ceil(invaders.length / decoder.invadersPerPanel);
@@ -312,6 +309,23 @@
 			}				
 			return invaders;
 		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		// Listen for account data changes
 		web3Service.onAccountDataChange(function () {

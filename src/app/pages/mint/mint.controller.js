@@ -6,13 +6,40 @@
 	function MintPageCtrl($scope, $mdMedia, $mdDialog, $routeParams, $mdToast, $location, $window, $sce, web3Service, coreContract, decoder) {
 		var _this = this;
 		
+		// Watch for screen size changes
+		_this.screenSize = {};
+		$scope.$watch(function () { return $mdMedia('gt-md'); }, function (lg) { _this.screenSize['lg'] = lg; });
+		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
+		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 		
 		
 		
 		
-		
-		
-		
+		loadPageData();
+		function loadPageData() {
+			_this.accountAddressLoading = true;
+			web3Service.awaitState(async function() {
+				_this.accountAddressLoading = false;
+				_this.accountAddress = web3Service.getActiveAccount();
+				
+				
+				//$scope.$apply();
+			}, true);
+	
+			/*
+			_this.invadersLoading = true;
+			coreContract.fetchAllInvaders().then(function(invaders) {
+				_this.invadersLoading = false;
+				
+				
+				
+				_this.invaders = addInvaderImageData(invaders);
+				//filter
+				
+				//$scope.$apply();
+			});
+			*/
+		}
 		
 		
 		
@@ -57,12 +84,6 @@
 			'14': '#FF77A8',
 			'15': '#FFCCAA'
 		}
-
-		// Watch for screen size changes
-		_this.screenSize = {};
-		$scope.$watch(function () { return $mdMedia('gt-md'); }, function (lg) { _this.screenSize['lg'] = lg; });
-		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
-		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 
 		// Start with blank canvas
 		_this.canvasPixels = [];
@@ -354,22 +375,15 @@
 				}
 			}
 		}
-
-		// Listen for network data changes
-		web3Service.onNetworkChange(function () {
-			if(_this.error) {
-				if(_this.tabSelection == 'collection') fetchForCollection();
-			}
-		}, $scope, true);
+		*/
+		
+		
 
 		// Listen for account data changes
-		web3Service.onAccountDataChange(function () {
-			checkCreateSupported();
-		}, $scope, true);
+		web3Service.onAccountDataChange(loadPageData, $scope, true);
 
 		// Listen for transactions
-		web3Service.onWaitingTransactionsChange(checkReload, $scope);
+		web3Service.onWaitingTransactionsChange(loadPageData, $scope);
 		
-		*/
 	}
 }());

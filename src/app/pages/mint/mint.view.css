@@ -17,342 +17,145 @@ div.invadersMintPage.sm div.bottomSpacer {
 	height: 10px;
 }
 
-/* Card Container */
-div.invadersMintPage div.createCard {
-	width: 1000px;
-	max-width: calc(100% - 60px);
-	border-radius: 15px;
+
+/* Top Filter */
+div.invadersMintPage div.scanMore {
+	width: calc(100% - 60px);
+	max-width: 1280px;
 	margin: 0 auto;
+	font-size: 0px;
+	padding: 0px 5px;
+	background-color: #80808093;
 }
-div.invadersMintPage.sm div.createCard {
-	max-width: calc(100% - 16px);
+div.invadersMintPage.sm div.scanMore {
+	width: calc(100% - 24px);
 }
-div.invadersMintPage div.loading {
-	position: absolute;
-	top: calc(50% - 50px);
-	left: calc(50% - 50px);
-	width: 80px;
-	height: 80px;
-	padding: 10px;
-	border-radius: 15px;
-}
-div.invadersMintPage div.error {
-	position: absolute;
-	text-align: center;
-	left: 50%;
-	top: 50%;
-	margin: -50px -153px;
-	width: 276px;
-	min-height: 42px;
-	max-height: 100px;
-	padding: 15px;
-	border-radius: 15px;
+div.invadersMintPage .right {
+	float: right;
 }
 
-/* Card Tabs */
-div.invadersMintPage div.createTabContainer {
-	position: relative;
+div.invadersMintPage button.scanMoreButton {
+    margin-left: 0px;
+    margin-right: 0px;
+    min-width: 0px;
+    height: 0px;
+    padding: 0px 4px;
+    min-height: 33px;
+}
+
+
+div.invadersMintPage div.scanMore .scanMoreOptions {
+	max-height: 0px;
 	width: 100%;
+	padding: 0px 0px;
+	overflow: hidden;
+	transition: max-height cubic-bezier(0.35, 0, 0.25, 1) 0.1s, padding cubic-bezier(0.35, 0, 0.25, 1) 0.1s;
+}
+div.invadersMintPage div.scanMore.expanded .scanMoreOptions {
+	max-height: 300px;
+	padding: 5px 0px;
+}
+div.invadersMintPage button.scanMoreButton .buttonIcon {
+	margin-top: 4px;
+}
+div.invadersMintPage .buttonIcon.scan {
+	background-image: url(/img/icon_scan_w.svg);
+}
+
+
+div.invadersMintPage .scanTitleCard {
+	display: inline-block;
+	margin: 5px;
+	width: 400px;
+}
+div.invadersMintPage.sm .scanTitleCard {
+	width: 245px;
+}
+div.invadersMintPage .titleCardAccount {
+	display: inline-block;
+    vertical-align: top;
+	margin-right: 5px;
+    width: 40px;
+    height: 40px;
+}
+div.invadersMintPage .titleCardText {
+	display: inline-block;
 	height: 40px;
-	border-radius: 15px;
-	overflow: visible;
 }
-div.invadersMintPage.sm div.createTabContainer {
-	height: 36px;
+div.invadersMintPage .addressLoadingSpinner {
+	margin: 0px auto;
+	margin-top: 100px;
 }
-div.invadersMintPage div.createTabContainer div.tabBackground {
-	position: absolute;
-	width: 100%;
-	height: 100px;
-	top: 0px;
-	left: 0px;
-	background-color: #e6e6e6;
-	border-radius: 15px;
-	font-size: 0px;
-}
-div.invadersMintPage div.createTabContainer div.tab {
-	box-sizing: border-box;
+
+
+/*
+div.invadersMintPage md-select {
 	display: inline-block;
-	height: 100%;
+	vertical-align: middle;
+	margin: 7px 0px;
+	margin-right: 5px;
 	font-size: 14px;
-	padding: 0px 15px;
-	line-height: 40px;
-	cursor: pointer;
-	border-width: 0px;
-	border-style: none;
-	transition: background-color cubic-bezier(0.35, 0, 0.25, 1) 0.08s;
+	color: #f2f2f2;
 }
-div.invadersMintPage.sm div.createTabContainer div.tab {
-	padding: 0px 10px;
-	line-height: 36px;
+div.invadersMintPage md-select:focus div.md-text {
+	color: #f2f2f2;
 }
-div.invadersMintPage div.createTabContainer div.tab:hover {
-	background-color: #d0d0d0
+div.invadersMintPage md-select div.md-text {
+	margin-left: 30px;
 }
-div.invadersMintPage div.createTabContainer div.tab.highlight {
-	background-color: #f7f7f7;
-	border-color: #cacaca;
-	border-style: solid;
-	font-weight: 600;
-}
-div.invadersMintPage div.createTabContainer div.tab.disabled {
-	display: none;
-}
-div.invadersMintPage div.createTabContainer div.tab.roundLeftCorner {
-	border-top-left-radius: 15px;
-}
-div.invadersMintPage div.createTabContainer div.tab.roundRightCorner {
-	border-top-right-radius: 15px;
-}
-div.invadersMintPage div.createTabContainer div.tab.rightBorder {
-	border-width: 0px 2px 0px 0px;
-}
-div.invadersMintPage div.createTabContainer div.tab.leftBorder {
-	border-width: 0px 0px 0px 2px;
-}
-div.invadersMintPage div.createTabContainer div.tab.leftRightBorder {
-	border-width: 0px 2px 0px 2px;
-}
-
-/* Create Window */
-div.invadersMintPage div.createWindow {
-	position: relative;
-	width: 100%;
-	min-height: 300px;
-	border-radius: 15px;
-	text-align: center;
-}
-div.invadersMintPage div.windowSectionLabel {
-	display: inline-block;
-	width: 100%;
-	text-align: left;
-	padding: 0px 20px;
-	box-sizing: border-box;
-	color: #fff;
-	opacity: 0.75;
-	filter: alpha(opacity=75);
-}
-div.invadersMintPage div.windowSectionLabel.topLabel {
-	padding-top: 10px;
-}
-
-/* Canvas Tab */
-div.invadersMintPage div.pixelconCanvas {
-	display: inline-block;
-	padding: 30px 38px 38px 30px;
-	width: 320px;
-	height: 320px;
-}
-div.invadersMintPage.sm div.pixelconCanvas {
-	width: 256px;
-	height: 256px;
-}
-div.invadersMintPage.lg div.pixelconCanvas {
-	width: 384px;
-	height: 384px;
-}
-div.invadersMintPage div.pixelconCanvasGrid {
-	width: 100%;
-	height: 100%;
-	display: grid;
-	grid-template-columns: repeat(8, 12.5%);
-	grid-template-rows: repeat(8, 12.5%);
-	grid-row-gap: 1px;
-	grid-column-gap: 1px;
-}
-div.invadersMintPage div.pixelconPalette {
-	position: relative;
-	display: inline-block;
-	vertical-align: text-top;
-	width: 316px;
-	height: 94px;
-}
-div.invadersMintPage.sm div.pixelconPalette {
-	width: 256px;
-	height: 64px;
-}
-div.invadersMintPage.lg div.pixelconPalette {
-	width: 288px;
-	height: 72px;
-}
-div.invadersMintPage div.pixelconPaletteGrid {
+div.invadersMintPage md-select .md-select-icon {
+	background-image: url(/img/icon_sort_w.svg);
+    width: 20px;
+    height: 20px;
+    color: #00000000;
 	position: absolute;
-	top: 0px;
-	left: calc(50% - 128px);
-	width: 256px;
-	height: 64px;
-	display: grid;
-	grid-template-columns: repeat(8, 12.5%);
-	grid-template-rows: repeat(2, 50%);
 }
-div.invadersMintPage div.canvasPixel {
-	cursor: pointer;
-}
-div.invadersMintPage div.palettePixel {
-	cursor: pointer;
-	margin: 2px;
-}
-div.invadersMintPage div.palettePixel.selected {
-	margin: 0px;
-	border: 2px;
-	border-style: solid;
-	border-color: #ffffff;
-}
-div.invadersMintPage div.idText {
-	font-size: 11px;
-	font-family: monospace;
-	font-weight: bold;
-	text-align: center;
-}
-div.invadersMintPage.lg div.idText {
-	font-size: 12px;
-}
-div.invadersMintPage.sm div.idText {
-	font-size: 8px;
-}
-
-/* Collection Tab */
-div.invadersMintPage div.displayTable {
-	width: 100%;
-	text-align: center;
-	margin-top: 10px;
-}
-div.invadersMintPage .pixelconCard {
+div.invadersMintPage div.scanMoreButtonDivider {
 	display: inline-block;
-	position: relative;
-	margin: 12px;
-	margin-bottom: 20px;
-}
-div.invadersMintPage.md .pixelconCard {
-	margin: 9px;
-	margin-bottom: 18px;
-}
-div.invadersMintPage.sm .pixelconCard {
-	margin: 6px;
-	margin-bottom: 16px;
-}
-
-/* Advanced Tab */
-div.invadersMintPage div.fileUpload {
-	position: relative;
-	display: inline-block;
-	width: calc(100% - 40px);
-	box-sizing: border-box;
-	margin: 20px 0px;
-	padding: 20px;
-	font-size: 16px;
-	color: #fff;
-	height: 100px;
-	border: dashed 2px #fff;
-	border-radius: 20px;
-	opacity: 0.7;
-	filter: alpha(opacity=70);
-}
-div.invadersMintPage div.fileUpload:hover {
-	opacity: 0.9;
-	filter: alpha(opacity=90);
-}
-div.invadersMintPage input.uploadInput {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	font-size: 0px;
-	width: 100%;
-	height: 100%;
-	opacity: 0;
-	filter: alpha(opacity=0);
-	cursor: pointer;
-}
-div.invadersMintPage div.alreadyCreatedPixelconContainer {
-	box-sizing: border-box;
-	padding: 0px 20px 15px 20px;
-	width: 100%;
-	text-align: center;
-}
-div.invadersMintPage div.alreadyCreatedPixelcon {
-	position: relative;
-	width: 32px;
-	height: 32px;
-	display: inline-block;
-	margin: 2px;
-}
-div.invadersMintPage div.alreadyCreatedPixelconCover {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	background-color: rgba(51, 51, 51, 0.5);
-	width: 100%;
-	height: 100%;
-}
-div.invadersMintPage div.alreadyCreatedPixelconGotoIcon {
-	display: none;
-	position: absolute;
-	left: 0px;
-	top: 0px;
-	width: 100%;
-	height: 100%;
-	background-image: url(/img/icon_goto_w.svg);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 18px;
-	opacity: 0.8;
-	filter: alpha(opacity=80);
-}
-div.invadersMintPage div.alreadyCreatedPixelcon:hover div.alreadyCreatedPixelconGotoIcon {
-	display: inline-block;
-}
-div.invadersMintPage div.advancedPixelconContainer {
-	box-sizing: border-box;
-	padding: 0px 10px 20px 10px;
-	width: 100%;
-	text-align: center;
-	font-size: 0px;
-}
-div.invadersMintPage div.advancedPixelcon {
-	position: relative;
-	width: 88px;
-	height: 123px;
-	display: inline-block;
-	margin: 10px;
-}
-div.invadersMintPage div.advancedPixelconImage {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	width: 88px;
-	height: 88px;
-}
-div.invadersMintPage button.advancedCreateButton {
-	position: absolute;
-	margin: 0px;
 	height: 30px;
-	max-height: 30px;
-	min-height: 30px;
-	line-height: 30px;
-	width: 80px;
-	min-width: 80px;
-	bottom: 0px;
-	left: 4px;
+	width: 1px;
+	background-color: #f2f2f25c;
+	margin: 8px 0px;
 }
-
-/* Card Details */
-div.invadersMintPage div.actions {
-	margin: 0px 10px;
-	min-height: 50px;
+div.invadersMintPage button.filterButton {
+	text-transform: none;
+	max-width: calc(100% - 260px);
+	text-align: left;
+	text-overflow: ellipsis;
 }
-div.invadersMintPage div.info {
-	padding: 10px 0px;
-	text-align: center;
+div.invadersMintPage.sm button.filterButton {
+	max-width: calc(100% - 100px);
 }
-div.invadersMintPage .buttonContainer {
-	height: 50px;
+div.invadersMintPage accounticon.accountTitleIcon {
+	display: inline-block;
+	vertical-align: middle;
+	width: 24px;
+	height: 24px;
+	margin-top: -4px;
 }
-div.invadersMintPage .actionButton {
-	margin: 1px;
+div.invadersMintPage .shiftLeft {
+	margin-left: -4px;
 }
-div.invadersMintPage .startButton {
-	margin-bottom: 0px;
-	max-height: 30px;
-	min-height: 30px;
-	line-height: 30px;
+div.invadersMintPage button.scanMoreButton .buttonIcon {
+	margin-top: 4px;
 }
+div.invadersMintPage .buttonIcon.filter {
+	background-image: url(/img/icon_filter_w.svg);
+}
+div.invadersMintPage .buttonIcon.share {
+	background-image: url(/img/icon_share_w.svg);
+}
+div.invadersMintPage .buttonIcon.small {
+	background-image: url(/img/icon_small_w.svg);
+}
+div.invadersMintPage .buttonIcon.large {
+	background-image: url(/img/icon_large_w.svg);
+}
+div.invadersMintPage div.scanMore .moreFilter {
+	max-height: 0px;
+	width: 100%;
+	padding: 0px 0px;
+	overflow: hidden;
+	transition: max-height cubic-bezier(0.35, 0, 0.25, 1) 0.1s, padding cubic-bezier(0.35, 0, 0.25, 1) 0.1s;
+}
+*/

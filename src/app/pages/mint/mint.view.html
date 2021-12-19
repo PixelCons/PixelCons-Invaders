@@ -1,113 +1,114 @@
-<div class="invadersMintPage" ng-class="ctrl.screenSize">
+<div class="invadersMintPage" ng-click="ctrl.scanOpen = false" ng-class="ctrl.screenSize">
 	<div class="topSpacer"></div>
 	
-	<div class="createCard colorLight">
+	<!-- Loading -->
+	<md-progress-circular ng-if="ctrl.accountAddressLoading" class="addressLoadingSpinner" md-diameter="80px" md-mode="indeterminate"></md-progress-circular>
 	
-		<!-- Tabs -->
-		<div class="createTabContainer">
-			<div class="tabBackground">
-				<div class="tab roundLeftCorner rightBorder" ng-class="{'highlight':ctrl.tabSelection=='canvas'}" ng-click="ctrl.setTab('canvas')">CANVAS</div>
-				<div class="tab leftRightBorder" ng-click="ctrl.setTab('collection')"
-					ng-class="{'highlight':ctrl.tabSelection=='collection', 'disabled':!ctrl.showButtons && !(ctrl.tabSelection=='collection' || ctrl.tabSelection=='advanced')}">COLLECTION</div>
-				<div class="tab leftRightBorder" ng-click="ctrl.setTab('advanced')"
-					ng-class="{'highlight':ctrl.tabSelection=='advanced', 'disabled':!ctrl.showButtons && !(ctrl.tabSelection=='collection' || ctrl.tabSelection=='advanced')}">ADVANCED</div>
+	<!-- Scan -->
+	<div class="scanMore" ng-if="!ctrl.accountAddressLoading" ng-click="$event.stopPropagation()" ng-class="{'expanded': ctrl.scanOpen}">
+		<div class="scanTitleCard">
+			<accounticon class="titleCardAccount" address="ctrl.accountAddress" border="0"></accounticon>
+			<div class="titleCardText">
+				<span class="textDark textLarge">{{ctrl.screenSize.sm ? 'Invaders to Uncover...' : 'Scanning for new Invaders to Uncover...'}}</span><br/>
+				<span class="textDark textSmall">28 PixelCons</span>
 			</div>
 		</div>
-	
-		<!-- Creator window -->
-		<div class="createWindow colorDark">
-		
-			<!-- Canvas tab -->
-			<div ng-show="ctrl.tabSelection=='canvas'">
-				<div class="windowSectionLabel topLabel textMedium">Draw a new PixelCon!</div>
-				<div class="pixelconCanvas">
-					<div class="pixelconCanvasGrid">
-						<div class="canvasPixel" ng-mousedown="ctrl.setPixel($index)"  ng-mouseenter="ctrl.setPixel($index, $event)"
-							ng-style="{'background-color':ctrl.colorPalette[pixel]}" ng-repeat="pixel in ctrl.canvasPixels track by $index"></div>
-					</div>
-				</div>
-				<div class="pixelconPalette">
-					<div class="pixelconPaletteGrid">
-						<div class="palettePixel" ng-class="{'selected': ctrl.selectedColor==$index}" ng-click="ctrl.setColor($index)"
-							ng-style="{'background-color':color}" ng-repeat="color in ctrl.colorPalette track by $index"></div>
-					</div>
-				</div>
-				<div class="windowSectionLabel idText textSelectable">{{ctrl.pixelconId}}</div>
-			</div>
 			
-			<!-- Collection tab -->
-			<div ng-show="ctrl.tabSelection=='collection'">
-				<div class="windowSectionLabel topLabel textMedium">Select the PixelCons you want to make into a collection (must be the creator and current owner)</div>
-				<div class="displayTable">
-					<pixelconcard class="pixelconCard" pixelcon="pixelcon" no-account="true" selectable="true" size="{{(ctrl.screenSize.sm)?'xs':(ctrl.screenSize.md?'sm':'md')}}" 
-						ng-repeat="pixelcon in ctrl.collectionPixelcons track by $index"></pixelconcard>
-				</div>
+		<md-button class="scanMoreButton filterButton textDark right" ng-click="ctrl.scanOpen = !ctrl.scanOpen" aria-label="Scan">
+			<div class="buttonIcon scan"></div>
+			<span>{{ctrl.screenSize.sm ? 'More' : 'Find More'}}</span>
+		</md-button>
 		
-				<!-- Empty -->
-				<div class="error colorLight textSelectable" ng-show="!ctrl.error && !ctrl.loading && (!ctrl.collectionPixelcons || ctrl.collectionPixelcons.length==0)">
-					No PixelCons
-				</div>
-			</div>
-			
-			<!-- Advanced tab -->
-			<div ng-show="ctrl.tabSelection=='advanced'">
-				<div class="windowSectionLabel topLabel textMedium">Create multiple PixelCons by uploading a PNG file. See templates <a class="light textWhite textBold" target="_blank" href="/data/PixelCons_AdvancedCreatorTemplates.zip" download>here</a></div>
-				<div class="fileUpload">
-					<span>Click Here to Uplod File</span><br>
-					<span>(Or Drag and Drop)</span>
-					<input class="uploadInput" type="file" accept="image/png" onchange="advancedCreateFileUpload(event.target);">
-				</div>
-				
-				<div class="windowSectionLabel textMedium" ng-show="ctrl.alreadyCreatedPixelconIds.length>0">Already Created</div>
-				<div class="alreadyCreatedPixelconContainer" ng-show="ctrl.alreadyCreatedPixelconIds.length>0">
-					<div class="alreadyCreatedPixelcon" ng-repeat="id in ctrl.alreadyCreatedPixelconIds track by $index">
-						<a ng-href="{{'/details/'+id}}" class="plain textDark">
-							<pixelcon id="id"></pixelcon>
-							<div class="alreadyCreatedPixelconCover">
-								<div class="alreadyCreatedPixelconGotoIcon"></div>
-							</div>
-						</a>
-					</div>
-				</div>
-				
-				<div class="windowSectionLabel textMedium" ng-show="ctrl.alreadyCreatedPixelconIds.length>0 && ctrl.advancedPixelcons.length==0">No new PixelCons...</div>
-				<div class="windowSectionLabel textMedium" ng-show="ctrl.advancedPixelcons.length>0">Loaded PixelCons</div>
-				<div class="advancedPixelconContainer">
-					<div class="advancedPixelcon" ng-repeat="advPixelcon in ctrl.advancedPixelcons track by $index">
-						<div class="advancedPixelconImage">
-							<pixelcon id="advPixelcon.id"></pixelcon>
-						</div>
-						<md-button class="advancedCreateButton md-raised md-primary" ng-click="ctrl.create($event, advPixelcon.id)" ng-disabled="!ctrl.canCreate()">Create</md-button>
-					</div>
-				</div>
-			</div>
-			
-			<!-- Loading -->
-			<div class="loading colorLight" ng-show="ctrl.loading">
-				<img class="crispImage" src="img/loading.gif" alt="Loading.." height="100%" width="100%"/>
-			</div>
+		<div class="scanMoreOptions">
+			<div style="height:200px;"></div>
 		
-			<!-- Error -->
-			<div class="error colorLight textSelectable" ng-show="ctrl.error" ng-bind-html="ctrl.error"></div>
 		</div>
 		
-		<!-- Actions -->
-		<div class="actions textMedium textLight">
-			<div class="info textDark" ng-hide="ctrl.showButtons">
-				<b ng-if="!ctrl.showStartButton">Note:</b> {{ctrl.infoText}} <br/>
-				<a href="/start" class="plain">
-					<md-button ng-if="ctrl.showStartButton" class="startButton md-raised md-primary">Start</md-button>
-				</a>
+		
+		
+		
+	<!--
+		<md-button class="scanMoreButton right" ng-click="" aria-label="Large View">
+			<div class="buttonIcon large"></div>
+		</md-button>
+		<md-button class="scanMoreButton right" ng-click="" aria-label="Small View">
+			<div class="buttonIcon small"></div>
+		</md-button>
+		<div class="scanMoreButtonDivider right"></div>
+		<md-menu md-position-mode="target-right target">
+			<md-button class="scanMoreButton right" ng-click="$mdOpenMenu()" aria-label="Share Account">
+				<div class="buttonIcon share"></div>
+			</md-button>
+			<md-menu-content class="shareLinksContextMenu">
+				<md-menu-item>
+					<md-button ng-click="ctrl.copyLink()"><div class="shareLinkIcon url textBlack"></div>Copy URL</md-button>
+				</md-menu-item>
+				<md-menu-item>
+					<a ng-href="{{ctrl.shareOnFacebook()}}" target="_blank" class="textBlack">
+						<md-button><div class="shareLinkIcon facebook"></div>Share on Facebook</md-button>
+					</a>
+				</md-menu-item>
+				<md-menu-item>
+					<a ng-href="{{ctrl.shareOnTwitter()}}" target="_blank" class="textBlack">
+						<md-button><div class="shareLinkIcon twitter"></div>Share on Twitter</md-button>
+					</a>
+				</md-menu-item>
+			</md-menu-content>
+		</md-menu>
+		<md-select ng-if="!ctrl.screenSize.sm" class="md-no-underline right" ng-model="ctrl.sortBy" ng-change="ctrl.onSortChange()" aria-label="Sort">
+			<md-option value="createdDesc">Date Desc</md-option>
+			<md-option value="createdAsc">Date Asc</md-option>
+			<md-option value="levelDesc">Level Desc</md-option>
+			<md-option value="levelAsc">Level Asc</md-option>
+		</md-select>
+		
+		<div class="moreFilter">
+			<md-select ng-if="ctrl.screenSize.sm" class="md-no-underline" ng-model="ctrl.sortBy" ng-change="ctrl.onSortChange()" aria-label="Sort">
+			<md-option value="createdDesc">Date Desc</md-option>
+			<md-option value="createdAsc">Date Asc</md-option>
+			<md-option value="levelDesc">Level Desc</md-option>
+			<md-option value="levelAsc">Level Asc</md-option>
+			</md-select>
+			<br/>
+			<div class="levelSelect textDark textMedium">
+				<span>Level</span>
+				<input class="levelInput" type="number" step="any" name="levelMin" ng-model="ctrl.levelMin" ng-change="ctrl.onLevelChange()" min="0" max="30"/>
+				<span>to</span>
+				<input class="levelInput" type="number" step="any" name="levelMax" ng-model="ctrl.levelMax" ng-change="ctrl.onLevelChange()" min="0" max="30"/>
 			</div>
-			<div class="buttonContainer" layout="row" layout-align="space-between center" ng-show="ctrl.showButtons"> 
-				<md-button class="actionButton" ng-click="ctrl.clear($event)">Clear</md-button>
-				<md-button class="actionButton md-raised md-primary" ng-click="ctrl.create($event)" 
-					ng-disabled="!ctrl.canCreate()" ng-show="ctrl.tabSelection=='canvas'">Create</md-button>
-				<md-button class="actionButton md-raised md-primary" ng-click="ctrl.createCollection($event)" 
-					ng-disabled="!ctrl.canCreateCollection()" ng-show="ctrl.tabSelection=='collection'">Create Collection</md-button>
+			<br/>
+			<div class="ownerSelect textDark textMedium">
+				<span>Owner</span>
+				<input class="ownerInput" maxlength="45" name="owner" ng-model="ctrl.owner" ng-change="ctrl.onOwnerChange()"/>
+				<md-progress-circular ng-show="ctrl.checkingOwner" class="ownerLoading" md-diameter="16px" md-mode="indeterminate"></md-progress-circular>
+				<accounticon ng-show="!ctrl.checkingOwner && ctrl.ownerAddress" class="ownerIcon" address="ctrl.ownerAddress" border="2"></accounticon>
+				<div ng-show="!ctrl.checkingOwner && !ctrl.ownerAddress && ctrl.owner" class="ownerUnknown textDark textBold textMedium">??</div>
 			</div>
+			<br/>
+			<md-checkbox class="colorCheckbox water textDark textMedium" ng-model="ctrl.typeWater" ng-change="ctrl.onTypeChange()">Water</md-checkbox>
+			<md-checkbox class="colorCheckbox forest textDark textMedium" ng-model="ctrl.typeForest" ng-change="ctrl.onTypeChange()">Forest</md-checkbox>
+			<md-checkbox class="colorCheckbox fire textDark textMedium" ng-model="ctrl.typeFire" ng-change="ctrl.onTypeChange()">Fire</md-checkbox>
+			<md-checkbox class="colorCheckbox desert textDark textMedium" ng-model="ctrl.typeDesert" ng-change="ctrl.onTypeChange()">Desert</md-checkbox>
+			<md-checkbox class="colorCheckbox electric textDark textMedium" ng-model="ctrl.typeElectric" ng-change="ctrl.onTypeChange()">Electric</md-checkbox>
+			<md-checkbox class="colorCheckbox metal textDark textMedium" ng-model="ctrl.typeMetal" ng-change="ctrl.onTypeChange()">Metal</md-checkbox>
+			<br/>
+			<md-checkbox class="colorCheckbox defence textDark textMedium" ng-model="ctrl.attrDefence" ng-change="ctrl.onAttributeChange()">Defence</md-checkbox>
+			<md-checkbox class="colorCheckbox attack textDark textMedium" ng-model="ctrl.attrAttack" ng-change="ctrl.onAttributeChange()">Attack</md-checkbox>
+			<br/>
+			<md-checkbox class="colorCheckbox longRange textDark textMedium" ng-model="ctrl.attrLongRange" ng-change="ctrl.onAttributeChange()">Long Range</md-checkbox>
+			<md-checkbox class="colorCheckbox shortRange textDark textMedium" ng-model="ctrl.attrShortRange" ng-change="ctrl.onAttributeChange()">Short Range</md-checkbox>
 		</div>
+		-->
 	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	<div class="bottomSpacer"></div>
 	<div class="footerSpacer"></div>
