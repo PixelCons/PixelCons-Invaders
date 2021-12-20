@@ -83,8 +83,72 @@ div.invadersMintPage .titleCardText {
 	height: 40px;
 }
 div.invadersMintPage .addressLoadingSpinner {
-	margin: 0px auto;
-	margin-top: 100px;
+	position: absolute;
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	margin: -80px -40px;
+}
+
+
+
+
+
+
+
+/* Mintable Invaders */
+div.invadersMintPage div.mintableInvaders {
+	width: calc(100% - 60px);
+	max-width: 1300px;
+	margin: 0 auto;
+	font-size: 0px;
+	text-align: center;
+	margin-top: 20px;
+}
+div.invadersMintPage.sm div.mintableInvaders {
+	width: calc(100% - 24px);
+}
+div.invadersMintPage div.mintableInvaders div.invaderPixelcon {
+	position: relative;
+	display: inline-block;
+	width: 80px;
+	height: 80px;
+	margin: 10px;
+}
+div.invadersMintPage div.mintableInvaders div.invader {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 80px;
+	height: 80px;
+}
+div.invadersMintPage div.mintableInvaders div.pixelcon {
+	position: absolute;
+	top: -10px;
+	left: -10px;
+	width: 40px;
+	height: 40px;
+	opacity: 0.7;
+	filter: alpha(opacity=70);
+}
+
+
+
+
+
+
+/* Error */
+div.invadersMintPage div.error {
+	position: absolute;
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	margin: -100px -153px;
+	width: 276px;
+	min-height: 42px;
+	max-height: 100px;
+	padding: 15px;
+	background-color: #80808093;
 }
 
 

@@ -156,8 +156,11 @@ div.invadersExplorePage md-progress-circular.filterAddressLoading {
 	display: inline-block;
 }
 div.invadersExplorePage md-progress-circular.invadersLoading {
-	margin: 0px auto;
-	margin-top: 150px;
+	position: absolute;
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	margin: -80px -40px;
 }
 div.invadersExplorePage div.ownerUnknown {
 	position: absolute;
@@ -266,4 +269,18 @@ div.invadersExplorePage div.invadersContainer div.invader {
 	width: 80px;
 	height: 80px;
 	margin: 10px;
+}
+
+/* Error */
+div.invadersExplorePage div.error {
+	position: absolute;
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	margin: -100px -153px;
+	width: 276px;
+	min-height: 42px;
+	max-height: 100px;
+	padding: 15px;
+	background-color: #80808093;
 }

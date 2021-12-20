@@ -9,9 +9,14 @@
 		const invaderSize = invaderScale*10;
 		const invadersPerWidth = Math.floor(maxImageSize / invaderSize);
 		const invadersPerPanel = invadersPerWidth * invadersPerWidth;
+		const pixelconScale = 2;
+		const pixelconSize = pixelconScale*10;
+		const pixelconsPerWidth = Math.floor(maxImageSize / pixelconSize);
+		const pixelconsPerPanel = pixelconsPerWidth * pixelconsPerWidth;
 		
 		//Setup functions
 		this.generateInvadersPanel = generateInvadersPanel;
+		this.generatePixelconsPanel = generatePixelconsPanel;
 		this.generateDisplayImage = generateDisplayImage;
 		this.getPanelStyleRules = getPanelStyleRules;
 		
@@ -19,6 +24,8 @@
 		var loadImage_cache = {};
 		this.invadersPerWidth = invadersPerWidth;
 		this.invadersPerPanel = invadersPerPanel;
+		this.pixelconsPerWidth = pixelconsPerWidth;
+		this.pixelconsPerPanel = pixelconsPerPanel;
 		
 		//Configuration
 		const qrCodeImageLink = document.location.origin + '/_';
@@ -72,6 +79,35 @@
 								ctx.fillStyle = getPaletteColorInHex(id[index]);
 								ctx.fillRect(offsetX + ((x+1) * invaderScale), offsetY + ((y+1) * invaderScale), invaderScale, invaderScale);
 							}
+						}
+					}
+				}
+			}
+			let data = canvas.toDataURL('image/png');
+			canvas.remove();
+			return data;
+		}
+		
+		//Generates a panel of pixelcons
+		function generatePixelconsPanel(pixelcons, offset) {
+			let canvas = document.createElement('canvas');
+			canvas.width = pixelconsPerWidth * pixelconSize;
+			canvas.height = pixelconsPerWidth * pixelconSize;
+			let ctx = canvas.getContext("2d");
+			
+			for(let i=0; i<pixelconsPerPanel; i++) {
+				const pixelconIndex = offset + i;
+				if(pixelconIndex < pixelcons.length) {
+					const id = formatId(pixelcons[pixelconIndex].id);
+					const pixelconPanelIndex = pixelconIndex % pixelconsPerPanel;
+					const offsetX = (pixelconPanelIndex % pixelconsPerWidth) * pixelconSize
+					const offsetY = Math.floor(pixelconPanelIndex/pixelconsPerWidth) * pixelconSize;
+					
+					for (let y = 0; y < 8; y++) {
+						for (let x = 0; x < 8; x++) {
+							let index = y * 8 + x;
+							ctx.fillStyle = getPaletteColorInHex(id[index]);
+							ctx.fillRect(offsetX + ((x+1) * pixelconScale), offsetY + ((y+1) * pixelconScale), pixelconScale, pixelconScale);
 						}
 					}
 				}
@@ -201,7 +237,7 @@
 			}
 			if(styleSheet) {
 				for(let i=0; i<count; i++) {
-					const panelSelector = cssPageSelector + ' .panel' + i;
+					const panelSelector = cssPageSelector + '.panel' + i;
 					let foundRule = null;
 					for(let j=0; j<styleSheet.cssRules.length; j++) {
 						if(styleSheet.cssRules[j].selectorText == panelSelector) {

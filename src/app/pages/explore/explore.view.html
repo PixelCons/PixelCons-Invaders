@@ -2,7 +2,7 @@
 	<div class="topSpacer"></div>
 	
 	<!-- Filter -->
-	<div class="topFilter" ng-click="$event.stopPropagation()" ng-class="{'expanded': ctrl.filterOpen}">
+	<div class="topFilter" ng-if="!ctrl.error" ng-click="$event.stopPropagation()" ng-class="{'expanded': ctrl.filterOpen}">
 		<md-button class="topFilterButton filterButton textDark" ng-click="ctrl.filterOpen = !ctrl.filterOpen" aria-label="Filter">
 			<div class="buttonIcon filter"></div>
 			<accounticon ng-if="ctrl.ownerAddress" class="accountTitleIcon" address="ctrl.ownerAddress" border="2"></accounticon>
@@ -83,11 +83,8 @@
 			
 	</div>
 	
-	
-	
-	
 	<!-- Invaders -->
-	<div class="invadersContainer">
+	<div class="invadersContainer" ng-if="!ctrl.error" >
 		<md-progress-circular ng-if="ctrl.invadersLoading" class="invadersLoading" md-diameter="80px" md-mode="indeterminate"></md-progress-circular>
 	
 		<div class="invader crispImage" ng-class="invader.panelClass" ng-style="{'background-position':invader.panelOffset}" ng-repeat="invader in ctrl.invaders track by $index"></div>
@@ -95,7 +92,7 @@
 	</div>
 	
 	<!-- Error -->
-	
+	<div class="error textDark textSelectable" ng-if="ctrl.error" ng-bind-html="ctrl.error"></div>
 	
 	
 	<div class="bottomSpacer"></div>

@@ -16,29 +16,29 @@
 		
 		
 		loadPageData();
-		function loadPageData() {
+		async function loadPageData() {
 			_this.accountAddressLoading = true;
+			_this.error = null;
 			web3Service.awaitState(async function() {
-				_this.accountAddressLoading = false;
-				_this.accountAddress = web3Service.getActiveAccount();
-				
-				
-				//$scope.$apply();
+				try {
+					_this.accountAddress = web3Service.getActiveAccount();
+					if(_this.accountAddress) {
+						_this.accountPixelcons = await coreContract.getAccountPixelcons(_this.accountAddress);
+						_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
+					
+					
+					} else {
+						_this.error = $sce.trustAsHtml('<b>Account Not Connected</b><br/>Please connect your Ethereum account');
+					}
+					
+					_this.accountAddressLoading = false;
+					//$scope.$apply();
+					
+				} catch(err) {
+					_this.accountAddressLoading = false;
+					_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + err);
+				}
 			}, true);
-	
-			/*
-			_this.invadersLoading = true;
-			coreContract.fetchAllInvaders().then(function(invaders) {
-				_this.invadersLoading = false;
-				
-				
-				
-				_this.invaders = addInvaderImageData(invaders);
-				//filter
-				
-				//$scope.$apply();
-			});
-			*/
 		}
 		
 		
@@ -50,6 +50,70 @@
 		
 		
 		
+		
+		// Generates images and adds class and offset details to the invader and pixelcon objects
+		function addPixelconInvaderImageData(pixelcons) {
+			
+			//pixelcons
+			const numPixelconPanels = Math.ceil(pixelcons.length / decoder.pixelconsPerPanel);
+			let pixelconCssRules = decoder.getPanelStyleRules('.invadersMintPage .pixelcon', numPixelconPanels);
+			if(pixelconCssRules && pixelconCssRules.length == numPixelconPanels) {
+				for(let i=0; i<numPixelconPanels; i++) {
+					let panelImage = decoder.generatePixelconsPanel(pixelcons, i*decoder.pixelconsPerPanel);
+					pixelconCssRules[i].style.backgroundSize = decoder.pixelconsPerWidth + '00%';
+					pixelconCssRules[i].style.backgroundImage = 'url("' + panelImage + '")';
+					for(let j=0; j<decoder.pixelconsPerPanel; j++) {
+						const pixelconIndex = (i*decoder.pixelconsPerPanel)+j;
+						if(pixelconIndex < pixelcons.length) {
+							const pixelconPanelIndex = pixelconIndex % decoder.pixelconsPerPanel;
+							const offsetX = ((pixelconPanelIndex % decoder.pixelconsPerWidth) / (decoder.pixelconsPerWidth - 1)) * 100;
+							const offsetY = (Math.floor(pixelconPanelIndex/decoder.pixelconsPerWidth) / (decoder.pixelconsPerWidth - 1)) * 100;
+							
+							pixelcons[pixelconIndex].panelClass = 'panel' + i;
+							pixelcons[pixelconIndex].panelOffset = offsetX + '% ' + offsetY + '%';
+						}
+					}
+				}
+			}
+			
+			//convert to invaderPixelcons list
+			let invaders = [];
+			for(let i=0; i<pixelcons.length; i++) {
+				for(let j=0; j<pixelcons[i].invaders.length; j++) {
+					pixelcons[i].invaders[j].pixelcon = {
+						id: pixelcons[i].id,
+						panelClass:	pixelcons[i].panelClass,
+						panelOffset: pixelcons[i].panelOffset
+					}
+					invaders.push(pixelcons[i].invaders[j]);
+				}
+			}
+			
+			//invaders
+			const numInvaderPanels = Math.ceil(invaders.length / decoder.invadersPerPanel);
+			let invaderCssRules = decoder.getPanelStyleRules('.invadersMintPage .invader', numInvaderPanels);
+			if(invaderCssRules && invaderCssRules.length == numInvaderPanels) {
+				for(let i=0; i<numInvaderPanels; i++) {
+					let panelImage = decoder.generateInvadersPanel(invaders, i*decoder.invadersPerPanel);
+					invaderCssRules[i].style.backgroundSize = decoder.invadersPerWidth + '00%';
+					invaderCssRules[i].style.backgroundImage = 'url("' + panelImage + '")';
+					for(let j=0; j<decoder.invadersPerPanel; j++) {
+						const invaderIndex = (i*decoder.invadersPerPanel)+j;
+						if(invaderIndex < invaders.length) {
+							const invaderPanelIndex = invaderIndex % decoder.invadersPerPanel;
+							const offsetX = ((invaderPanelIndex % decoder.invadersPerWidth) / (decoder.invadersPerWidth - 1)) * 100;
+							const offsetY = (Math.floor(invaderPanelIndex/decoder.invadersPerWidth) / (decoder.invadersPerWidth - 1)) * 100;
+							
+							invaders[invaderIndex].panelClass = 'panel' + i;
+							invaders[invaderIndex].panelOffset = offsetX + '% ' + offsetY + '%';
+						}
+					}
+				}
+			}
+			
+			
+			return invaders;
+		}
 		
 		
 		
@@ -383,7 +447,10 @@
 		web3Service.onAccountDataChange(loadPageData, $scope, true);
 
 		// Listen for transactions
-		web3Service.onWaitingTransactionsChange(loadPageData, $scope);
+		web3Service.onWaitingTransactionsChange(function (transactionData) {
+			//if (transaction.type == _mintTypeDescription[0]) loadInvaders();
+			//dirtyDatabaseData = transactionData && transactionData.success;
+		}, $scope);
 		
 	}
 }());

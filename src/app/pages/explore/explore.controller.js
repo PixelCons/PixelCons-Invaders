@@ -141,18 +141,21 @@
 		}
 		
 		loadInvaders();
-		function loadInvaders() {
+		async function loadInvaders() {
 			_this.invadersLoading = true;
-			coreContract.fetchAllInvaders().then(function(invaders) {
-				_this.invadersLoading = false;
-				
-				
-				
+			_this.error = null;
+			try {
+				let invaders = await coreContract.fetchAllInvaders();
 				_this.invaders = addInvaderImageData(invaders);
-				//filter
+				//TODO: filter
 				
+				_this.invadersLoading = false;
 				//$scope.$apply();
-			});
+				
+			} catch(err) {
+				_this.invadersLoading = false;
+				_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + err);
+			}
 		}
 		
 		function onOwnerChange(noWait) {
@@ -288,7 +291,7 @@
 		// Generates images and adds class and offset details to the invader objects
 		function addInvaderImageData(invaders) {
 			const numPanels = Math.ceil(invaders.length / decoder.invadersPerPanel);
-			let cssRules = decoder.getPanelStyleRules('.invadersExplorePage', numPanels);
+			let cssRules = decoder.getPanelStyleRules('.invadersExplorePage ', numPanels);
 			if(cssRules && cssRules.length == numPanels) {
 				for(let i=0; i<numPanels; i++) {
 					let panelImage = decoder.generateInvadersPanel(invaders, i*decoder.invadersPerPanel);
@@ -306,7 +309,7 @@
 						}
 					}
 				}
-			}				
+			}
 			return invaders;
 		}
 		
@@ -339,6 +342,7 @@
 
 		// Listen for transactions
 		web3Service.onWaitingTransactionsChange(function (transactionData) {
+			//if (transaction.type == _mintTypeDescription[0]) loadInvaders();
 			//dirtyDatabaseData = transactionData && transactionData.success;
 		}, $scope);
 	}
