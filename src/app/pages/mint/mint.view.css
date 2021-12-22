@@ -44,25 +44,13 @@ div.invadersMintPage button.scanMoreButton {
 }
 
 
-div.invadersMintPage div.scanMore .scanMoreOptions {
-	max-height: 0px;
-	width: 100%;
-	padding: 0px 0px;
-	overflow: hidden;
-	transition: max-height cubic-bezier(0.35, 0, 0.25, 1) 0.1s, padding cubic-bezier(0.35, 0, 0.25, 1) 0.1s;
-}
-div.invadersMintPage div.scanMore.expanded .scanMoreOptions {
-	max-height: 300px;
-	padding: 5px 0px;
-}
+
 div.invadersMintPage button.scanMoreButton .buttonIcon {
 	margin-top: 4px;
 }
 div.invadersMintPage .buttonIcon.scan {
 	background-image: url(/img/icon_scan_w.svg);
 }
-
-
 div.invadersMintPage .scanTitleCard {
 	display: inline-block;
 	margin: 5px;
@@ -92,6 +80,77 @@ div.invadersMintPage .addressLoadingSpinner {
 
 
 
+
+div.invadersMintPage div.scanMore .scanMoreOptions {
+	max-height: 0px;
+	width: 100%;
+	padding: 0px 0px;
+	overflow: hidden;
+	transition: max-height cubic-bezier(0.35, 0, 0.25, 1) 0.15s, padding cubic-bezier(0.35, 0, 0.25, 1) 0.15s;
+}
+div.invadersMintPage div.scanMore.expanded .scanMoreOptions {
+	max-height: 80vh;
+	padding: 5px 0px;
+}
+div.invadersMintPage div.scanMore div.moreOptionTitle {
+	width: 100%;
+	padding: 0px 10px;
+	box-sizing: border-box;
+}
+div.invadersMintPage div.scanMore div.moreOptionTitle div.openSeaIcon {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	vertical-align: top;
+	background-image: url(/img/icon_opensea_w.svg);
+	background-size: 20px;
+	margin: 1px 5px 0px 5px;
+}
+div.invadersMintPage div.scanMore div.moreOptionContainer {
+	position: relative;
+	height: calc(100vh - 350px);
+	overflow-y: auto; 
+	overflow-y: overlay;
+	overflow-x: hidden;
+	scrollbar-color: rgba(153, 153, 153, 0.7) transparent;
+	scrollbar-width: thin;
+}
+div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar {
+	width: 8px;
+}
+div.invadersMintPage.sm div.scanMore div.moreOptionContainer::-webkit-scrollbar {
+	width: 3px;
+}
+div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar-track {
+	background: transparent
+}
+div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar-thumb {
+	background: #ffffff7a;
+	border-radius: 4px;
+}
+div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar-thumb:hover {
+	background: #ffffffbd;
+}
+
+
+div.invadersMintPage.sm div.scanMore div.moreOptionContainer {
+	height: calc(100vh - 250px);
+}
+div.invadersMintPage div.scanMore div.moreOptionContainer .moreLoadingSpinner {
+	position: absolute;
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	margin: -25px -25px;
+}
+
+div.invadersMintPage div.scanMore div.marketItem {
+	display: inline-block;
+	width: 112px;
+	height: 64px;
+	background-color: #000;
+	margin: 10px;
+}
 
 
 

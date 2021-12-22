@@ -5,6 +5,7 @@
 	MintPageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$routeParams', '$mdToast', '$location', '$window', '$sce', 'web3Service', 'coreContract', 'decoder'];
 	function MintPageCtrl($scope, $mdMedia, $mdDialog, $routeParams, $mdToast, $location, $window, $sce, web3Service, coreContract, decoder) {
 		var _this = this;
+		_this.loadMarketData = loadMarketData;
 		
 		// Watch for screen size changes
 		_this.screenSize = {};
@@ -21,27 +22,48 @@
 			_this.error = null;
 			web3Service.awaitState(async function() {
 				try {
-					_this.accountAddress = web3Service.getActiveAccount();
-					if(_this.accountAddress) {
-						_this.accountPixelcons = await coreContract.getAccountPixelcons(_this.accountAddress);
-						_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
-					
-					
+					let web3state = web3Service.getState();
+					if (web3state == "ready") {
+						_this.accountAddress = web3Service.getActiveAccount();
+						if (_this.accountAddress) {
+							_this.accountPixelcons = await coreContract.getAccountPixelcons(_this.accountAddress);
+							_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
+							
+							
+							
+						} else {
+							if (web3Service.isReadOnly()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
+							else if (web3Service.isPrivacyMode()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please connect your Ethereum account');
+							else _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please log into ' + web3Service.getProviderName());
+						}
+					} else if (web3state == "not_enabled") {
+						_this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
 					} else {
-						_this.error = $sce.trustAsHtml('<b>Account Not Connected</b><br/>Please connect your Ethereum account');
+						_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>Unkown Network');
 					}
 					
 					_this.accountAddressLoading = false;
-					//$scope.$apply();
+					safeApply();
 					
 				} catch(err) {
 					_this.accountAddressLoading = false;
 					_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + err);
+					safeApply();
 				}
 			}, true);
 		}
 		
 		
+		async function loadMarketData() {
+			_this.scanOpen = !_this.scanOpen;
+			if(_this.marketData === undefined) {
+				_this.marketLoading = true;
+				_this.marketData = await coreContract.getPixelconsForSale();
+				
+				_this.marketLoading = false;
+				safeApply();
+			}
+		}
 		
 		
 		
@@ -53,7 +75,6 @@
 		
 		// Generates images and adds class and offset details to the invader and pixelcon objects
 		function addPixelconInvaderImageData(pixelcons) {
-			
 			//pixelcons
 			const numPixelconPanels = Math.ceil(pixelcons.length / decoder.pixelconsPerPanel);
 			let pixelconCssRules = decoder.getPanelStyleRules('.invadersMintPage .pixelcon', numPixelconPanels);
@@ -110,8 +131,6 @@
 					}
 				}
 			}
-			
-			
 			return invaders;
 		}
 		
@@ -443,6 +462,11 @@
 		
 		
 
+		// Safe apply to ensure fatest response possible
+		function safeApply() {
+		 if($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') $scope.$apply();
+		}
+		
 		// Listen for account data changes
 		web3Service.onAccountDataChange(loadPageData, $scope, true);
 

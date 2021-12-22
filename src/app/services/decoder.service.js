@@ -13,10 +13,16 @@
 		const pixelconSize = pixelconScale*10;
 		const pixelconsPerWidth = Math.floor(maxImageSize / pixelconSize);
 		const pixelconsPerPanel = pixelconsPerWidth * pixelconsPerWidth;
+		const marketItemWidth = 112+2;
+		const marketItemHeight = 64+2;
+		const marketItemsPerWidth = Math.floor(maxImageSize / marketItemWidth);
+		const marketItemsPerHeight = Math.floor(maxImageSize / marketItemHeight);
+		const marketItemsPerPanel = marketItemsPerWidth * marketItemsPerHeight;
 		
 		//Setup functions
 		this.generateInvadersPanel = generateInvadersPanel;
 		this.generatePixelconsPanel = generatePixelconsPanel;
+		this.generateMarketItemsPanel = generateMarketItemsPanel;
 		this.generateDisplayImage = generateDisplayImage;
 		this.getPanelStyleRules = getPanelStyleRules;
 		
@@ -26,6 +32,9 @@
 		this.invadersPerPanel = invadersPerPanel;
 		this.pixelconsPerWidth = pixelconsPerWidth;
 		this.pixelconsPerPanel = pixelconsPerPanel;
+		this.marketItemsPerWidth = marketItemsPerWidth;
+		this.marketItemsPerHeight = marketItemsPerHeight;
+		this.marketItemsPerPanel = marketItemsPerPanel;
 		
 		//Configuration
 		const qrCodeImageLink = document.location.origin + '/_';
@@ -110,6 +119,46 @@
 							ctx.fillRect(offsetX + ((x+1) * pixelconScale), offsetY + ((y+1) * pixelconScale), pixelconScale, pixelconScale);
 						}
 					}
+				}
+			}
+			let data = canvas.toDataURL('image/png');
+			canvas.remove();
+			return data;
+		}
+		
+		//Generates a panel of market items/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		function generateMarketItemsPanel(pixelcons, offset) {
+				//const marketItemWidth = 112+2;
+				//const marketItemHeight = 64+2;
+				//const marketItemsPerWidth = Math.floor(maxImageSize / marketItemWidth);
+				//const marketItemsPerHeight = Math.floor(maxImageSize / marketItemHeight);
+				//const marketItemsPerPanel = marketItemsPerWidth * marketItemsPerHeight;
+			let canvas = document.createElement('canvas');
+			canvas.width = marketItemsPerWidth * marketItemWidth;
+			canvas.height = marketItemsPerHeight * marketItemHeight;
+			let ctx = canvas.getContext("2d");
+			
+			for(let i=0; i<marketItemsPerPanel; i++) {
+				const marketItemIndex = offset + i;
+				if(marketItemIndex < marketItems.length) {
+					const id = formatId(marketItems[marketItemIndex].id);
+					const marketItemPanelIndex = marketItemIndex % marketItemsPerPanel;
+					const offsetX = (marketItemPanelIndex % marketItemsPerWidth) * marketItemWidth
+					const offsetY = Math.floor(marketItemPanelIndex/marketItemsPerWidth) * marketItemHeight;
+					
+					//18x18
+					//64x64
+
+					//112x64
+					/*
+					for (let y = 0; y < 8; y++) {
+						for (let x = 0; x < 8; x++) {
+							let index = y * 8 + x;
+							ctx.fillStyle = getPaletteColorInHex(id[index]);
+							ctx.fillRect(offsetX + ((x+1) * pixelconScale), offsetY + ((y+1) * pixelconScale), pixelconScale, pixelconScale);
+						}
+					}
+					*/
 				}
 			}
 			let data = canvas.toDataURL('image/png');

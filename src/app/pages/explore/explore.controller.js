@@ -150,11 +150,12 @@
 				//TODO: filter
 				
 				_this.invadersLoading = false;
-				//$scope.$apply();
+				safeApply();
 				
 			} catch(err) {
 				_this.invadersLoading = false;
 				_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + err);
+				safeApply();
 			}
 		}
 		
@@ -327,8 +328,10 @@
 		
 		
 		
-		
-		
+		// Safe apply to ensure fatest response possible
+		function safeApply() {
+		 if($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') $scope.$apply();
+		}
 		
 		// Listen for account data changes
 		web3Service.onAccountDataChange(function () {

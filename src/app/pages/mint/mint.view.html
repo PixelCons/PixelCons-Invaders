@@ -17,21 +17,29 @@
 			</div>
 		</div>
 			
-		<md-button class="scanMoreButton filterButton textDark right" ng-click="ctrl.scanOpen = !ctrl.scanOpen" aria-label="Scan">
+		<md-button class="scanMoreButton filterButton textDark right" ng-click="ctrl.loadMarketData();" aria-label="Scan">
 			<div class="buttonIcon scan"></div>
 			<span>{{ctrl.screenSize.sm ? 'More' : 'Find More'}}</span>
 		</md-button>
 		
 		<div class="scanMoreOptions">
-			<div style="height:200px;"></div>
+			<div class="moreOptionTitle textLarge textDark">For Sale on OpenSea<div class="openSeaIcon"></div></div>
+			<div class="moreOptionContainer textCenter">
+				<md-progress-circular ng-if="ctrl.marketLoading" class="moreLoadingSpinner" md-diameter="50px" md-mode="indeterminate"></md-progress-circular>
+				
+				<div class="marketItem" ng-repeat="item in ctrl.marketData track by $index">
+				
+				
+				</div>
+				
+				
 			
-			
-		
+			</div>
 		</div>
 	</div>
 	
 	<!-- Mintable Invaders -->
-	<div class="mintableInvaders" ng-if="!ctrl.error">
+	<div class="mintableInvaders" ng-if="!ctrl.accountAddressLoading && !ctrl.error">
 		<span class="textMedium textDark">The first 1500 PixelCons can uncover new invaders. Each PixelCon has a random set of invaders to mint from.</span>
 		<br/><br/><br/>
 		<div class="invaderPixelcon" ng-repeat="invaderPixelcon in ctrl.accountInvaderPixelcons track by $index">
@@ -39,6 +47,7 @@
 			<div class="invader crispImage" ng-class="invaderPixelcon.panelClass" ng-style="{'background-position':invaderPixelcon.panelOffset}"></div>
 		</div>
 	
+		<!-- No PixelCons Error -->
 	
 	</div>
 	
@@ -49,6 +58,8 @@
 	
 	
 	
+	<div class="bottomSpacer"></div>
+	<div class="bottomSpacer"></div>
 	<div class="bottomSpacer"></div>
 	<div class="footerSpacer"></div>
 </div>

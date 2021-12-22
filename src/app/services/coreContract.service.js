@@ -149,6 +149,7 @@
 		
 		// Gets pixelcon and related data for the given account
 		async function getAccountPixelcons(account) {
+			await sleep(1000);
 			let testData = [{
 				id: '0xccccccc6ccbbb3676b8bb31773bb3816763311ccccc42cccb8b9413b33333333'
 			},{
@@ -170,7 +171,165 @@
 		
 		// Gets list of pixelcons for sale and their mintable invaders
 		async function getPixelconsForSale() {
-			return [];
+			await sleep(2000);
+			let testData = [{
+				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
+				price: 0.11,
+				unit: 'Ξ',
+				invaders: [null,null]
+			},{
+				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
+				price: 0.21,
+				unit: 'Ξ',
+				invaders: [null,null,null,null]
+			},{
+				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
+				price: 0.43,
+				unit: 'Ξ',
+				invaders: [null,null,null]
+			},{
+				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
+				price: 0.632,
+				unit: 'Ξ',
+				invaders: [null,null,null,null]
+			},{
+				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
+				price: 1.1,
+				unit: 'Ξ',
+				invaders: [null,null,null,null,null,null]
+			},{
+				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
+				price: 2.184,
+				unit: 'Ξ',
+				invaders: [null,null,null,null,null]
+			},{
+				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
+				price: 0.11,
+				unit: 'Ξ',
+				invaders: [null,null]
+			},{
+				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
+				price: 0.21,
+				unit: 'Ξ',
+				invaders: [null,null,null,null]
+			},{
+				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
+				price: 0.43,
+				unit: 'Ξ',
+				invaders: [null,null,null]
+			},{
+				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
+				price: 0.632,
+				unit: 'Ξ',
+				invaders: [null,null,null,null]
+			},{
+				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
+				price: 1.1,
+				unit: 'Ξ',
+				invaders: [null,null,null,null,null,null]
+			},{
+				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
+				price: 2.184,
+				unit: 'Ξ',
+				invaders: [null,null,null,null,null]
+			},{
+				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
+				price: 0.11,
+				unit: 'Ξ',
+				invaders: [null,null]
+			},{
+				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
+				price: 0.21,
+				unit: 'Ξ',
+				invaders: [null,null,null,null]
+			},{
+				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
+				price: 0.43,
+				unit: 'Ξ',
+				invaders: [null,null,null]
+			},{
+				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
+				price: 0.632,
+				unit: 'Ξ',
+				invaders: [null,null,null,null]
+			},{
+				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
+				price: 1.1,
+				unit: 'Ξ',
+				invaders: [null,null,null,null,null,null]
+			},{
+				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
+				price: 2.184,
+				unit: 'Ξ',
+				invaders: [null,null,null,null,null]
+			},{
+				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
+				price: 0.11,
+				unit: 'Ξ',
+				invaders: [null,null]
+			},{
+				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
+				price: 0.21,
+				unit: 'Ξ',
+				invaders: [null,null,null,null]
+			},{
+				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
+				price: 0.43,
+				unit: 'Ξ',
+				invaders: [null,null,null]
+			},{
+				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
+				price: 0.632,
+				unit: 'Ξ',
+				invaders: [null,null,null,null]
+			},{
+				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
+				price: 1.1,
+				unit: 'Ξ',
+				invaders: [null,null,null,null,null,null]
+			},{
+				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
+				price: 2.184,
+				unit: 'Ξ',
+				invaders: [null,null,null,null,null]
+			},{
+				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
+				price: 0.11,
+				unit: 'Ξ',
+				invaders: [null,null]
+			},{
+				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
+				price: 0.21,
+				unit: 'Ξ',
+				invaders: [null,null,null,null]
+			},{
+				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
+				price: 0.43,
+				unit: 'Ξ',
+				invaders: [null,null,null]
+			},{
+				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
+				price: 0.632,
+				unit: 'Ξ',
+				invaders: [null,null,null,null]
+			},{
+				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
+				price: 1.1,
+				unit: 'Ξ',
+				invaders: [null,null,null,null,null,null]
+			},{
+				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
+				price: 2.184,
+				unit: 'Ξ',
+				invaders: [null,null,null,null,null]
+			}];
+			for(let i=0; i<testData.length; i++) {
+				for(let j=0; j<testData[i].invaders.length; j++) {
+					let invader = generateInvader();
+					testData[i].invaders[j] = invaderAnalysis(invader.id);
+				}
+			}
+			return testData;
 		}
 
 
@@ -521,10 +680,37 @@
 			}
 		}
 		
+		function invaderAnalysis(invaderId) {
+			const attackDefence = ['1','5'];
+			const longRangeShortRange = ['6','d'];
+			const elementalTypes = ['7','8','9','a','b','c'];
+			invaderId = formatInvaderId(invaderId);
+			
+			let shadow = '0x';
+			let level = 0;
+			let type = null;
+			let skill = null;
+			let range = null;
+			for(let i=0; i<invaderId.length; i++) {
+				shadow += (invaderId[i] == '0') ? '0' : '7';
+				level += (elementalTypes.indexOf(invaderId[i]) > -1) ? 1 : 0;
+				type |= (elementalTypes.indexOf(invaderId[i]) > -1) ? invaderId[i] : null;
+				skill |= (attackDefence.indexOf(invaderId[i]) > -1) ? invaderId[i] : null;
+				range |= (longRangeShortRange.indexOf(invaderId[i]) > -1) ? invaderId[i] : null;
+			}
+			return {
+				shadow: shadow,
+				level: level/2,
+				type: type,
+				skill: skill,
+				range: range
+			}
+		}
+		
 		function getColorsTri() {
-			let base = ['1','5'];
-			let mids = ['6','d'];
-			let highs = ['7','8','9','a','b','c'];
+			const base = ['1','5'];
+			const mids = ['6','d'];
+			const highs = ['7','8','9','a','b','c'];
 			
 			let colors = [];
 			colors.push(base.splice([Math.floor(Math_random() * base.length)], 1));
@@ -548,6 +734,10 @@
 		function Math_random() {
 			//return Math.random();
 			return randomNumbers[(randomIndex++)%(randomNumbers.length-10)];
+		}
+		
+		function sleep(ms) {
+			return new Promise(resolve => setTimeout(resolve, ms));
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
