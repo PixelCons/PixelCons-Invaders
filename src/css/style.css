@@ -197,7 +197,6 @@ div.appContainer {
 div.pageContent {
 	width: 100%;
 	height: 100%;
-	overflow-y: auto;
 }
 div.pageContentBackground {
 	min-height: 100%;
@@ -302,6 +301,31 @@ a.buttonLink {
 /* Spinner */
 md-progress-circular svg path {
 	stroke: #f2f2f2;
+}
+
+/* Scrollbar */
+.appContainer .invisibleScroll {
+	overflow-y: auto; 
+	overflow-y: overlay;
+	overflow-x: hidden;
+	scrollbar-color: rgba(153, 153, 153, 0.7) transparent;
+	scrollbar-width: thin;
+}
+.appContainer .invisibleScroll::-webkit-scrollbar {
+	width: 8px;
+}
+.appContainer.sm .invisibleScroll::-webkit-scrollbar {
+	width: 3px;
+}
+.appContainer .invisibleScroll::-webkit-scrollbar-track {
+	background: transparent
+}
+.appContainer .invisibleScroll::-webkit-scrollbar-thumb {
+	background: #ffffff7a;
+	border-radius: 4px;
+}
+.appContainer .invisibleScroll::-webkit-scrollbar-thumb:hover {
+	background: #ffffffbd;
 }
 
 /* Image expand */

@@ -40,9 +40,9 @@
 <body ng-app="App" ng-cloak>
 
 	<!-- Start of main HTML -->
-	<div ng-controller="AppCtrl" layout="column" class="appContainer textNotSelectable" ng-cloak>
+	<div ng-controller="AppCtrl as ctrl" layout="column" class="appContainer textNotSelectable" ng-class="ctrl.screenSize" ng-cloak>
 		<app-header></app-header>
-		<div id="scrollTarget" class="pageContent">
+		<div id="scrollTarget" class="pageContent invisibleScroll">
 			<div id="contentBackground" class="pageContentBackground crispImage">
 				<ng-view id="view" class="filteredImage"></ng-view>
 			</div>
