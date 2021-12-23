@@ -33,7 +33,6 @@
 		this.pixelconsPerWidth = pixelconsPerWidth;
 		this.pixelconsPerPanel = pixelconsPerPanel;
 		this.marketItemsPerWidth = marketItemsPerWidth;
-		this.marketItemsPerHeight = marketItemsPerHeight;
 		this.marketItemsPerPanel = marketItemsPerPanel;
 		
 		//Configuration
@@ -127,7 +126,7 @@
 		}
 		
 		//Generates a panel of market items/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		function generateMarketItemsPanel(pixelcons, offset) {
+		function generateMarketItemsPanel(marketItems, offset) {
 				//const marketItemWidth = 112+2;
 				//const marketItemHeight = 64+2;
 				//const marketItemsPerWidth = Math.floor(maxImageSize / marketItemWidth);
@@ -146,19 +145,32 @@
 					const offsetX = (marketItemPanelIndex % marketItemsPerWidth) * marketItemWidth
 					const offsetY = Math.floor(marketItemPanelIndex/marketItemsPerWidth) * marketItemHeight;
 					
-					//18x18
-					//64x64
 
-					//112x64
-					/*
+					//64x64
+					const marketPixelconScale = 8;
 					for (let y = 0; y < 8; y++) {
 						for (let x = 0; x < 8; x++) {
 							let index = y * 8 + x;
 							ctx.fillStyle = getPaletteColorInHex(id[index]);
-							ctx.fillRect(offsetX + ((x+1) * pixelconScale), offsetY + ((y+1) * pixelconScale), pixelconScale, pixelconScale);
+							ctx.fillRect(1 + offsetX + (x * marketPixelconScale), 1 + offsetY + (y * marketPixelconScale), marketPixelconScale, marketPixelconScale);
 						}
 					}
-					*/
+					
+					//18x18
+					ctx.fillStyle = '#000000';
+					const marketInvaderScale = 2;
+					const marketInvaderOffset = [[69,46],[90,46],[69,24],[90,24],[69,2],[90,2]];
+					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
+						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].shadow);
+						for (let y = 0; y < 8; y++) {
+							for (let x = 0; x < 8; x++) {
+								let index = y * 8 + x;
+								if (invaderShadow[index] != '0') {
+									ctx.fillRect(marketInvaderOffset[j][0] + offsetX + (x * marketInvaderScale), marketInvaderOffset[j][1] + offsetY + (y * marketInvaderScale), marketInvaderScale+1, marketInvaderScale+1);
+								}
+							}
+						}
+					}
 				}
 			}
 			let data = canvas.toDataURL('image/png');

@@ -58,7 +58,10 @@
 			_this.scanOpen = !_this.scanOpen;
 			if(_this.marketData === undefined) {
 				_this.marketLoading = true;
-				_this.marketData = await coreContract.getPixelconsForSale();
+				let marketData = await coreContract.getPixelconsForSale();
+				_this.marketData = addMarketItemImageData(marketData);
+				
+				
 				
 				_this.marketLoading = false;
 				safeApply();
@@ -72,6 +75,36 @@
 		
 		
 		
+		
+		
+		
+		
+		
+		// Generates images and adds class and offset details to the market item objects
+		function addMarketItemImageData(marketItems) {
+			//market items
+			const numMarketItemPanels = Math.ceil(marketItems.length / decoder.marketItemsPerPanel);
+			let marketItemCssRules = decoder.getPanelStyleRules('.invadersMintPage .marketItem', numMarketItemPanels);
+			if(marketItemCssRules && marketItemCssRules.length == numMarketItemPanels) {
+				for(let i=0; i<numMarketItemPanels; i++) {
+					let panelImage = decoder.generateMarketItemsPanel(marketItems, i*decoder.marketItemsPerPanel);
+					marketItemCssRules[i].style.backgroundSize = decoder.marketItemsPerWidth + '00%';
+					marketItemCssRules[i].style.backgroundImage = 'url("' + panelImage + '")';
+					for(let j=0; j<decoder.marketItemsPerPanel; j++) {
+						const marketItemIndex = (i*decoder.marketItemsPerPanel)+j;
+						if(marketItemIndex < marketItems.length) {
+							const marketItemPanelIndex = marketItemIndex % decoder.marketItemsPerPanel;
+							const offsetX = ((marketItemPanelIndex % decoder.marketItemsPerWidth) / (decoder.marketItemsPerWidth - 1)) * 100;
+							const offsetY = (Math.floor(marketItemPanelIndex/decoder.marketItemsPerWidth) / (decoder.marketItemsPerWidth - 1)) * 100;
+							
+							marketItems[marketItemIndex].panelClass = 'panel' + i;
+							marketItems[marketItemIndex].panelOffset = offsetX + '% ' + offsetY + '%';
+						}
+					}
+				}
+			}
+			return marketItems;
+		}
 		
 		// Generates images and adds class and offset details to the invader and pixelcon objects
 		function addPixelconInvaderImageData(pixelcons) {

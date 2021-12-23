@@ -684,7 +684,7 @@
 			const attackDefence = ['1','5'];
 			const longRangeShortRange = ['6','d'];
 			const elementalTypes = ['7','8','9','a','b','c'];
-			invaderId = formatInvaderId(invaderId);
+			invaderId = formatInvaderId(invaderId).substr(2,64);
 			
 			let shadow = '0x';
 			let level = 0;
