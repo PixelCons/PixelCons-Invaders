@@ -103,7 +103,23 @@
 					}
 				}
 			}
+			
+			//tool tips
+			let marketItemTtCssRules = decoder.getPanelStyleRules('.invadersMintPage .marketItemTt', numMarketItemPanels);
+			if(marketItemTtCssRules && marketItemTtCssRules.length == numMarketItemPanels) {
+				for(let i=0; i<numMarketItemPanels; i++) {
+					let panelImage = decoder.generateMarketItemTtsPanel(marketItems, i*decoder.marketItemsPerPanel);
+					marketItemTtCssRules[i].style.backgroundSize = decoder.marketItemsPerWidth + '00%';
+					marketItemTtCssRules[i].style.backgroundImage = 'url("' + panelImage + '")';
+				}
+			}
+			
 			return marketItems;
+			
+			
+			
+			
+			//generateMarketItemTtsPanel
 		}
 		
 		// Generates images and adds class and offset details to the invader and pixelcon objects

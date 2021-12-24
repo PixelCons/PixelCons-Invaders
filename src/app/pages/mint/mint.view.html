@@ -28,7 +28,9 @@
 				<md-progress-circular ng-if="ctrl.marketLoading" class="moreLoadingSpinner" md-diameter="50px" md-mode="indeterminate"></md-progress-circular>
 				
 				<div class="marketItemContainer" ng-repeat="item in ctrl.marketData track by $index">
-					<div class="marketItem crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
+					<div class="marketItem crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}">
+						<div class="marketItemTt crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
+					</div>
 					<div class="marketItemPrice textDark textSmall textBold">{{item.price + item.unit}}</div>
 					<md-button class="marketItemBuy textDark textSmall textBold">Buy</md-button>
 				</div>

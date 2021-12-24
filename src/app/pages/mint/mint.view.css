@@ -147,13 +147,22 @@ div.invadersMintPage div.scanMore div.moreOptionContainer .moreLoadingSpinner {
 div.invadersMintPage div.scanMore div.marketItemContainer {
 	position: relative;
 	display: inline-block;
-	width: 114px;
-	height: 84px;
+	width: 116px;
+	height: 86px;
 	margin: 10px;
 }
 div.invadersMintPage div.scanMore div.marketItem {
-	width: 114px;
-	height: 66px;
+	width: 116px;
+	height: 72px;
+}
+div.invadersMintPage div.scanMore div.marketItemTt {
+	display: none;
+	background-color: #818181c2;
+	width: 100%;
+	height: 100%;
+}
+div.invadersMintPage div.scanMore div.marketItem:hover div.marketItemTt{
+	display: block;
 }
 div.invadersMintPage div.scanMore .marketItemPrice {
 	position: absolute;

@@ -13,8 +13,8 @@
 		const pixelconSize = pixelconScale*10;
 		const pixelconsPerWidth = Math.floor(maxImageSize / pixelconSize);
 		const pixelconsPerPanel = pixelconsPerWidth * pixelconsPerWidth;
-		const marketItemWidth = 112+2;
-		const marketItemHeight = 64+2;
+		const marketItemWidth = 112+4;
+		const marketItemHeight = 64+8;
 		const marketItemsPerWidth = Math.floor(maxImageSize / marketItemWidth);
 		const marketItemsPerHeight = Math.floor(maxImageSize / marketItemHeight);
 		const marketItemsPerPanel = marketItemsPerWidth * marketItemsPerHeight;
@@ -23,6 +23,7 @@
 		this.generateInvadersPanel = generateInvadersPanel;
 		this.generatePixelconsPanel = generatePixelconsPanel;
 		this.generateMarketItemsPanel = generateMarketItemsPanel;
+		this.generateMarketItemTtsPanel = generateMarketItemTtsPanel;
 		this.generateDisplayImage = generateDisplayImage;
 		this.getPanelStyleRules = getPanelStyleRules;
 		
@@ -125,13 +126,8 @@
 			return data;
 		}
 		
-		//Generates a panel of market items/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//Generates a panel of market items
 		function generateMarketItemsPanel(marketItems, offset) {
-				//const marketItemWidth = 112+2;
-				//const marketItemHeight = 64+2;
-				//const marketItemsPerWidth = Math.floor(maxImageSize / marketItemWidth);
-				//const marketItemsPerHeight = Math.floor(maxImageSize / marketItemHeight);
-				//const marketItemsPerPanel = marketItemsPerWidth * marketItemsPerHeight;
 			let canvas = document.createElement('canvas');
 			canvas.width = marketItemsPerWidth * marketItemWidth;
 			canvas.height = marketItemsPerHeight * marketItemHeight;
@@ -145,28 +141,73 @@
 					const offsetX = (marketItemPanelIndex % marketItemsPerWidth) * marketItemWidth
 					const offsetY = Math.floor(marketItemPanelIndex/marketItemsPerWidth) * marketItemHeight;
 					
-
-					//64x64
+					//pixelcon
 					const marketPixelconScale = 8;
 					for (let y = 0; y < 8; y++) {
 						for (let x = 0; x < 8; x++) {
 							let index = y * 8 + x;
 							ctx.fillStyle = getPaletteColorInHex(id[index]);
-							ctx.fillRect(1 + offsetX + (x * marketPixelconScale), 1 + offsetY + (y * marketPixelconScale), marketPixelconScale, marketPixelconScale);
+							ctx.fillRect(4 + offsetX + (x * marketPixelconScale), 4 + offsetY + (y * marketPixelconScale), marketPixelconScale, marketPixelconScale);
 						}
 					}
 					
-					//18x18
+					//invaders
 					ctx.fillStyle = '#000000';
 					const marketInvaderScale = 2;
-					const marketInvaderOffset = [[69,46],[90,46],[69,24],[90,24],[69,2],[90,2]];
+					const marketInvaderOffset = [[72,50],[94,50],[72,28],[94,28],[72,6],[94,6]];
 					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
+						const offsets = marketInvaderOffset[j];
 						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].shadow);
 						for (let y = 0; y < 8; y++) {
 							for (let x = 0; x < 8; x++) {
 								let index = y * 8 + x;
 								if (invaderShadow[index] != '0') {
-									ctx.fillRect(marketInvaderOffset[j][0] + offsetX + (x * marketInvaderScale), marketInvaderOffset[j][1] + offsetY + (y * marketInvaderScale), marketInvaderScale+1, marketInvaderScale+1);
+									ctx.fillRect(offsets[0] + offsetX + (x * marketInvaderScale), offsets[1] + offsetY + (y * marketInvaderScale), marketInvaderScale+1, marketInvaderScale+1);
+								}
+							}
+						}
+					}
+				}
+			}
+			let data = canvas.toDataURL('image/png');
+			canvas.remove();
+			return data;
+		}
+		
+		//Generates a panel of market item tool tips
+		function generateMarketItemTtsPanel(marketItems, offset) {
+			let canvas = document.createElement('canvas');
+			canvas.width = marketItemsPerWidth * marketItemWidth;
+			canvas.height = marketItemsPerHeight * marketItemHeight;
+			let ctx = canvas.getContext("2d");
+			
+			for(let i=0; i<marketItemsPerPanel; i++) {
+				const marketItemIndex = offset + i;
+				if(marketItemIndex < marketItems.length) {
+					const id = formatId(marketItems[marketItemIndex].id);
+					const marketItemPanelIndex = marketItemIndex % marketItemsPerPanel;
+					const offsetX = (marketItemPanelIndex % marketItemsPerWidth) * marketItemWidth
+					const offsetY = Math.floor(marketItemPanelIndex/marketItemsPerWidth) * marketItemHeight;
+					const marketInvaderScale = 4;
+					const marketInvaderOffset = [
+						[[43,20]],
+						[[24,20],[62,20]],
+						[[5,20],[43,20],[81,20]],
+						[[24,2],[62,2],[24,38],[62,38]],
+						[[5,2],[43,2],[81,2],[24,38],[62,38]],
+						[[5,2],[43,2],[81,2],[5,38],[43,38],[81,38]]
+					];
+					
+					//invaders
+					ctx.fillStyle = '#000000';
+					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
+						const offsets = marketInvaderOffset[marketItems[marketItemIndex].invaders.length-1][j];
+						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].shadow);
+						for (let y = 0; y < 8; y++) {
+							for (let x = 0; x < 8; x++) {
+								let index = y * 8 + x;
+								if (invaderShadow[index] != '0') {
+									ctx.fillRect(offsets[0] + offsetX + (x * marketInvaderScale), offsets[1] + offsetY + (y * marketInvaderScale), marketInvaderScale, marketInvaderScale);
 								}
 							}
 						}
