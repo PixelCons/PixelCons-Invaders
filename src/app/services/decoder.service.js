@@ -190,15 +190,28 @@
 					const offsetY = Math.floor(marketItemPanelIndex/marketItemsPerWidth) * marketItemHeight;
 					const marketInvaderScale = 4;
 					const marketInvaderOffset = [
-						[[43,20]],
-						[[24,20],[62,20]],
-						[[5,20],[43,20],[81,20]],
-						[[24,2],[62,2],[24,38],[62,38]],
-						[[5,2],[43,2],[81,2],[24,38],[62,38]],
-						[[5,2],[43,2],[81,2],[5,38],[43,38],[81,38]]
+						[[42,20]],
+						[[19,20],[65,20]],
+						[[4,20],[42,20],[80,20]],
+						[[19,2],[65,2],[19,38],[65,38]],
+						[[4,2],[42,2],[80,2],[19,38],[65,38]],
+						[[4,2],[42,2],[80,2],[4,38],[42,38],[80,38]]
 					];
 					
 					//invaders
+					ctx.fillStyle = '#808080';
+					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
+						const offsets = marketInvaderOffset[marketItems[marketItemIndex].invaders.length-1][j];
+						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].shadow);
+						for (let y = 0; y < 8; y++) {
+							for (let x = 0; x < 8; x++) {
+								let index = y * 8 + x;
+								if (invaderShadow[index] != '0') {
+									ctx.fillRect((offsets[0] + offsetX + (x * marketInvaderScale))-1, (offsets[1] + offsetY + (y * marketInvaderScale))-1, marketInvaderScale+2, marketInvaderScale+2);
+								}
+							}
+						}
+					}
 					ctx.fillStyle = '#000000';
 					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
 						const offsets = marketInvaderOffset[marketItems[marketItemIndex].invaders.length-1][j];
@@ -211,6 +224,35 @@
 								}
 							}
 						}
+					}
+					
+					//attributes
+					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
+						let dots = [];
+						if(marketItems[marketItemIndex].invaders[j].type) dots.push(marketItems[marketItemIndex].invaders[j].type);
+						if(marketItems[marketItemIndex].invaders[j].skill) dots.push(marketItems[marketItemIndex].invaders[j].skill);
+						if(marketItems[marketItemIndex].invaders[j].range) dots.push(marketItems[marketItemIndex].invaders[j].range);
+						const dotSize = 8;
+						const dotSpacing = 2;
+						const dotOffsetY = 17;
+						const dotOffsetX = ((marketInvaderScale*8) - (dots.length*dotSize + (dots.length-1)*dotSpacing))/2;
+						const offsets = marketInvaderOffset[marketItems[marketItemIndex].invaders.length-1][j];
+						for (let d = 0; d < dots.length; d++) {
+							let posX = dotOffsetX + d*(dotSize + dotSpacing);
+							ctx.fillStyle = getPaletteColorInHex(dots[d]);
+							ctx.fillRect(offsets[0] + offsetX + posX, offsets[1] + offsetY + dotOffsetY, dotSize, dotSize);
+						}
+					}
+					
+					//level
+					ctx.fillStyle = '#f2f2f2';
+					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
+						const offsets = marketInvaderOffset[marketItems[marketItemIndex].invaders.length-1][j];
+						const textOffsetX = (marketInvaderScale*8)/2;
+						const textOffsetY = 14;
+						ctx.font = 'bold 12px Roboto, "Helvetica Neue", sans-serif';
+						ctx.textAlign = 'center';
+						ctx.fillText('Lv' + marketItems[marketItemIndex].invaders[j].level, offsets[0] + offsetX + textOffsetX, offsets[1] + offsetY + textOffsetY);
 					}
 				}
 			}

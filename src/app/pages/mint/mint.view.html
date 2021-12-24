@@ -14,6 +14,11 @@
 			<div class="titleCardText">
 				<span class="textDark textLarge">{{ctrl.screenSize.sm ? 'Invaders to Uncover...' : 'New Invaders to Uncover...'}}</span><br/>
 				<span class="textDark textSmall">{{ctrl.accountPixelcons.length + (ctrl.accountPixelcons.length == 1 ? ' PixelCon' : ' PixelCons')}}</span>
+				
+				
+				
+				
+				
 			</div>
 		</div>
 			
@@ -23,16 +28,17 @@
 		</md-button>
 		
 		<div class="scanMoreOptions">
-			<div class="moreOptionTitle textLarge textDark">For Sale on OpenSea<div class="openSeaIcon"></div></div>
+			<div class="moreOptionTitle textLarge textDark">PixelCons with Invaders on OpenSea<div class="openSeaIcon"></div></div>
 			<div class="moreOptionContainer textCenter">
 				<md-progress-circular ng-if="ctrl.marketLoading" class="moreLoadingSpinner" md-diameter="50px" md-mode="indeterminate"></md-progress-circular>
 				
 				<div class="marketItemContainer" ng-repeat="item in ctrl.marketData track by $index">
-					<div class="marketItem crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}">
-						<div class="marketItemTt crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
-					</div>
+					<div class="marketItem crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
+					<div class="marketItemTt crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
 					<div class="marketItemPrice textDark textSmall textBold">{{item.price + item.unit}}</div>
+					<!--
 					<md-button class="marketItemBuy textDark textSmall textBold">Buy</md-button>
+					-->
 				</div>
 				
 				

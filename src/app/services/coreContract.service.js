@@ -149,7 +149,7 @@
 		
 		// Gets pixelcon and related data for the given account
 		async function getAccountPixelcons(account) {
-			await sleep(1000);
+			//await sleep(1000);
 			let testData = [{
 				id: '0xccccccc6ccbbb3676b8bb31773bb3816763311ccccc42cccb8b9413b33333333'
 			},{
@@ -171,7 +171,7 @@
 		
 		// Gets list of pixelcons for sale and their mintable invaders
 		async function getPixelconsForSale() {
-			await sleep(2000);
+			//await sleep(2000);
 			let testData = [{
 				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
 				price: 0.11,
@@ -694,9 +694,9 @@
 			for(let i=0; i<invaderId.length; i++) {
 				shadow += (invaderId[i] == '0') ? '0' : '7';
 				level += (elementalTypes.indexOf(invaderId[i]) > -1) ? 1 : 0;
-				type |= (elementalTypes.indexOf(invaderId[i]) > -1) ? invaderId[i] : null;
-				skill |= (attackDefence.indexOf(invaderId[i]) > -1) ? invaderId[i] : null;
-				range |= (longRangeShortRange.indexOf(invaderId[i]) > -1) ? invaderId[i] : null;
+				type = (elementalTypes.indexOf(invaderId[i]) > -1) ? invaderId[i] : type;
+				skill = (attackDefence.indexOf(invaderId[i]) > -1) ? invaderId[i] : skill;
+				range = (longRangeShortRange.indexOf(invaderId[i]) > -1) ? invaderId[i] : range;
 			}
 			return {
 				shadow: shadow,

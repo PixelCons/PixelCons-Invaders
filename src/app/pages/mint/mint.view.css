@@ -145,6 +145,7 @@ div.invadersMintPage div.scanMore div.moreOptionContainer .moreLoadingSpinner {
 }
 
 div.invadersMintPage div.scanMore div.marketItemContainer {
+	cursor: pointer;
 	position: relative;
 	display: inline-block;
 	width: 116px;
@@ -152,17 +153,27 @@ div.invadersMintPage div.scanMore div.marketItemContainer {
 	margin: 10px;
 }
 div.invadersMintPage div.scanMore div.marketItem {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 116px;
+	height: 72px;
+	opacity: 0.3;
+	filter: alpha(opacity=30);
+}
+div.invadersMintPage div.scanMore div.marketItemContainer:hover div.marketItem {
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+}
+div.invadersMintPage div.scanMore div.marketItemTt {
+	position: absolute;
+	top: 0px;
+	left: 0px;
 	width: 116px;
 	height: 72px;
 }
-div.invadersMintPage div.scanMore div.marketItemTt {
+div.invadersMintPage div.scanMore div.marketItemContainer:hover div.marketItemTt {
 	display: none;
-	background-color: #818181c2;
-	width: 100%;
-	height: 100%;
-}
-div.invadersMintPage div.scanMore div.marketItem:hover div.marketItemTt{
-	display: block;
 }
 div.invadersMintPage div.scanMore .marketItemPrice {
 	position: absolute;
@@ -203,6 +214,7 @@ div.invadersMintPage div.mintableInvaders div.invaderPixelcon {
 	margin: 10px;
 }
 div.invadersMintPage div.mintableInvaders div.invader {
+	cursor: pointer;
 	position: absolute;
 	top: 0px;
 	left: 0px;

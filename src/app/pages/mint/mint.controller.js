@@ -513,7 +513,7 @@
 
 		// Safe apply to ensure fatest response possible
 		function safeApply() {
-		 if($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') $scope.$apply();
+		 if($scope.$root && $scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') $scope.$apply();
 		}
 		
 		// Listen for account data changes
