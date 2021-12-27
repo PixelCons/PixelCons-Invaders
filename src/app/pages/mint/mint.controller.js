@@ -5,6 +5,9 @@
 	MintPageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$routeParams', '$mdToast', '$location', '$window', '$sce', 'web3Service', 'coreContract', 'decoder'];
 	function MintPageCtrl($scope, $mdMedia, $mdDialog, $routeParams, $mdToast, $location, $window, $sce, web3Service, coreContract, decoder) {
 		var _this = this;
+		const sortByDefault = 'rarityDesc';
+		_this.marketSortBy = sortByDefault;
+		_this.sortBy = sortByDefault;
 		_this.loadMarketData = loadMarketData;
 		
 		// Watch for screen size changes
@@ -94,8 +97,9 @@
 						const marketItemIndex = (i*decoder.marketItemsPerPanel)+j;
 						if(marketItemIndex < marketItems.length) {
 							const marketItemPanelIndex = marketItemIndex % decoder.marketItemsPerPanel;
+							const marketItemsPerHeight = decoder.marketItemsPerPanel / decoder.marketItemsPerWidth;
 							const offsetX = ((marketItemPanelIndex % decoder.marketItemsPerWidth) / (decoder.marketItemsPerWidth - 1)) * 100;
-							const offsetY = (Math.floor(marketItemPanelIndex/decoder.marketItemsPerWidth) / (decoder.marketItemsPerWidth - 1)) * 100;
+							const offsetY = (Math.floor(marketItemPanelIndex/decoder.marketItemsPerWidth) / (marketItemsPerHeight - 1)) * 100;
 							
 							marketItems[marketItemIndex].panelClass = 'panel' + i;
 							marketItems[marketItemIndex].panelOffset = offsetX + '% ' + offsetY + '%';
@@ -115,11 +119,6 @@
 			}
 			
 			return marketItems;
-			
-			
-			
-			
-			//generateMarketItemTtsPanel
 		}
 		
 		// Generates images and adds class and offset details to the invader and pixelcon objects

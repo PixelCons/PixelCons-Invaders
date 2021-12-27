@@ -17,7 +17,6 @@ div.invadersMintPage.sm div.bottomSpacer {
 	height: 10px;
 }
 
-
 /* Top Filter */
 div.invadersMintPage div.scanMore {
 	width: calc(100% - 60px);
@@ -42,9 +41,6 @@ div.invadersMintPage button.scanMoreButton {
     padding: 0px 4px;
     min-height: 33px;
 }
-
-
-
 div.invadersMintPage button.scanMoreButton .buttonIcon {
 	margin-top: 4px;
 }
@@ -78,9 +74,7 @@ div.invadersMintPage .addressLoadingSpinner {
 	margin: -80px -40px;
 }
 
-
-
-
+/* Scan More */
 div.invadersMintPage div.scanMore .scanMoreOptions {
 	max-height: 0px;
 	width: 100%;
@@ -93,9 +87,15 @@ div.invadersMintPage div.scanMore.expanded .scanMoreOptions {
 	padding: 5px 0px;
 }
 div.invadersMintPage div.scanMore div.moreOptionTitle {
-	width: 100%;
+	width: 400px;
 	padding: 0px 10px;
 	box-sizing: border-box;
+	display: inline-block;
+}
+div.invadersMintPage.sm div.scanMore div.moreOptionTitle {
+	line-height: 21px;
+	width: 220px;
+	padding: 0px;
 }
 div.invadersMintPage div.scanMore div.moreOptionTitle div.openSeaIcon {
 	display: inline-block;
@@ -109,30 +109,34 @@ div.invadersMintPage div.scanMore div.moreOptionTitle div.openSeaIcon {
 div.invadersMintPage div.scanMore div.moreOptionContainer {
 	position: relative;
 	height: calc(100vh - 350px);
+	width: 100%;
 	overflow-y: auto; 
 	overflow-y: overlay;
 	overflow-x: hidden;
 	scrollbar-color: rgba(153, 153, 153, 0.7) transparent;
 	scrollbar-width: thin;
 }
-div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar {
-	width: 8px;
+div.invadersMintPage md-select {
+	display: inline-block;
+	margin: 0px;
+	font-size: 14px;
+	color: #f2f2f2;
+	margin-top: -4px;
+	margin-right: 5px;
 }
-div.invadersMintPage.sm div.scanMore div.moreOptionContainer::-webkit-scrollbar {
-	width: 3px;
+div.invadersMintPage md-select:focus div.md-text {
+	color: #f2f2f2;
 }
-div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar-track {
-	background: transparent
+div.invadersMintPage md-select div.md-text {
+	margin-left: 30px;
 }
-div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar-thumb {
-	background: #ffffff7a;
-	border-radius: 4px;
+div.invadersMintPage md-select .md-select-icon {
+	background-image: url(/img/icon_sort_w.svg);
+    width: 20px;
+    height: 20px;
+    color: #00000000;
+	position: absolute;
 }
-div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar-thumb:hover {
-	background: #ffffffbd;
-}
-
-
 div.invadersMintPage.sm div.scanMore div.moreOptionContainer {
 	height: calc(100vh - 250px);
 }
@@ -143,7 +147,6 @@ div.invadersMintPage div.scanMore div.moreOptionContainer .moreLoadingSpinner {
 	top: 50%;
 	margin: -25px -25px;
 }
-
 div.invadersMintPage div.scanMore div.marketItemContainer {
 	cursor: pointer;
 	position: relative;
@@ -180,19 +183,38 @@ div.invadersMintPage div.scanMore .marketItemPrice {
 	left: 0px;
 	bottom: 1px;
 }
-div.invadersMintPage div.scanMore .marketItemBuy {
+div.invadersMintPage div.scanMore .marketItemCount {
+	display: none;
 	position: absolute;
 	right: 0px;
 	bottom: 0px;
 	min-width: 0px;
 	min-height: 0px;
-	display: inline-block;
 	height: 18px;
 	line-height: 18px;
 	margin: 0px;
 }
+div.invadersMintPage div.scanMore div.marketItemContainer:hover div.marketItemCount {
+	display: inline-block;
+}
 
-
+/* Scroll Bars */
+div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar {
+	width: 8px;
+}
+div.invadersMintPage.sm div.scanMore div.moreOptionContainer::-webkit-scrollbar {
+	width: 3px;
+}
+div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar-track {
+	background: transparent
+}
+div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar-thumb {
+	background: #ffffff7a;
+	border-radius: 4px;
+}
+div.invadersMintPage div.scanMore div.moreOptionContainer::-webkit-scrollbar-thumb:hover {
+	background: #ffffffbd;
+}
 
 /* Mintable Invaders */
 div.invadersMintPage div.mintableInvaders {
@@ -200,11 +222,13 @@ div.invadersMintPage div.mintableInvaders {
 	max-width: 1300px;
 	margin: 0 auto;
 	font-size: 0px;
-	text-align: center;
 	margin-top: 20px;
 }
 div.invadersMintPage.sm div.mintableInvaders {
 	width: calc(100% - 24px);
+}
+div.invadersMintPage div.mintableInvaders div.invaderPixelconsContainer {
+	display: inline-block;
 }
 div.invadersMintPage div.mintableInvaders div.invaderPixelcon {
 	position: relative;
@@ -231,11 +255,6 @@ div.invadersMintPage div.mintableInvaders div.pixelcon {
 	filter: alpha(opacity=70);
 }
 
-
-
-
-
-
 /* Error */
 div.invadersMintPage div.error {
 	position: absolute;
@@ -249,76 +268,3 @@ div.invadersMintPage div.error {
 	padding: 15px;
 	background-color: #80808093;
 }
-
-
-/*
-div.invadersMintPage md-select {
-	display: inline-block;
-	vertical-align: middle;
-	margin: 7px 0px;
-	margin-right: 5px;
-	font-size: 14px;
-	color: #f2f2f2;
-}
-div.invadersMintPage md-select:focus div.md-text {
-	color: #f2f2f2;
-}
-div.invadersMintPage md-select div.md-text {
-	margin-left: 30px;
-}
-div.invadersMintPage md-select .md-select-icon {
-	background-image: url(/img/icon_sort_w.svg);
-    width: 20px;
-    height: 20px;
-    color: #00000000;
-	position: absolute;
-}
-div.invadersMintPage div.scanMoreButtonDivider {
-	display: inline-block;
-	height: 30px;
-	width: 1px;
-	background-color: #f2f2f25c;
-	margin: 8px 0px;
-}
-div.invadersMintPage button.filterButton {
-	text-transform: none;
-	max-width: calc(100% - 260px);
-	text-align: left;
-	text-overflow: ellipsis;
-}
-div.invadersMintPage.sm button.filterButton {
-	max-width: calc(100% - 100px);
-}
-div.invadersMintPage accounticon.accountTitleIcon {
-	display: inline-block;
-	vertical-align: middle;
-	width: 24px;
-	height: 24px;
-	margin-top: -4px;
-}
-div.invadersMintPage .shiftLeft {
-	margin-left: -4px;
-}
-div.invadersMintPage button.scanMoreButton .buttonIcon {
-	margin-top: 4px;
-}
-div.invadersMintPage .buttonIcon.filter {
-	background-image: url(/img/icon_filter_w.svg);
-}
-div.invadersMintPage .buttonIcon.share {
-	background-image: url(/img/icon_share_w.svg);
-}
-div.invadersMintPage .buttonIcon.small {
-	background-image: url(/img/icon_small_w.svg);
-}
-div.invadersMintPage .buttonIcon.large {
-	background-image: url(/img/icon_large_w.svg);
-}
-div.invadersMintPage div.scanMore .moreFilter {
-	max-height: 0px;
-	width: 100%;
-	padding: 0px 0px;
-	overflow: hidden;
-	transition: max-height cubic-bezier(0.35, 0, 0.25, 1) 0.1s, padding cubic-bezier(0.35, 0, 0.25, 1) 0.1s;
-}
-*/
