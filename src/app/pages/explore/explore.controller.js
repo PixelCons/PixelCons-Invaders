@@ -10,8 +10,11 @@
 		const levelMaxDefault = null;
 		const sortByDefault = 'createdDesc';
 		const realtimeFilterInPath = false;
+		const tooltipDelay = 300;
 		_this.getFilterTitleOwnerString = getFilterTitleOwnerString;
 		_this.getFilterTitleString = getFilterTitleString;
+		_this.invaderMouseEnter = invaderMouseEnter;
+		_this.invaderMouseLeave = invaderMouseLeave;
 		_this.copyLink = copyLink;
 		_this.shareOnTwitter = shareOnTwitter;
 		_this.shareOnFacebook = shareOnFacebook;
@@ -265,7 +268,70 @@
 			if(filterTitle == filterTitleStart) return _this.ownerAddress ? '' : 'All Invaders';
 			return filterTitle;
 		}
-
+		
+		
+		
+		// Show/Hide invader tooltip
+		var tooltipShow = {};
+		var tooltipElement = {};
+		function invaderMouseEnter(invader, ev) {
+			if(tooltipShow[invader.id]) $timeout.cancel(tooltipShow[invader.id]);
+			tooltipShow[invader.id] = $timeout(function() {
+				const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+				const rightMargin = vw - ev.srcElement.getBoundingClientRect().right;
+				let tooltip = generateTooltip(invader, rightMargin < 140);
+				tooltipElement[invader.id] = tooltip;
+				ev.srcElement.appendChild(tooltip);
+				$timeout(function() { tooltip.classList.add('show'); }, 10);
+			}, tooltipDelay);
+		}
+		function invaderMouseLeave(invader, ev) {
+			if(tooltipShow[invader.id]) $timeout.cancel(tooltipShow[invader.id]);
+			if(tooltipElement[invader.id]) {
+				let tooltip = tooltipElement[invader.id];
+				delete tooltipElement[invader.id];
+				tooltip.classList.remove('show');
+				$timeout(function() { tooltip.remove(); }, 100);
+			}
+		}
+		function generateTooltip(invader, left) {
+			let tooltip = document.createElement('div');
+			tooltip.classList.add('tooltip');
+			if(left) tooltip.classList.add('left');
+			
+			addTooltipLine(tooltip, 'Invader ' + invader.number, null, null, false, true);
+			addTooltipLine(tooltip, invader.type, invader.typeColor, invader.typeRarity);
+			addTooltipLine(tooltip, 'Level ' + (invader.level > 0 ? invader.level : 'Uknown'), null, invader.levelRarity);
+			addTooltipLine(tooltip, invader.skill, invader.skillColor);
+			addTooltipLine(tooltip, invader.range, invader.rangeColor, invader.skillRangeRarity, true);
+			
+			return tooltip;
+		}
+		function addTooltipLine(tooltip, lineText, color, rarity, rarityShared, isTitle) {
+			let line = document.createElement('div');
+			line.className = 'line textLeft textSmall textDark' + (isTitle ? ' textBold' : '');
+			
+			if(color) {
+				let colorDiv = document.createElement('div');
+				colorDiv.className = 'color';
+				colorDiv.style.backgroundColor = color;
+				line.appendChild(colorDiv);
+			}
+			
+			let textSpan = document.createElement('span');
+			textSpan.className = (color || isTitle) ? '' : 'offset';
+			textSpan.innerText = lineText;
+			line.appendChild(textSpan);
+			
+			if(rarity) {
+				let percentageDiv = document.createElement('div');
+				percentageDiv.className = 'percentage' + (rarityShared ? ' shared' : '');
+				percentageDiv.innerText = (rarity < 0.01) ? '(<0.01%)' : '(' + rarity + '%)';
+				line.appendChild(percentageDiv);
+			}
+			tooltip.appendChild(line);
+		}
+		
 		// Copies share link to the clipboard
 		function copyLink() {
 			let copyText = document.getElementById("copyToClipboard");

@@ -87,7 +87,8 @@
 	<div class="invadersContainer" ng-if="!ctrl.error" >
 		<md-progress-circular ng-if="ctrl.invadersLoading" class="invadersLoading" md-diameter="80px" md-mode="indeterminate"></md-progress-circular>
 	
-		<div class="invader crispImage" ng-class="invader.panelClass" ng-style="{'background-position':invader.panelOffset}" ng-repeat="invader in ctrl.invaders track by $index"></div>
+		<div class="invader crispImage" ng-class="invader.panelClass" ng-style="{'background-position':invader.panelOffset}" ng-repeat="invader in ctrl.invaders track by $index"
+				ng-mouseenter="ctrl.invaderMouseEnter(invader, $event)" ng-mouseleave="ctrl.invaderMouseLeave(invader, $event)"></div>
 	
 	</div>
 	

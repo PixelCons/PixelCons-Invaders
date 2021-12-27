@@ -199,7 +199,7 @@
 					];
 					
 					//invaders
-					ctx.fillStyle = '#808080';
+					ctx.fillStyle = '#909090';
 					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
 						const offsets = marketInvaderOffset[marketItems[marketItemIndex].invaders.length-1][j];
 						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].shadow);
@@ -229,9 +229,9 @@
 					//attributes
 					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
 						let dots = [];
-						if(marketItems[marketItemIndex].invaders[j].type) dots.push(marketItems[marketItemIndex].invaders[j].type);
-						if(marketItems[marketItemIndex].invaders[j].skill) dots.push(marketItems[marketItemIndex].invaders[j].skill);
-						if(marketItems[marketItemIndex].invaders[j].range) dots.push(marketItems[marketItemIndex].invaders[j].range);
+						if(marketItems[marketItemIndex].invaders[j].typeColor) dots.push(marketItems[marketItemIndex].invaders[j].typeColor);
+						if(marketItems[marketItemIndex].invaders[j].skillColor) dots.push(marketItems[marketItemIndex].invaders[j].skillColor);
+						if(marketItems[marketItemIndex].invaders[j].rangeColor) dots.push(marketItems[marketItemIndex].invaders[j].rangeColor);
 						const dotSize = 8;
 						const dotSpacing = 2;
 						const dotOffsetY = 17;
@@ -239,7 +239,7 @@
 						const offsets = marketInvaderOffset[marketItems[marketItemIndex].invaders.length-1][j];
 						for (let d = 0; d < dots.length; d++) {
 							let posX = dotOffsetX + d*(dotSize + dotSpacing);
-							ctx.fillStyle = getPaletteColorInHex(dots[d]);
+							ctx.fillStyle = dots[d];
 							ctx.fillRect(offsets[0] + offsetX + posX, offsets[1] + offsetY + dotOffsetY, dotSize, dotSize);
 						}
 					}

@@ -149,7 +149,7 @@
 		
 		// Gets pixelcon and related data for the given account
 		async function getAccountPixelcons(account) {
-			//await sleep(1000);
+			await sleep(1000);
 			let testData = [{
 				id: '0xccccccc6ccbbb3676b8bb31773bb3816763311ccccc42cccb8b9413b33333333'
 			},{
@@ -171,7 +171,7 @@
 		
 		// Gets list of pixelcons for sale and their mintable invaders
 		async function getPixelconsForSale() {
-			//await sleep(2000);
+			await sleep(2000);
 			let testData = [{
 				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
 				price: 0.11,
@@ -554,12 +554,12 @@
 		var allInvaders = [];
 		function generateInvaders() {
 			if(allInvaders.length == 0) {
-				for(let i=0; i<1000; i++) allInvaders.push(generateInvader());
+				for(let i=0; i<1000; i++) allInvaders.push(generateInvader(i));
 			}
 			return allInvaders;
 		}
 		
-		function generateInvader() {
+		function generateInvader(num) {
 			let colors = getColorsTri();
 			let invaderGrid = [];
 			for(let y=0; y<8; y++){ invaderGrid[y] = []; for(let x=0; x<8; x++) invaderGrid[y][x] = '0'; }
@@ -675,8 +675,22 @@
 					invaderGrid[y][7-x] = invaderGrid[y][x];
 				}
 			}
+			
+			let invaderId = gridToId(invaderGrid);
+			let analysis = invaderAnalysis(invaderId);
 			return {
-				id: gridToId(invaderGrid)
+				id: invaderId,
+				number: (num===undefined) ? Math.floor(Math.random()*1000) : num,
+				level: analysis.level,
+				levelRarity: analysis.levelRarity,
+				type: analysis.type,
+				typeColor: analysis.typeColor,
+				typeRarity: analysis.typeRarity,
+				skill: analysis.skill,
+				skillColor: analysis.skillColor,
+				range: analysis.range,
+				rangeColor: analysis.rangeColor,
+				skillRangeRarity: analysis.skillRangeRarity
 			}
 		}
 		
@@ -688,22 +702,72 @@
 			
 			let shadow = '0x';
 			let level = 0;
-			let type = null;
-			let skill = null;
-			let range = null;
+			let typeColor = null;
+			let skillColor = null;
+			let rangeColor = null;
 			for(let i=0; i<invaderId.length; i++) {
 				shadow += (invaderId[i] == '0') ? '0' : '7';
 				level += (elementalTypes.indexOf(invaderId[i]) > -1) ? 1 : 0;
-				type = (elementalTypes.indexOf(invaderId[i]) > -1) ? invaderId[i] : type;
-				skill = (attackDefence.indexOf(invaderId[i]) > -1) ? invaderId[i] : skill;
-				range = (longRangeShortRange.indexOf(invaderId[i]) > -1) ? invaderId[i] : range;
+				typeColor = (elementalTypes.indexOf(invaderId[i]) > -1) ? invaderId[i] : typeColor;
+				skillColor = (attackDefence.indexOf(invaderId[i]) > -1) ? invaderId[i] : skillColor;
+				rangeColor = (longRangeShortRange.indexOf(invaderId[i]) > -1) ? invaderId[i] : rangeColor;
 			}
+			level = level/2;
+			
+			let type = 'Ancient';
+			if(typeColor == '7') type = 'Metallum Alloy';
+			else if(typeColor == '8') type = 'Ignis Magma';
+			else if(typeColor == '9') type = 'Sicco Solar';
+			else if(typeColor == 'a') type = 'Lectricus Zap';
+			else if(typeColor == 'b') type = 'Silva Brush';
+			else if(typeColor == 'c') type = 'Imber Drench';
+			
+			let skill = 'Versatile';
+			if(skillColor == '5') skill = 'Attack';
+			else if(skillColor == '1') skill = 'Defence';
+			
+			let range = 'All Range';
+			if(rangeColor == 'd') range = 'Long Range';
+			else if(rangeColor == '6') range = 'Short Range';
+			
+			let typeRarity = 16.7;
+			if(!typeColor) typeRarity = 3.1;
+			
+			let levelRarity = null;
+			if(level == 1) levelRarity = 9.21;
+			else if(level == 2) levelRarity = 15.08;
+			else if(level == 3) levelRarity = 18.00;
+			else if(level == 4) levelRarity = 17.17;
+			else if(level == 5) levelRarity = 13.93;
+			else if(level == 6) levelRarity = 9.93;
+			else if(level == 7) levelRarity = 6.33;
+			else if(level == 8) levelRarity = 3.65;
+			else if(level == 9) levelRarity = 1.93;
+			else if(level == 10) levelRarity = 0.93;
+			else if(level == 11) levelRarity = 0.44;
+			else if(level == 12) levelRarity = 0.19;
+			else if(level == 13) levelRarity = 0.07;
+			else if(level == 14) levelRarity = 0.03;
+			else if(level == 15) levelRarity = 0.01;
+			else if(level > 15) levelRarity = 0.001;
+			
+			let skillRangeRarity = 24.3;
+			if(!skillColor && rangeColor) skillRangeRarity = 1.39;
+			else if(skillColor && !rangeColor) skillRangeRarity = 1.39;
+			else if(!skillColor && !rangeColor) skillRangeRarity = 0.01;
+			
 			return {
 				shadow: shadow,
-				level: level/2,
+				level: level,
+				levelRarity: levelRarity,
 				type: type,
+				typeColor: getColorFromHex(typeColor),
+				typeRarity: typeRarity,
 				skill: skill,
-				range: range
+				skillColor: getColorFromHex(skillColor),
+				range: range,
+				rangeColor: getColorFromHex(rangeColor),
+				skillRangeRarity: skillRangeRarity
 			}
 		}
 		
@@ -727,6 +791,26 @@
 				}
 			}
 			return '0x' + invader;
+		}
+		
+		function getColorFromHex(hex) {
+			if(hex == '0') return '#000000';
+			if(hex == '1') return '#1D2B53';
+			if(hex == '2') return '#7E2553';
+			if(hex == '3') return '#008751';
+			if(hex == '4') return '#AB5236';
+			if(hex == '5') return '#5F574F';
+			if(hex == '6') return '#C2C3C7';
+			if(hex == '7') return '#FFF1E8';
+			if(hex == '8') return '#FF004D';
+			if(hex == '9') return '#FFA300';
+			if(hex == 'a') return '#FFFF27';
+			if(hex == 'b') return '#00E756';
+			if(hex == 'c') return '#29ADFF';
+			if(hex == 'd') return '#83769C';
+			if(hex == 'e') return '#FF77A8';
+			if(hex == 'f') return '#FFCCAA';
+			return null;
 		}
 		
 		var randomIndex = 0;
