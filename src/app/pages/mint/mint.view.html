@@ -72,7 +72,7 @@
 	-->
 		
 		<div>
-			<span class="textMedium textDark textBold">Your PixelCons with Invaders</span>
+			<span class="textMedium textDark textBold">Your PixelCons Invaders</span>
 			<md-select class="md-no-underline right" ng-model="ctrl.sortBy" ng-change="ctrl.onSortChange()" aria-label="Sort">
 				<md-option value="rarityDesc">Rarity Desc</md-option>
 				<md-option value="levelDesc">Level Desc</md-option>
@@ -83,7 +83,8 @@
 		
 			<div class="invaderPixelcon" ng-repeat="invaderPixelcon in ctrl.accountInvaderPixelcons track by $index">
 				<div class="pixelcon crispImage" ng-class="invaderPixelcon.pixelcon.panelClass" ng-style="{'background-position':invaderPixelcon.pixelcon.panelOffset}"></div>
-				<div class="invader crispImage" ng-class="invaderPixelcon.panelClass" ng-style="{'background-position':invaderPixelcon.panelOffset}"></div>
+				<div class="invader crispImage" ng-class="invaderPixelcon.panelClass" ng-style="{'background-position':invaderPixelcon.panelOffset}"
+						ng-mouseenter="ctrl.invaderMouseEnter(invaderPixelcon, $event)" ng-mouseleave="ctrl.invaderMouseLeave(invaderPixelcon, $event)"></div>
 			</div>
 		</div>
 		
