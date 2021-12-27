@@ -308,7 +308,7 @@
 			let qrGridSize = 0;
 			if(includeQr) {
 				let linkStr = qrCodeImageLink.length > 22 ? qrCodeImageLink : (qrCodeImageLink + ModifiedBase64.fromInt(pixelcon.index).padStart(4, '0'));
-				let qr = QRCode.makeCode(linkStr);
+				let qr = QRCode.makeCode_25x25(linkStr);
 				if(qr) {
 					qrGridSize = qr.length;
 					const offsetX = qrOffset + marginW;
