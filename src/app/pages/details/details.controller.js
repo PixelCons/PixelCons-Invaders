@@ -2,32 +2,20 @@
 	angular.module('App')
 		.controller('DetailsPageCtrl', DetailsPageCtrl);
 
-	DetailsPageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$routeParams', '$timeout', '$routeParams', '$sce', '$location', 'web3Service', 'coreContract', 'market'];
-	function DetailsPageCtrl($scope, $mdMedia, $mdDialog, $routeParams, $timeout, $routeParams, $sce, $location, web3Service, coreContract, market) {
+	DetailsPageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$routeParams', '$timeout', '$sce', '$window', 'web3Service', 'coreContract', 'market', 'decoder'];
+	function DetailsPageCtrl($scope, $mdMedia, $mdDialog, $routeParams, $timeout, $sce, $window, web3Service, coreContract, market, decoder) {
 		var _this = this;
-		var pixelconDetails;
-		_this.rename = rename;
-		_this.create = create;
-		_this.send = send;
-		_this.generatePrint = generatePrint;
-		_this.searchSimilar = searchSimilar;
+		_this.isOwner = true;
 		_this.copyLink = copyLink;
 		_this.shareOnTwitter = shareOnTwitter;
 		_this.shareOnFacebook = shareOnFacebook;
+		_this.sendTo = sendTo;
+		_this.createWallpaper = createWallpaper;
+		_this.viewOnPixelcons = viewOnPixelcons;
+		_this.goBack = goBack;
 		_this.marketEnabled = market.isEnabled();
 		_this.marketLink = market.getItemLink();
 		
-		// Handle hovering manually for added tapping functionality
-		_this.hovering = false;
-		_this.hoverMouseMove = function(ev) {
-			if(ev.movementX != 0 || ev.movementY != 0) _this.hovering = true;
-		}
-		_this.hoverMouseLeave = function(ev) {
-			_this.hovering = false;
-		}
-		_this.hoverMouseClick = function(ev) {
-			_this.hovering = !_this.hovering;
-		}
 		
 		// Watch for screen size changes
 		_this.screenSize = {};
@@ -35,183 +23,40 @@
 		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
 		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 
-		// Format id (set to null if invalid)
-		_this.pixelconId = coreContract.formatPixelconId($routeParams.id);
-		_this.pixelconIndex = getIndexFromQRCode($routeParams.qrcode);
 		
-		// Redirect if invalid qrcode
-		if(!!$routeParams.qrcode && _this.pixelconIndex === null) {
-			$location.path('/');
-			return;
-		}
-
-		// Get details for the pixelcon id
-		loadPixelconDetails();
-		function loadPixelconDetails(pixelcon) {
-			_this.marketData = null;
-			_this.details = null;
-			_this.unclaimed = false;
-
-			if (pixelcon) {
-				setPixelconDetails(pixelcon);
-			} else {
-				_this.loading = true;
-				_this.error = null;
-				coreContract.fetchPixelcon((!!$routeParams.qrcode) ? _this.pixelconIndex : _this.pixelconId).then(function (pixelcon) {
-					if (pixelcon && Array.isArray(pixelcon)) pixelcon = pixelcon[0];			
-					_this.loading = false;
-					if (pixelcon) {
-						//correct to more standard url if from qr link
-						if(!!$routeParams.qrcode) {
-							$location.path('/details/' + pixelcon.id, false);
-							$location.replace();
-						}
-						setPixelconDetails(pixelcon);
-					} else {
-						if (_this.pixelconId) {
-							if (web3Service.isReadOnly()) _this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + 'This PixelCon does not exist yet...');
-							else _this.unclaimed = true;
-						} else {
-							if(!!$routeParams.qrcode) _this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + 'This PixelCon does not exist yet...');
-							else _this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + 'Invalid ID');
-						}
-					}
-				}, function (reason) {
-					_this.loading = false;
-					_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + reason);
-				});
+		
+		
+		
+		
+		
+		loadDetails();
+		async function loadDetails() {
+			_this.detailsLoading = true;
+			_this.error = null;
+			try {
+				let invader = await coreContract.fetchInvader($routeParams.index);
+				_this.invader = addInvaderImageData(invader);
+				
+				_this.detailsLoading = false;
+				safeApply();
+				
+			} catch(err) {
+				_this.detailsLoading = false;
+				_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + err);
+				safeApply();
 			}
-		}
-
-		// Update from transaction
-		function updateFromTransaction(transactionData) {
-			if (transactionData && transactionData.success && transactionData.pixelcons) {
-				let pixelcon = findInList(transactionData.pixelcons);
-				if (pixelcon) {
-					pixelcon = angular.extend({}, pixelconDetails, pixelcon);
-					loadPixelconDetails(pixelcon);
-				}
-			}
-		}
-
-		// Sets page details to the given pixelcon data
-		function setPixelconDetails(pixelcon) {
-			pixelconDetails = pixelcon;
-			_this.marketLink = market.getItemLink(pixelcon.id);
-			_this.pixelconId = pixelcon.id;
-			_this.pixelconIndex = pixelcon.index;			
-			_this.details = {
-				id: pixelcon.id,
-				index: pixelcon.index,
-				owner: pixelcon.owner,
-				creator: pixelcon.creator,
-				name: pixelcon.name,
-				number: 'Number ' + pixelcon.index,
-				date: 'Created ' + (new Date(pixelcon.date)).toLocaleDateString(),
-				collection: pixelcon.collection,
-				match: pixelcon.match
-			}
-			
-			//scramble the collection pixelconIds
-			if(pixelcon.collection) {
-				_this.scrambledCollectionPixelconIds = web3Service.scrambleList(pixelcon.collection.pixelconIds, pixelcon.id);
-			} else {
-				_this.scrambledCollectionPixelconIds = null;
-			}
-			
-			checkPermissions();
-		}
-
-		// Checks permissions for the action buttons
-		function checkPermissions() {
-			let account = web3Service.getActiveAccount();
-			_this.isOwner = false;
-			_this.isCreator = false;
-			if (_this.details && account) {
-				_this.isOwner = (account == _this.details.owner);
-				_this.isCreator = (account == _this.details.creator);
-			}
-		}
-
-		// Rename the pixelcon
-		function rename(ev) {
-			$mdDialog.show({
-				controller: 'PixelconDialogCtrl',
-				controllerAs: 'ctrl',
-				templateUrl: HTMLTemplates['dialog.pixelcon'],
-				parent: angular.element(document.body),
-				locals: { pixelconId: _this.pixelconId, editMode: true },
-				bindToController: true,
-				clickOutsideToClose: true
-			});
-		}
-
-		// Create the pixelcon
-		function create(ev) {
-			$mdDialog.show({
-				controller: 'PixelconDialogCtrl',
-				controllerAs: 'ctrl',
-				templateUrl: HTMLTemplates['dialog.pixelcon'],
-				parent: angular.element(document.body),
-				locals: { pixelconId: _this.pixelconId },
-				bindToController: true,
-				clickOutsideToClose: true
-			});
-		}
-
-		// Send pixelcon
-		function send(ev) {
-			$mdDialog.show({
-				controller: 'SendDialogCtrl',
-				controllerAs: 'ctrl',
-				templateUrl: HTMLTemplates['dialog.send'],
-				parent: angular.element(document.body),
-				locals: { pixelconId: _this.pixelconId },
-				bindToController: true,
-				clickOutsideToClose: true
-			});
-		}
-
-		// Search for similar pixelcons
-		function generatePrint() {
-			$mdDialog.show({
-				controller: 'PrintsDialogCtrl',
-				controllerAs: 'ctrl',
-				templateUrl: HTMLTemplates['dialog.prints'],
-				parent: angular.element(document.body),
-				locals: { pixelcon: _this.details },
-				bindToController: true,
-				clickOutsideToClose: true
-			});
-		}
-
-		// Search for similar pixelcons
-		function searchSimilar() {
-		}
-
-		// Gets page relevant pixelcon from list
-		function findInList(list) {
-			let pixelcon = null;
-			if (list) {
-				for (let i = 0; i < list.length; i++) {
-					if (list[i].id == _this.pixelconId) {
-						pixelcon = list[i];
-						break;
-					}
-				}
-			}
-			return pixelcon;
 		}
 		
-		// Gets the encoded index from the qrcode
-		function getIndexFromQRCode(qrcode) {
-			if(qrcode) {
-				if(qrcode.indexOf('_') === 0 || qrcode.indexOf('~') === 0) {
-					let index = modifiedBase64ToInt(qrcode.substr(1, qrcode.length));
-					return index;
-				}
-			}
-			return null;
+		
+		
+		
+
+		
+		
+		// Generates image for the invader
+		function addInvaderImageData(invader) {
+			invader.image = decoder.generateInvader(invader.id);
+			return invader;
 		}
 
 		// Copies share link to the clipboard
@@ -226,7 +71,7 @@
 		function shareOnTwitter() {
 			let url = "https://twitter.com/intent/tweet?url=";
 			url += encodeURI(document.URL);
-			url += '&text=' + encodeURI("Check out this PixelCon!");
+			url += '&text=' + encodeURI("Check out this PixelCon Invader!");
 			return url;
 		}
 
@@ -237,39 +82,46 @@
 			return url;
 		}
 		
-		// Base64 util functions
-		function modifiedBase64ToInt(base64) {
-			const modifiedBase64Digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+-";
-			let digits = modifiedBase64Digits.split('');
-			let digitsMap = {};
-			for (let i = 0; i < digits.length; i++) digitsMap[digits[i]] = i;
-			
-			let result = 0;
-			let inputDigits = ("" + base64).split('');
-			for (let i = 0; i < inputDigits.length; i++) {
-				let digitVal = digitsMap[inputDigits[i]];
-				if(digitVal === undefined) return null;
-				result = (result << 6) + digitVal;
-			}
-			return result;
+		// Transfer ownership of this invader
+		function sendTo() {
+			//TODO
 		}
-
-		// Set flag the directive as loaded
-		$timeout(function () {
-			_this.loaded = true;
-		});
-
+		
+		// Open wallpaper generator
+		function createWallpaper() {
+			//TODO
+		}
+		
+		// Link to view this invader on pixelcons
+		function viewOnPixelcons() {
+			let url = "https://pixelcons.io/details/" + _this.invader.id;
+			return url;
+		}
+		
+		// Navigates back to the previous page
+		function goBack() {
+			$window.history.back();
+		}
+		
+		// Safe apply to ensure fatest response possible
+		function safeApply() {
+			if($scope.$root && $scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') $scope.$apply();
+		}
+		
 		// Listen for account data changes
 		web3Service.onAccountDataChange(function () {
-			checkPermissions();
-		}, $scope);
-
+			//loadPageData();
+		}, $scope, true);
+		
 		// Listen for network data changes
 		web3Service.onNetworkChange(function () {
-			if(_this.error) loadPixelconDetails();
-		}, $scope);
+			//if(_this.error) loadDetails();
+		}, $scope, true);
 
 		// Listen for transactions
-		web3Service.onWaitingTransactionsChange(updateFromTransaction, $scope);
+		web3Service.onWaitingTransactionsChange(function (transactionData) {
+			//if (transaction.type == _mintTypeDescription[0]) loadInvaders();
+			//dirtyDatabaseData = transactionData && transactionData.success;
+		}, $scope);
 	}
 }());

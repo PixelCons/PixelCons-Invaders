@@ -14,7 +14,7 @@
 			controller: 'HomePageCtrl',
 			controllerAs: 'ctrl'
 		})
-			.when("/details/:id", {
+			.when("/details/:index", {
 				templateUrl: HTMLTemplates['page.details'],
 				controller: 'DetailsPageCtrl',
 				controllerAs: 'ctrl'
@@ -38,11 +38,6 @@
 			.when("/terms", {
 				templateUrl: HTMLTemplates['page.terms'],
 				controller: 'TermsPageCtrl',
-				controllerAs: 'ctrl'
-			})
-			.when("/:qrcode", {
-				templateUrl: HTMLTemplates['page.details'],
-				controller: 'DetailsPageCtrl',
 				controllerAs: 'ctrl'
 			})
 			.otherwise({

@@ -271,6 +271,15 @@ button.md-button.md-raised.dim {
 .shareLinksContextMenu div.shareLinkIcon.twitter {
 	background-image: url(/img/icon_twitter.svg);
 }
+.shareLinksContextMenu div.shareLinkIcon.send {
+	background-image: url(/img/icon_send.svg);
+}
+.shareLinksContextMenu div.shareLinkIcon.wallpaper {
+	background-image: url(/img/icon_wallpaper.svg);
+}
+.shareLinksContextMenu div.shareLinkIcon.pixelcons {
+	background-image: url(/img/icon_pixelcons.svg);
+}
 
 /* Hyperlink */
 a.light:link,

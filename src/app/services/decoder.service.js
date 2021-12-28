@@ -19,7 +19,8 @@
 		const marketItemsPerHeight = Math.floor(maxImageSize / marketItemHeight);
 		const marketItemsPerPanel = marketItemsPerWidth * marketItemsPerHeight;
 		
-		//Setup functions
+		//Public functions
+		this.generateInvader = generateInvader;
 		this.generateInvadersPanel = generateInvadersPanel;
 		this.generatePixelconsPanel = generatePixelconsPanel;
 		this.generateMarketItemsPanel = generateMarketItemsPanel;
@@ -55,6 +56,40 @@
 			'd': [131,118,156],	//#83769C
 			'e': [255,119,168],	//#FF77A8
 			'f': [255,204,170],	//#FFCCAA
+		}
+		
+		//Generates a single invader image
+		function generateInvader(invaderId) {
+			const id = formatId(invaderId);
+			const mult = 2;
+			
+			let canvas = document.createElement('canvas');
+			canvas.width = invaderSize*mult;
+			canvas.height = invaderSize*mult;
+			let ctx = canvas.getContext("2d");
+			
+			ctx.fillStyle = '#000000';
+			for (let y = 0; y < 8; y++) {
+				for (let x = 0; x < 8; x++) {
+					let index = y * 8 + x;
+					if(id[index] != '0') {
+						ctx.fillRect((((x+1) * invaderScale * mult)-1), (((y+1) * invaderScale * mult)-1), (invaderScale * mult)+2, (invaderScale * mult)+2);
+					}
+				}
+			}
+			for (let y = 0; y < 8; y++) {
+				for (let x = 0; x < 8; x++) {
+					let index = y * 8 + x;
+					if(id[index] != '0') {
+						ctx.fillStyle = getPaletteColorInHex(id[index]);
+						ctx.fillRect(((x+1) * invaderScale* mult), ((y+1) * invaderScale * mult), invaderScale * mult, invaderScale * mult);
+					}
+				}
+			}
+					
+			let data = canvas.toDataURL('image/png');
+			canvas.remove();
+			return data;
 		}
 		
 		//Generates a panel of invaders

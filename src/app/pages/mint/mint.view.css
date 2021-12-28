@@ -16,6 +16,13 @@ div.invadersMintPage div.bottomSpacer {
 div.invadersMintPage.sm div.bottomSpacer {
 	height: 10px;
 }
+div.invadersMintPage .addressLoadingSpinner {
+	position: absolute;
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	margin: -80px -40px;
+}
 
 /* Top Filter */
 div.invadersMintPage div.scanMore {
@@ -65,13 +72,6 @@ div.invadersMintPage .titleCardAccount {
 div.invadersMintPage .titleCardText {
 	display: inline-block;
 	height: 40px;
-}
-div.invadersMintPage .addressLoadingSpinner {
-	position: absolute;
-	text-align: center;
-	left: 50%;
-	top: 50%;
-	margin: -80px -40px;
 }
 
 /* Scan More */

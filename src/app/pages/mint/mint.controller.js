@@ -19,9 +19,7 @@
 		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
 		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 		
-		
-		
-		
+		// Loads account related data for invader minting
 		loadPageData();
 		async function loadPageData() {
 			_this.accountAddressLoading = true;
@@ -59,7 +57,7 @@
 			}, true);
 		}
 		
-		
+		// Loads market data for the more section
 		async function loadMarketData() {
 			_this.scanOpen = !_this.scanOpen;
 			if(_this.marketData === undefined) {
@@ -67,24 +65,10 @@
 				let marketData = await coreContract.getPixelconsForSale();
 				_this.marketData = addMarketItemImageData(marketData);
 				
-				
-				
 				_this.marketLoading = false;
 				safeApply();
 			}
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 		// Generates images and adds class and offset details to the market item objects
 		function addMarketItemImageData(marketItems) {
@@ -120,7 +104,6 @@
 					marketItemTtCssRules[i].style.backgroundImage = 'url("' + panelImage + '")';
 				}
 			}
-			
 			return marketItems;
 		}
 		
@@ -185,11 +168,6 @@
 			return invaders;
 		}
 		
-		
-		
-		
-		
-		
 		// Show/Hide invader tooltip
 		var tooltipShow = {};
 		var tooltipElement = {};
@@ -218,7 +196,7 @@
 			tooltip.classList.add('tooltip');
 			if(left) tooltip.classList.add('left');
 			
-			addTooltipLine(tooltip, 'Invader ' + invader.number, null, null, false, true);
+			addTooltipLine(tooltip, 'Invader ' + ((invader.number || invader.number===0) ? invader.number : ''), null, null, false, true);
 			addTooltipLine(tooltip, invader.type, invader.typeColor, invader.typeRarity);
 			addTooltipLine(tooltip, 'Level ' + (invader.level > 0 ? invader.level : 'Uknown'), null, invader.levelRarity);
 			addTooltipLine(tooltip, invader.skill, invader.skillColor);
@@ -253,11 +231,18 @@
 		
 		// Safe apply to ensure fatest response possible
 		function safeApply() {
-		 if($scope.$root && $scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') $scope.$apply();
+			if($scope.$root && $scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') $scope.$apply();
 		}
 		
 		// Listen for account data changes
-		web3Service.onAccountDataChange(loadPageData, $scope, true);
+		web3Service.onAccountDataChange(function () {
+			loadPageData();
+		}, $scope, true);
+
+		// Listen for network data changes
+		web3Service.onNetworkChange(function () {
+			if(_this.error) loadPageData();
+		}, $scope, true);
 
 		// Listen for transactions
 		web3Service.onWaitingTransactionsChange(function (transactionData) {

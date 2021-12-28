@@ -281,7 +281,7 @@
 				const rightMargin = vw - ev.srcElement.getBoundingClientRect().right;
 				let tooltip = generateTooltip(invader, rightMargin < 140);
 				tooltipElement[invader.id] = tooltip;
-				ev.srcElement.appendChild(tooltip);
+				ev.srcElement.parentElement.appendChild(tooltip);
 				$timeout(function() { tooltip.classList.add('show'); }, 10);
 			}, tooltipDelay);
 		}
@@ -299,7 +299,7 @@
 			tooltip.classList.add('tooltip');
 			if(left) tooltip.classList.add('left');
 			
-			addTooltipLine(tooltip, 'Invader ' + invader.number, null, null, false, true);
+			addTooltipLine(tooltip, 'Invader ' + ((invader.number || invader.number===0) ? invader.number : ''), null, null, false, true);
 			addTooltipLine(tooltip, invader.type, invader.typeColor, invader.typeRarity);
 			addTooltipLine(tooltip, 'Level ' + (invader.level > 0 ? invader.level : 'Uknown'), null, invader.levelRarity);
 			addTooltipLine(tooltip, invader.skill, invader.skillColor);
@@ -380,29 +380,10 @@
 			return invaders;
 		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		// Safe apply to ensure fatest response possible
 		function safeApply() {
-		 if($scope.$root && $scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') $scope.$apply();
+			if($scope.$root && $scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') $scope.$apply();
 		}
-		
-		// Listen for account data changes
-		web3Service.onAccountDataChange(function () {
-			//checkUpdateData();
-		}, $scope, true);
 
 		// Listen for network data changes
 		web3Service.onNetworkChange(function () {
