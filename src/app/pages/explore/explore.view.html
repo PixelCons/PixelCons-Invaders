@@ -10,10 +10,10 @@
 			<md-progress-circular ng-if="ctrl.ownerAddressNameLoading" class="filterAddressLoading" md-diameter="14px" md-mode="indeterminate"></md-progress-circular>
 			<span ng-class="{'shiftLeft':ctrl.ownerAddress}">{{ctrl.getFilterTitleString()}}</span>
 		</md-button>
-		<md-button class="topFilterButton right" ng-click="" aria-label="Large View">
+		<md-button class="topFilterButton right" ng-click="ctrl.smallView = false" aria-label="Large View">
 			<div class="buttonIcon large"></div>
 		</md-button>
-		<md-button class="topFilterButton right" ng-click="" aria-label="Small View">
+		<md-button class="topFilterButton right" ng-click="ctrl.smallView = true" aria-label="Small View">
 			<div class="buttonIcon small"></div>
 		</md-button>
 		<div class="topFilterButtonDivider right"></div>
@@ -42,6 +42,7 @@
 			<md-option value="createdAsc">Date Asc</md-option>
 			<md-option value="levelDesc">Level Desc</md-option>
 			<md-option value="levelAsc">Level Asc</md-option>
+			<md-option value="rarityDesc">Rarity Desc</md-option>
 		</md-select>
 		
 		<div class="moreFilter">
@@ -50,6 +51,7 @@
 			<md-option value="createdAsc">Date Asc</md-option>
 			<md-option value="levelDesc">Level Desc</md-option>
 			<md-option value="levelAsc">Level Asc</md-option>
+			<md-option value="rarityDesc">Rarity Desc</md-option>
 			</md-select>
 			<br/>
 			<div class="levelSelect textDark textMedium">
@@ -84,22 +86,12 @@
 	</div>
 	
 	<!-- Invaders -->
-	<div class="invadersContainer" ng-if="!ctrl.error" >
+	<div class="invadersContainer" ng-class="{'small':ctrl.smallView}" ng-if="!ctrl.error">
 		<md-progress-circular ng-if="ctrl.invadersLoading" class="invadersLoading" md-diameter="80px" md-mode="indeterminate"></md-progress-circular>
-	
-				
-				
-				<div class="invader crispImage" ng-class="invader.panelClass" ng-style="{'background-position':invader.panelOffset}" ng-repeat="invader in ctrl.invaders track by $index"
-						ng-mouseenter="ctrl.invaderMouseEnter(invader, $event)" ng-mouseleave="ctrl.invaderMouseLeave(invader, $event)">
-						
-						
-			<a ng-href="{{'/details/' + invader.number}}" href="" class="plain buttonLink textDark">
-			</a>
-						
-						
-				</div>
-				
-	
+		<div ng-if="!invader.hidden" class="invader crispImage" ng-class="invader.panelClass" ng-style="{'background-position':invader.panelOffset}" 
+				ng-repeat="invader in ctrl.invaders track by $index" ng-mouseenter="ctrl.invaderMouseEnter(invader, $event)" ng-mouseleave="ctrl.invaderMouseLeave(invader, $event)">
+			<a ng-href="{{'/details/' + invader.number}}" href="" class="plain buttonLink textDark"></a>
+		</div>
 	</div>
 	
 	<!-- Error -->

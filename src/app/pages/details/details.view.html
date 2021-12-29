@@ -58,8 +58,8 @@
 			<!-- Data -->
 			<div class="title textDark textExLarge textBold">{{'Invader ' + ctrl.invader.number}}</div>
 			<div class="detail">
-				<div class="color" ng-style="{'background-color':ctrl.invader.typeColor}"></div>
-				<span class="textDark textLarge">{{ctrl.invader.type}}</span>
+				<div class="color" ng-show="ctrl.invader.typeColor" ng-style="{'background-color':ctrl.invader.typeColor}"></div>
+				<span class="textDark textLarge" ng-class="{'offset':!ctrl.invader.typeColor}">{{ctrl.invader.type}}</span>
 				<div class="percentage textDark textSmall">{{(ctrl.invader.typeRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invader.typeRarity + '%)'}}</div>
 			</div>
 			<div class="detail">
@@ -68,12 +68,12 @@
 			</div>
 			<div class="detail">
 				<div class="subDetail">
-					<div class="color" ng-style="{'background-color':ctrl.invader.skillColor}"></div>
-					<span class="textDark textLarge">{{ctrl.invader.skill}}</span>
+					<div class="color" ng-show="ctrl.invader.skillColor" ng-style="{'background-color':ctrl.invader.skillColor}"></div>
+					<span class="textDark textLarge" ng-class="{'offset':!ctrl.invader.skillColor}">{{ctrl.invader.skill}}</span>
 				</div>
 				<div class="subDetail">
-					<div class="color" ng-style="{'background-color':ctrl.invader.rangeColor}"></div>
-					<span class="textDark textLarge">{{ctrl.invader.range}}</span>
+					<div class="color" ng-show="ctrl.invader.rangeColor" ng-style="{'background-color':ctrl.invader.rangeColor}"></div>
+					<span class="textDark textLarge" ng-class="{'offset':!ctrl.invader.rangeColor}">{{ctrl.invader.range}}</span>
 					<div class="percentage shared textDark textSmall">{{(ctrl.invader.skillRangeRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invader.skillRangeRarity + '%)'}}</div>
 				</div>
 			</div>

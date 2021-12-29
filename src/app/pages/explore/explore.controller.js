@@ -6,9 +6,10 @@
 	function ExplorePageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, $timeout, decoder, web3Service, coreContract) {
 		var _this = this;
 		var ownerCheckTimeout;
+		var levelCheckTimeout;
 		const levelMinDefault = null;
 		const levelMaxDefault = null;
-		const sortByDefault = 'createdDesc';
+		const sortByDefault = 'createdAsc';
 		const realtimeFilterInPath = false;
 		const tooltipDelay = 300;
 		_this.getFilterTitleOwnerString = getFilterTitleOwnerString;
@@ -24,6 +25,7 @@
 		_this.onAttributeChange = onAttributeChange;
 		_this.onSortChange = onSortChange;
 		_this.filterOpen = false;
+		_this.smallView = $mdMedia('xs');
 		_this.sortBy = sortByDefault;
 		_this.levelMin = levelMinDefault;
 		_this.levelMax = levelMaxDefault;
@@ -150,7 +152,7 @@
 			try {
 				let invaders = await coreContract.fetchAllInvaders();
 				_this.invaders = addInvaderImageData(invaders);
-				//TODO: filter
+				filterInvaders();
 				
 				_this.invadersLoading = false;
 				safeApply();
@@ -162,6 +164,44 @@
 			}
 		}
 		
+		function filterInvaders() {
+			if(_this.invaders) {
+				//sort
+				_this.invaders.sort(function(invA, invB) {
+					if(_this.sortBy == 'createdDesc') {
+						return invB.number - invA.number;
+					} else if(_this.sortBy == 'createdAsc') {
+						return invA.number - invB.number;
+					} else if(_this.sortBy == 'levelDesc') {
+						return invB.level - invA.level;
+					} else if(_this.sortBy == 'levelAsc') {
+						return invA.level - invB.level;
+					} else if(_this.sortBy == 'rarityDesc') {
+						return invB.rarityScore - invA.rarityScore;
+					}
+				});
+				
+				//filter
+				for(let i=0; i<_this.invaders.length; i++) {
+					let invHidden = false;
+					if(_this.levelMin != null && _this.levelMin != undefined && _this.invaders[i].level < _this.levelMin) invHidden |= true;
+					if(_this.levelMax != null && _this.levelMax != undefined && _this.invaders[i].level > _this.levelMax) invHidden |= true;
+					if(_this.ownerAddress && _this.invaders[i].owner.toLowerCase() != _this.ownerAddress.toLowerCase()) invHidden |= true;
+					if(!_this.typeWater && _this.invaders[i].typeColor == '#29ADFF') invHidden |= true;
+					if(!_this.typeForest && _this.invaders[i].typeColor == '#00E756') invHidden |= true;
+					if(!_this.typeFire && _this.invaders[i].typeColor == '#FF004D') invHidden |= true;
+					if(!_this.typeDesert && _this.invaders[i].typeColor == '#FFA300') invHidden |= true;
+					if(!_this.typeElectric && _this.invaders[i].typeColor == '#FFFF27') invHidden |= true;
+					if(!_this.typeMetal && _this.invaders[i].typeColor == '#FFF1E8') invHidden |= true;
+					if(!_this.attrDefence && _this.invaders[i].skillColor == '#C2C3C7') invHidden |= true;
+					if(!_this.attrAttack && _this.invaders[i].skillColor == '#83769C') invHidden |= true;
+					if(!_this.attrLongRange && _this.invaders[i].rangeColor == '#5F574F') invHidden |= true;
+					if(!_this.attrShortRange && _this.invaders[i].rangeColor == '#1D2B53') invHidden |= true;
+					_this.invaders[i].hidden = invHidden;
+				}
+			}
+		}
+		
 		function onOwnerChange(noWait) {
 			let processOwner = function() {
 				if(!_this.owner) {
@@ -169,6 +209,7 @@
 					_this.ownerAddressName = null;
 					_this.checkingOwner = false;
 					updatePathParams();
+					filterInvaders();
 					
 				} else if(web3Service.isAddress(_this.owner)) {
 					_this.ownerAddress = web3Service.formatAddress(_this.owner);
@@ -186,6 +227,7 @@
 						_this.ownerAddressName = null;
 					}
 					updatePathParams();
+					filterInvaders();
 					
 				} else {
 					web3Service.awaitState(async function() {
@@ -202,52 +244,68 @@
 						}
 						$scope.$apply();
 						updatePathParams();
+						filterInvaders();
 					}, true);
 				}
 			}
 			
 			_this.checkingOwner = true;
-			if(ownerCheckTimeout) $timeout.cancel(ownerCheckTimeout);
+			if(ownerCheckTimeout) {
+				$timeout.cancel(ownerCheckTimeout);
+				ownerCheckTimeout = null;
+			}
 			if(noWait || !_this.owner) processOwner();
 			else ownerCheckTimeout = $timeout(processOwner, 700);
 		}
 		
-		function onLevelChange() {
-			if(_this.lastLevelMin != _this.levelMin) {
-				if(_this.levelMin === undefined) _this.levelMin = _this.lastLevelMin;
-				if(_this.levelMin !== null) {
-					_this.levelMin = parseInt("" + _this.levelMin);
-					if(isNaN(_this.levelMin)) _this.levelMin = _this.lastLevelMin;
-					if(_this.levelMin < 0) _this.levelMin = 0;
-					if(_this.levelMin > 30) _this.levelMin = 30;
-					if(_this.levelMax != null && _this.levelMax < _this.levelMin) _this.levelMax = _this.levelMin;
+		function onLevelChange(noWait) {
+			let processLevel = function() {
+				if(_this.lastLevelMin != _this.levelMin) {
+					if(_this.levelMin === undefined) _this.levelMin = _this.lastLevelMin;
+					if(_this.levelMin !== null) {
+						_this.levelMin = parseInt("" + _this.levelMin);
+						if(isNaN(_this.levelMin)) _this.levelMin = _this.lastLevelMin;
+						if(_this.levelMin < 0) _this.levelMin = 0;
+						if(_this.levelMin > 30) _this.levelMin = 30;
+						if(_this.levelMax != null && _this.levelMax < _this.levelMin) _this.levelMax = _this.levelMin;
+					}
+					_this.lastLevelMin = _this.levelMin;
 				}
-				_this.lastLevelMin = _this.levelMin;
-			}
-			if(_this.lastLevelMax != _this.levelMax) {
-				if(_this.levelMax === undefined) _this.levelMax = _this.lastLevelMax;
-				if(_this.levelMax !== null) {
-					_this.levelMax = parseInt("" + _this.levelMax);
-					if(isNaN(_this.levelMax)) _this.levelMax = _this.lastLevelMax;
-					if(_this.levelMax < 0) _this.levelMax = 0;
-					if(_this.levelMax > 30) _this.levelMax = 30;
-					if(_this.levelMin != null && _this.levelMax < _this.levelMin) _this.levelMin = _this.levelMax;
+				if(_this.lastLevelMax != _this.levelMax) {
+					if(_this.levelMax === undefined) _this.levelMax = _this.lastLevelMax;
+					if(_this.levelMax !== null) {
+						_this.levelMax = parseInt("" + _this.levelMax);
+						if(isNaN(_this.levelMax)) _this.levelMax = _this.lastLevelMax;
+						if(_this.levelMax < 0) _this.levelMax = 0;
+						if(_this.levelMax > 30) _this.levelMax = 30;
+						if(_this.levelMin != null && _this.levelMax < _this.levelMin) _this.levelMin = _this.levelMax;
+					}
+					_this.lastLevelMax = _this.levelMax;
 				}
-				_this.lastLevelMax = _this.levelMax;
+				updatePathParams();
+				filterInvaders();
 			}
-			updatePathParams();
+			if(levelCheckTimeout) {
+				$timeout.cancel(levelCheckTimeout);
+				levelCheckTimeout = null;
+			}
+			if(noWait) processLevel();
+			else levelCheckTimeout = $timeout(processLevel, 400);
 		}
 		
 		function onTypeChange() {
 			updatePathParams();
+			filterInvaders();
 		}
 		
 		function onAttributeChange() {
 			updatePathParams();
+			filterInvaders();
 		}
 		
 		function onSortChange() {
 			updatePathParams();
+			filterInvaders();
 		}
 		
 		// Returns the owner portion of title for filter
@@ -268,6 +326,9 @@
 			if(filterTitle == filterTitleStart) return _this.ownerAddress ? '' : 'All Invaders';
 			return filterTitle;
 		}
+		
+		
+		
 		
 		
 		

@@ -285,9 +285,10 @@
 						const offsets = marketInvaderOffset[marketItems[marketItemIndex].invaders.length-1][j];
 						const textOffsetX = (marketInvaderScale*8)/2;
 						const textOffsetY = 14;
+						const level = marketItems[marketItemIndex].invaders[j].level;
 						ctx.font = 'bold 12px Roboto, "Helvetica Neue", sans-serif';
 						ctx.textAlign = 'center';
-						ctx.fillText('Lv' + marketItems[marketItemIndex].invaders[j].level, offsets[0] + offsetX + textOffsetX, offsets[1] + offsetY + textOffsetY);
+						ctx.fillText('Lv' + ((level>0)?level:'?'), offsets[0] + offsetX + textOffsetX, offsets[1] + offsetY + textOffsetY);
 					}
 				}
 			}

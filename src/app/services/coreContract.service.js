@@ -715,14 +715,15 @@
 				range: analysis.range,
 				rangeColor: analysis.rangeColor,
 				skillRangeRarity: analysis.skillRangeRarity,
-				owner: '0x9f2fedFfF291314E5a86661e5ED5E6f12e36dd37'
+				rarityScore: analysis.rarityScore,
+				owner: (num > 900) ? '0x1a5805e6bE1f495b8346cEfA32F2a567c063598C' : '0x9f2fedFfF291314E5a86661e5ED5E6f12e36dd37'
 			}
 			
 		}
 		
 		function invaderAnalysis(invaderId) {
-			const attackDefence = ['1','5'];
-			const longRangeShortRange = ['6','d'];
+			const attackDefence = ['6','d'];
+			const longRangeShortRange = ['1','5'];
 			const elementalTypes = ['7','8','9','a','b','c'];
 			invaderId = formatInvaderId(invaderId).substr(2,64);
 			
@@ -749,14 +750,14 @@
 			else if(typeColor == 'c') type = 'Imber Drench';
 			
 			let skill = 'Versatile';
-			if(skillColor == '5') skill = 'Attack';
-			else if(skillColor == '1') skill = 'Defence';
+			if(skillColor == '6') skill = 'Attack';
+			else if(skillColor == 'd') skill = 'Defence';
 			
 			let range = 'All Range';
-			if(rangeColor == 'd') range = 'Long Range';
-			else if(rangeColor == '6') range = 'Short Range';
+			if(rangeColor == '5') range = 'Long Range';
+			else if(rangeColor == '1') range = 'Short Range';
 			
-			let typeRarity = 16.7;
+			let typeRarity = 16.15;
 			if(!typeColor) typeRarity = 3.1;
 			
 			let levelRarity = null;
@@ -778,9 +779,18 @@
 			else if(level > 15) levelRarity = 0.001;
 			
 			let skillRangeRarity = 24.3;
-			if(!skillColor && rangeColor) skillRangeRarity = 1.39;
-			else if(skillColor && !rangeColor) skillRangeRarity = 1.39;
+			if(!skillColor && rangeColor) skillRangeRarity = 1.41;
+			else if(skillColor && !rangeColor) skillRangeRarity = 1.41;
 			else if(!skillColor && !rangeColor) skillRangeRarity = 0.01;
+			
+			let rarityScore = level;
+			if(level >= 15) rarityScore += 700; //crazy high level < 0.014
+			else if(!skillColor && !rangeColor) rarityScore += 600; //all range versatile 0.014
+			else if(level >= 13 && level <= 14) rarityScore += 500; //levels 13to14 0.03-0.07
+			else if(level == 0 && (!skillColor || !rangeColor)) rarityScore += 400; //all range or versatile ancient 0.17
+			else if(level >= 9 && level <= 12) rarityScore += 300; //levels 9to12 0.19-1.93
+			else if(level > 0 && (!skillColor || !rangeColor)) rarityScore += 200; //all range or versatile 2.8
+			else if(level == 0) rarityScore += 100; //ancient 3.1
 			
 			return {
 				shadow: shadow,
@@ -793,7 +803,8 @@
 				skillColor: getColorFromHex(skillColor),
 				range: range,
 				rangeColor: getColorFromHex(rangeColor),
-				skillRangeRarity: skillRangeRarity
+				skillRangeRarity: skillRangeRarity,
+				rarityScore: rarityScore
 			}
 		}
 		
