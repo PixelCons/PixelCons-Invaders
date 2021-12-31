@@ -37,7 +37,8 @@ const appScripts = [
 	resolvePath("src/app/shared/pixelconcard/pixelconcard.directive.js"),
 	resolvePath("src/app/dialogs/send/send.controller.js"),
 	resolvePath("src/app/dialogs/prints/prints.controller.js"),
-	resolvePath("src/app/dialogs/settings/settings.controller.js")
+	resolvePath("src/app/dialogs/settings/settings.controller.js"),
+	resolvePath("src/app/dialogs/info/info.controller.js")
 ];
 const appStyleSheetsBuildPath = resolvePath("build/style.min.css");
 const appStyleSheets = [
@@ -55,7 +56,8 @@ const appStyleSheets = [
 	resolvePath("src/app/shared/pixelconcard/pixelconcard.view.css"),
 	resolvePath("src/app/dialogs/send/send.view.css"),
 	resolvePath("src/app/dialogs/prints/prints.view.css"),
-	resolvePath("src/app/dialogs/settings/settings.view.css")
+	resolvePath("src/app/dialogs/settings/settings.view.css"),
+	resolvePath("src/app/dialogs/info/info.view.css")
 ];
 const appHTMLBuildPath = resolvePath("build/templates");
 const appHTML = [
@@ -72,7 +74,8 @@ const appHTML = [
 	resolvePath("src/app/shared/accounticon/accounticon.view.html"),
 	resolvePath("src/app/dialogs/send/send.view.html"),
 	resolvePath("src/app/dialogs/prints/prints.view.html"),
-	resolvePath("src/app/dialogs/settings/settings.view.html")
+	resolvePath("src/app/dialogs/settings/settings.view.html"),
+	resolvePath("src/app/dialogs/info/info.view.html")
 ];
 const appContractsBuildPath = resolvePath("build/contracts");
 const appContracts = [

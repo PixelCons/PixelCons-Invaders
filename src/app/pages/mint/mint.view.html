@@ -1,8 +1,12 @@
 <div class="invadersMintPage" ng-class="ctrl.screenSize">
-	<div class="topSpacer"></div>
 	
 	<!-- Explainer -->
-	<span class="textMedium textDark">How does it work?</span>
+	<div class="explainer" ng-if="!ctrl.accountAddressLoading">
+		<md-button class="explainerButton textMedium textDark" ng-click="ctrl.infoHint('mintExplainer')" aria-label="Explainer">
+			<span>How does it work</span>
+			<div class="hint"></div>
+		</md-button>
+	</div>
 	
 	<!-- Loading -->
 	<md-progress-circular ng-if="ctrl.accountAddressLoading" class="addressLoadingSpinner" md-diameter="80px" md-mode="indeterminate"></md-progress-circular>
@@ -19,85 +23,53 @@
 			<div class="titleCardText">
 				<span class="textDark textLarge">{{ctrl.screenSize.sm ? 'Invaders to Uncover...' : 'New Invaders to Uncover...'}}</span><br/>
 				<span class="textDark textSmall">{{ctrl.accountPixelcons.length + (ctrl.accountPixelcons.length == 1 ? ' PixelCon' : ' PixelCons')}}</span>
-				
-				
-				
-				
-				
 			</div>
 		</div>
-			
 		<md-button class="scanMoreButton filterButton textDark right" ng-click="ctrl.loadMarketData();" aria-label="Scan">
 			<div class="buttonIcon scan"></div>
 			<span>{{ctrl.screenSize.sm ? 'More' : 'Find More'}}</span>
 		</md-button>
 		
+		<!-- Scan More Options -->
 		<div class="scanMoreOptions">
 			<div class="moreOptionTitle textDark" ng-class="{'textLarge':!ctrl.screenSize.sm,'textMedium':ctrl.screenSize.sm}">
 				<div class="openSeaIcon"></div>PixelCons with Invaders{{!ctrl.screenSize.sm?' on OpenSea':''}}
 			</div>
-			
-			<md-select class="md-no-underline right" ng-model="ctrl.marketSortBy" ng-change="ctrl.onSortChange()" aria-label="Sort">
+			<md-select class="md-no-underline right" ng-model="ctrl.marketSortBy" ng-change="ctrl.filterMarketData()" aria-label="Market Sort">
 				<md-option value="rarityDesc">Rarity Desc</md-option>
 				<md-option value="levelDesc">Level Desc</md-option>
 				<md-option value="priceDesc">Price Desc</md-option>
 				<md-option value="priceAsc">Price Asc</md-option>
 			</md-select>
-			
-			
-			
-			
-			
 			<div class="moreOptionContainer textCenter">
 				<md-progress-circular ng-if="ctrl.marketLoading" class="moreLoadingSpinner" md-diameter="50px" md-mode="indeterminate"></md-progress-circular>
-				
 				<div class="marketItemContainer" ng-repeat="item in ctrl.marketData track by $index">
 					<div class="marketItem crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
 					<div class="marketItemTt crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
 					<div class="marketItemPrice textDark textSmall textBold">{{item.price + item.unit}}</div>
 					<div class="marketItemCount textDark textSmall textBold">{{item.invaders.length + (item.invaders.length==1?' Invader':' Invaders')}}</div>
 				</div>
-				
-				
-			
 			</div>
 		</div>
 	</div>
 	
 	<!-- Mintable Invaders -->
 	<div class="mintableInvaders" ng-if="!ctrl.accountAddressLoading && !ctrl.error">
-	<!--
-		<span class="textMedium textDark">The first 1500 PixelCons can uncover new invaders. Each PixelCon has a random set of invaders to mint from.</span>
-		<span class="textMedium textDark">Each PixelCon can mint a predefined set of Invaders</span>
-	-->
-		
 		<div>
-			<span class="textMedium textDark textBold">Your PixelCons Invaders</span>
-			<md-select class="md-no-underline right" ng-model="ctrl.sortBy" ng-change="ctrl.onSortChange()" aria-label="Sort">
+			<span class="textMedium textDark textBold">Your Uncoverable Invaders</span>
+			<md-select class="md-no-underline right" ng-model="ctrl.sortBy" ng-change="ctrl.filterPageData()" aria-label="Sort">
 				<md-option value="rarityDesc">Rarity Desc</md-option>
 				<md-option value="levelDesc">Level Desc</md-option>
 			</md-select>
 		</div>
-		
 		<div class="invaderPixelconsContainer textCenter">
-		
 			<div class="invaderPixelcon" ng-repeat="invaderPixelcon in ctrl.accountInvaderPixelcons track by $index">
 				<div class="pixelcon crispImage" ng-class="invaderPixelcon.pixelcon.panelClass" ng-style="{'background-position':invaderPixelcon.pixelcon.panelOffset}"></div>
 				<div class="invader crispImage" ng-class="invaderPixelcon.panelClass" ng-style="{'background-position':invaderPixelcon.panelOffset}"
 						ng-mouseenter="ctrl.invaderMouseEnter(invaderPixelcon, $event)" ng-mouseleave="ctrl.invaderMouseLeave(invaderPixelcon, $event)"></div>
 			</div>
 		</div>
-		
-		<!-- No PixelCons Error -->
-	
 	</div>
-	
-	
-	
-	
-	
-	
-	
 	
 	<div class="bottomSpacer"></div>
 	<div class="bottomSpacer"></div>

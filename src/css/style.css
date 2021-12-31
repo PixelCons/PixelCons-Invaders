@@ -53,32 +53,17 @@
 .colorWhite {
 	background-color: #333333;
 }
-.colorYellow {
-	background-color: #efd273;
-}
-.colorLavender {
-	background-color: #73b7dc;
-}
 .colorBorderDark {
-	border-color: #333333;
-}
-.colorBorderDarkOverlay {
-	border-color: rgba(242, 242, 242, 0.7);
+	background-color: #f2f2f2;
 }
 .colorBorderLight {
-	border-color: #f2f2f2;
+	background-color: #525252;
 }
 .colorBorderGray {
-	border-color: #d2d2d2;
+	background-color: #f7f7f7;
 }
 .colorBorderWhite {
-	border-color: #ffffff;
-}
-.colorBorderYellow {
-	border-color: #efd273;
-}
-.colorBorderLavender {
-	border-color: #73b7dc;
+	background-color: #333333;
 }
 
 /* Text Sizes/Colors */
@@ -313,28 +298,35 @@ md-progress-circular svg path {
 }
 
 /* Scrollbar */
-.appContainer .invisibleScroll {
+.invisibleScroll {
 	overflow-y: auto; 
 	overflow-y: overlay;
 	overflow-x: hidden;
 	scrollbar-color: rgba(153, 153, 153, 0.7) transparent;
 	scrollbar-width: thin;
 }
-.appContainer .invisibleScroll::-webkit-scrollbar {
+.invisibleScroll::-webkit-scrollbar {
 	width: 8px;
 }
-.appContainer.sm .invisibleScroll::-webkit-scrollbar {
+.sm .invisibleScroll::-webkit-scrollbar {
 	width: 3px;
 }
-.appContainer .invisibleScroll::-webkit-scrollbar-track {
+.invisibleScroll::-webkit-scrollbar-track {
 	background: transparent
 }
-.appContainer .invisibleScroll::-webkit-scrollbar-thumb {
+.invisibleScroll::-webkit-scrollbar-thumb {
 	background: #ffffff7a;
 	border-radius: 4px;
 }
-.appContainer .invisibleScroll::-webkit-scrollbar-thumb:hover {
+.invisibleScroll::-webkit-scrollbar-thumb:hover {
 	background: #ffffffbd;
+}
+.invisibleScroll.dark::-webkit-scrollbar-thumb {
+	background: #8c8c8c7a;
+	border-radius: 4px;
+}
+.invisibleScroll.dark::-webkit-scrollbar-thumb:hover {
+	background: #8c8c8cbd;
 }
 
 /* Image expand */

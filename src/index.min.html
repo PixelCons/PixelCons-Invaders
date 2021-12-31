@@ -26,7 +26,7 @@
 <body ng-app="App" ng-cloak>
 
 	<!-- Start of main HTML -->
-	<div ng-controller="AppCtrl as ctrl" layout="column" class="appContainer textNotSelectable" ng-class="ctrl.screenSize" ng-cloak>
+	<div ng-controller="AppCtrl as ctrl" layout="column" class="appContainer textNotSelectable" ng-cloak>
 		<app-header></app-header>
 		<div id="scrollTarget" class="pageContent invisibleScroll">
 			<div id="contentBackground" class="pageContentBackground crispImage">
@@ -55,6 +55,7 @@
 			'dialog.send': 'templates/dialogs_send.view.html',
 			'dialog.prints': 'templates/dialogs_prints.view.html',
 			'dialog.settings': 'templates/dialogs_settings.view.html'
+			'dialog.info': 'templates/dialogs_info.view.html'
 		}
 	</script>
 

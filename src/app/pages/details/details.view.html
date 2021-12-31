@@ -57,16 +57,22 @@
 		
 			<!-- Data -->
 			<div class="title textDark textExLarge textBold">{{'Invader ' + ctrl.invader.number}}</div>
-			<div class="detail">
+			<div class="detail" ng-click="ctrl.infoHint('typeExplainer')">
 				<div class="color" ng-show="ctrl.invader.typeColor" ng-style="{'background-color':ctrl.invader.typeColor}"></div>
 				<span class="textDark textLarge" ng-class="{'offset':!ctrl.invader.typeColor}">{{ctrl.invader.type}}</span>
-				<div class="percentage textDark textSmall">{{(ctrl.invader.typeRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invader.typeRarity + '%)'}}</div>
+				<div class="percentage textDark textSmall">
+					<span>{{(ctrl.invader.typeRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invader.typeRarity + '%)'}}</span>
+					<div class="hint"></div>
+				</div>
 			</div>
-			<div class="detail">
+			<div class="detail" ng-click="ctrl.infoHint('levelExplainer')">
 				<span class="textDark textLarge offset">{{'Level ' + (ctrl.invader.level > 0 ? ctrl.invader.level : 'Uknown')}}</span>
-				<div class="percentage textDark textSmall">{{(ctrl.invader.levelRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invader.levelRarity + '%)'}}</div>
+				<div class="percentage textDark textSmall">
+					<span>{{(ctrl.invader.levelRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invader.levelRarity + '%)'}}</span>
+					<div class="hint"></div>
+				</div>
 			</div>
-			<div class="detail">
+			<div class="detail" ng-click="ctrl.infoHint('attributesExplainer')">
 				<div class="subDetail">
 					<div class="color" ng-show="ctrl.invader.skillColor" ng-style="{'background-color':ctrl.invader.skillColor}"></div>
 					<span class="textDark textLarge" ng-class="{'offset':!ctrl.invader.skillColor}">{{ctrl.invader.skill}}</span>
@@ -74,7 +80,10 @@
 				<div class="subDetail">
 					<div class="color" ng-show="ctrl.invader.rangeColor" ng-style="{'background-color':ctrl.invader.rangeColor}"></div>
 					<span class="textDark textLarge" ng-class="{'offset':!ctrl.invader.rangeColor}">{{ctrl.invader.range}}</span>
-					<div class="percentage shared textDark textSmall">{{(ctrl.invader.skillRangeRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invader.skillRangeRarity + '%)'}}</div>
+					<div class="percentage shared textDark textSmall">
+						<span>{{(ctrl.invader.skillRangeRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invader.skillRangeRarity + '%)'}}</span>
+					<div class="hint"></div>
+					</div>
 				</div>
 			</div>
 			<div class="ownerDetail">

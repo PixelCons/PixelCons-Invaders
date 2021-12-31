@@ -7,9 +7,12 @@
 		var _this = this;
 		const sortByDefault = 'rarityDesc';
 		const tooltipDelay = 300;
-		_this.marketSortBy = sortByDefault;
+		_this.infoHint = infoHint;
 		_this.sortBy = sortByDefault;
+		_this.marketSortBy = sortByDefault;
 		_this.loadMarketData = loadMarketData;
+		_this.filterPageData = filterPageData;
+		_this.filterMarketData = filterMarketData;
 		_this.invaderMouseEnter = invaderMouseEnter;
 		_this.invaderMouseLeave = invaderMouseLeave;
 		
@@ -32,7 +35,7 @@
 						if (_this.accountAddress) {
 							_this.accountPixelcons = await coreContract.getAccountPixelcons(_this.accountAddress);
 							_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
-							
+							filterPageData();
 							
 							
 						} else {
@@ -64,11 +67,43 @@
 				_this.marketLoading = true;
 				let marketData = await coreContract.getPixelconsForSale();
 				_this.marketData = addMarketItemImageData(marketData);
+				filterMarketData();
 				
 				_this.marketLoading = false;
 				safeApply();
 			}
 		}
+		
+		
+		// Filters the page data
+		function filterPageData() {
+			if(_this.accountInvaderPixelcons) {
+				_this.accountInvaderPixelcons.sort(function(invA, invB) {
+					if(_this.sortBy == 'levelDesc') {
+						return invB.level - invA.level;
+					} else if(_this.sortBy == 'rarityDesc') {
+						return invB.rarityScore - invA.rarityScore;
+					}
+				});
+			}
+		}
+		
+		// Filters the market data
+		function filterMarketData() {
+			if(_this.marketData) {
+				_this.marketData.sort(function(invA, invB) {
+					if(_this.marketSortBy == 'priceDesc') {
+						return invB.priceUSD - invA.priceUSD;
+					} else if(_this.marketSortBy == 'priceAsc') {
+						return invA.priceUSD - invB.priceUSD;
+					} else if(_this.marketSortBy == 'levelDesc') {
+						return invB.maxLevel - invA.maxLevel;
+					} else if(_this.marketSortBy == 'rarityDesc') {
+						return invB.maxRarity - invA.maxRarity;
+					}
+				});
+			}
+		}		
 		
 		// Generates images and adds class and offset details to the market item objects
 		function addMarketItemImageData(marketItems) {
@@ -227,6 +262,19 @@
 				line.appendChild(percentageDiv);
 			}
 			tooltip.appendChild(line);
+		}
+		
+		// Gets info on the given topic
+		function infoHint(topic) {
+			$mdDialog.show({
+				controller: 'InfoDialogCtrl',
+				controllerAs: 'ctrl',
+				templateUrl: HTMLTemplates['dialog.info'],
+				parent: angular.element(document.body),
+				locals: { topic: topic },
+				bindToController: true,
+				clickOutsideToClose: true
+			});
 		}
 		
 		// Safe apply to ensure fatest response possible

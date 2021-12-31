@@ -85,6 +85,7 @@
 			$http.get(HTMLTemplates['dialog.send'], { cache: $templateCache });
 			$http.get(HTMLTemplates['dialog.prints'], { cache: $templateCache });
 			$http.get(HTMLTemplates['dialog.settings'], { cache: $templateCache });
+			$http.get(HTMLTemplates['dialog.info'], { cache: $templateCache });
 		}]);
 
 
@@ -93,10 +94,18 @@
 	AppCtrl.$inject = ['$scope', '$mdMedia'];
 	function AppCtrl($scope, $mdMedia) {
 		var _this = this;
-		_this.screenSize = {};
-		$scope.$watch(function () { return $mdMedia('gt-md'); }, function (lg) { _this.screenSize['lg'] = lg; });
-		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
-		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
+		$scope.$watch(function () { return $mdMedia('gt-md'); }, function (lg) {
+			if(lg) document.body.classList.add('lg');
+			else document.body.classList.remove('lg');
+		});
+		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) {
+			if(md) document.body.classList.add('md');
+			else document.body.classList.remove('md');
+		});
+		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) {
+			if(sm) document.body.classList.add('sm');
+			else document.body.classList.remove('sm');
+		});
 		
 		$scope.$on('$routeChangeStart', function($event, next, current) {
 			ignoreReload = false;

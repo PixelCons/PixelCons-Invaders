@@ -34,13 +34,14 @@
 	<link rel="stylesheet" href="app/dialogs/send/send.view.css">
 	<link rel="stylesheet" href="app/dialogs/prints/prints.view.css">
 	<link rel="stylesheet" href="app/dialogs/settings/settings.view.css">
+	<link rel="stylesheet" href="app/dialogs/info/info.view.css">
 
 </head>
 
 <body ng-app="App" ng-cloak>
 
 	<!-- Start of main HTML -->
-	<div ng-controller="AppCtrl as ctrl" layout="column" class="appContainer textNotSelectable" ng-class="ctrl.screenSize" ng-cloak>
+	<div ng-controller="AppCtrl as ctrl" layout="column" class="appContainer textNotSelectable" ng-cloak>
 		<app-header></app-header>
 		<div id="scrollTarget" class="pageContent invisibleScroll">
 			<div id="contentBackground" class="pageContentBackground crispImage">
@@ -68,7 +69,8 @@
 			'shared.accounticon': 'app/shared/accounticon/accounticon.view.html',
 			'dialog.send': 'app/dialogs/send/send.view.html',
 			'dialog.prints': 'app/dialogs/prints/prints.view.html',
-			'dialog.settings': 'app/dialogs/settings/settings.view.html'
+			'dialog.settings': 'app/dialogs/settings/settings.view.html',
+			'dialog.info': 'app/dialogs/info/info.view.html'
 		}
 	</script>
 
@@ -110,6 +112,7 @@
 	<script src="app/dialogs/send/send.controller.js"></script>
 	<script src="app/dialogs/prints/prints.controller.js"></script>
 	<script src="app/dialogs/settings/settings.controller.js"></script>
+	<script src="app/dialogs/info/info.controller.js"></script>
 
 </body>
 

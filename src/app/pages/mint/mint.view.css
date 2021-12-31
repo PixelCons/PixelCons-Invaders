@@ -24,6 +24,29 @@ div.invadersMintPage .addressLoadingSpinner {
 	margin: -80px -40px;
 }
 
+/* Explainer */
+div.invadersMintPage div.explainer {
+	width: calc(100% - 60px);
+	max-width: 1280px;
+	margin: 0 auto;
+	font-size: 0px;
+	padding: 0px 5px;
+}
+div.invadersMintPage.sm div.explainer {
+	width: calc(100% - 24px);
+}
+div.invadersMintPage button.explainerButton {
+	text-transform: none;
+	margin: 8px 0px;
+}
+div.invadersMintPage button.explainerButton div.hint {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-image: url(/img/icon_hint_w.svg);
+	background-size: 16px;
+}
+
 /* Top Filter */
 div.invadersMintPage div.scanMore {
 	width: calc(100% - 60px);

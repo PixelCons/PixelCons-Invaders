@@ -39,7 +39,7 @@
 		_this.typeDesert = true;
 		_this.typeElectric = true;
 		_this.typeMetal = true;
-		_this.attrDefence = true;
+		_this.attrDefense = true;
 		_this.attrAttack = true;
 		_this.attrLongRange = true;
 		_this.attrShortRange = true;
@@ -72,7 +72,7 @@
 				_this.typeMetal = ($routeParams.excludeTypes.indexOf('metal') == -1);
 			}
 			if ($routeParams.excludeAttributes !== undefined) {
-				_this.attrDefence = ($routeParams.excludeAttributes.indexOf('defence') == -1);
+				_this.attrDefense = ($routeParams.excludeAttributes.indexOf('defense') == -1);
 				_this.attrAttack = ($routeParams.excludeAttributes.indexOf('attack') == -1);
 				_this.attrLongRange = ($routeParams.excludeAttributes.indexOf('longrange') == -1);
 				_this.attrShortRange = ($routeParams.excludeAttributes.indexOf('shortrange') == -1);
@@ -136,7 +136,7 @@
 				
 		function getExcludeAttributesPathParam() {
 			let excludeAttributes = [];
-			if(!_this.attrDefence) excludeAttributes.push('defence');
+			if(!_this.attrDefense) excludeAttributes.push('defense');
 			if(!_this.attrAttack) excludeAttributes.push('attack');
 			if(!_this.attrLongRange) excludeAttributes.push('longrange');
 			if(!_this.attrShortRange) excludeAttributes.push('shortrange');
@@ -193,7 +193,7 @@
 					if(!_this.typeDesert && _this.invaders[i].typeColor == '#FFA300') invHidden |= true;
 					if(!_this.typeElectric && _this.invaders[i].typeColor == '#FFFF27') invHidden |= true;
 					if(!_this.typeMetal && _this.invaders[i].typeColor == '#FFF1E8') invHidden |= true;
-					if(!_this.attrDefence && _this.invaders[i].skillColor == '#C2C3C7') invHidden |= true;
+					if(!_this.attrDefense && _this.invaders[i].skillColor == '#C2C3C7') invHidden |= true;
 					if(!_this.attrAttack && _this.invaders[i].skillColor == '#83769C') invHidden |= true;
 					if(!_this.attrLongRange && _this.invaders[i].rangeColor == '#5F574F') invHidden |= true;
 					if(!_this.attrShortRange && _this.invaders[i].rangeColor == '#1D2B53') invHidden |= true;

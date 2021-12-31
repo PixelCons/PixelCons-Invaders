@@ -1,0 +1,115 @@
+/* General */
+.infoDialog {
+	position: relative;
+	max-height: calc(100% - 40px);
+	width: 700px;
+	max-width: calc(100% - 40px);
+}
+.infoDialog div.view {
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	font-size: 0px;
+}
+
+/* Header */
+.infoDialog div.dialogCloseButton {
+	cursor: pointer;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 24px;
+	height: 24px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-image: url("/img/icon_close.svg");
+	background-size: contain;
+	opacity: 0.7;
+	filter: alpha(opacity=70);
+}
+.infoDialog div.dialogCloseButton:hover {
+	opacity: 1;
+	filter: alpha(opacity=100);
+}
+.infoDialog div.dialogTitle {
+	width: 100%;
+	text-align: center;
+	margin: 15px 0px;
+}
+.infoDialog .md-errors-spacer {
+	max-height: 0px;
+	min-height: 0px;
+}
+
+/* View */
+.infoDialog div.infoSpan {
+	display: inline-block;
+	padding: 0px 10px;
+}
+.infoDialog div.infoDivider {
+	width: 90%;
+	height: 1px;
+	margin: 10px 5% 0px 5%;
+	background-color: #bfbfbf;
+}
+.infoDialog div.infoHeader {
+	text-align: left;
+	width: 100%;
+	padding: 20px 10px 10px 10px;
+	box-sizing: border-box;
+}
+.infoDialog div.infoColorBlock {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border: solid 1px #909090;
+	margin-right: 5px;
+}
+.infoDialog div.infoLeft {
+	display: inline-block;
+	vertical-align: top;
+	width: calc(58% - 20px);
+	text-align: left;
+	padding: 0px 0px 0px 10px;
+	box-sizing: border-box;
+}
+.infoDialog div.infoRight {
+	display: inline-block;
+	vertical-align: top;
+	width: 42%;
+	margin: 0px 10px;
+	background-size: cover;
+	background-position: center;
+	height: 175px;
+}
+.infoDialog div.infoSpacer {
+	width: 100%;
+	height: 20px;
+}
+.infoDialog div.infoList {
+	padding-left: 20px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

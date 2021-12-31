@@ -73,6 +73,7 @@ div.pixelconDetailsPage.sm div.detailContainer {
 	width: 300px;
 }
 div.pixelconDetailsPage div.detailContainer div.detail {
+	cursor: pointer;
 	width: 100%;
 	padding: 5px 5px;
 	box-sizing: border-box;
@@ -94,6 +95,7 @@ div.pixelconDetailsPage div.detailContainer div.detail span.offset {
 	margin-left: 9px;
 }
 div.pixelconDetailsPage div.detailContainer div.detail div.percentage {
+	position: relative;
 	display: inline-block;
 	margin-left: 2px;
 }
@@ -101,6 +103,25 @@ div.pixelconDetailsPage div.detailContainer div.detail div.percentage.shared {
 	height: 30px;
 	margin-top: -10px;
 	vertical-align: bottom;
+}
+div.pixelconDetailsPage div.detailContainer div.detail div.percentage {
+	position: relative;
+	overflow: visible;
+	display: inline-block;
+	margin-left: 2px;
+}
+div.pixelconDetailsPage div.detailContainer div.detail div.percentage div.hint {
+	display: none;
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	background-image: url(/img/icon_hint_w.svg);
+	background-size: 16px;
+	top: -5px;
+	right: -18px;
+}
+div.pixelconDetailsPage div.detailContainer div.detail:hover div.percentage div.hint {
+	display: block;
 }
 div.pixelconDetailsPage div.detailContainer div.ownerDetail {
 	position: absolute;
@@ -117,10 +138,11 @@ div.pixelconDetailsPage div.detailContainer .ownerIcon {
 /* Buttons */
 div.pixelconDetailsPage div.detailContainer div.buttonsContainer {
 	position: absolute;
-	top: 5px;
-	right: 5px;
+	top: 0px;
+	right: 0px;
 	width: 36px;
 	height: 200px;
+	padding: 5px 5px 5px 15px;
 }
 div.pixelconDetailsPage div.detailContainer .more {
 	background-image: url("/img/icon_more_w.svg");

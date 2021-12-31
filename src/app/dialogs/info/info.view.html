@@ -1,0 +1,211 @@
+<md-dialog class="infoDialog colorDark textBlack" ng-class="ctrl.screenSize" aria-label="Info">
+	
+	<!-- Header -->
+	<div class="dialogTitle textLarge textBold">{{ctrl.title}}</div>
+	
+	<!-- Type Explainer -->
+	<div class="view invisibleScroll dark textCenter" ng-if="ctrl.topic=='typeExplainer'">
+		<div class="infoSpan textMedium">Each Invader belongs to a specific type indicating their planet of origin as well as elemental type. Types can be identified by what highlight color an Invader has.</div>
+		<div class="infoDivider"></div>
+		
+		<!-- Imber Drench (Water) -->
+		<div class="infoHeader">
+			<div class="infoColorBlock" style="background-color:#29ADFF;"></div>
+			<span class="textMedium textBold">Imber Drench (Water)</span>
+			<div class="infoSubHeader textSmall textLighter">(16.15% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">A planet composed of mostly seas. What little land exists is frequently hit with heavy rain so most of the population lives under water.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<!-- Silva Brush (Forest) -->
+		<div class="infoHeader">
+			<div class="infoColorBlock" style="background-color:#00E756;"></div>
+			<span class="textMedium textBold">Silva Brush (Forest)</span>
+			<div class="infoSubHeader textSmall textLighter">(16.15% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">A planet covered in forest and jungle. Most inhabitants live at higher elevations as the lower areas are often covered in fog and darkness.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<!-- Ignis Magma (Fire) -->
+		<div class="infoHeader">
+			<div class="infoColorBlock" style="background-color:#FF004D;"></div>
+			<span class="textMedium textBold">Ignis Magma (Fire)</span>
+			<div class="infoSubHeader textSmall textLighter">(16.15% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">A mostly rocky planet rife with volcanic activity. Home to a very industrial society that has learned to harness the heat for energy.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<!-- Sicco Solar (Desert) -->
+		<div class="infoHeader">
+			<div class="infoColorBlock" style="background-color:#FFA300;"></div>
+			<span class="textMedium textBold">Sicco Solar (Desert)</span>
+			<div class="infoSubHeader textSmall textLighter">(16.15% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">A barren planet covered in sand with frequent high winds. Most inhabitants choose to live in underground caves to avoid the scorching sun.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<!-- Lectricus Zap (Electric) -->
+		<div class="infoHeader">
+			<div class="infoColorBlock" style="background-color:#FFFF27;"></div>
+			<span class="textMedium textBold">Lectricus Zap (Electric)</span>
+			<div class="infoSubHeader textSmall textLighter">(16.15% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">A gaseous planet where most of the population lives on floating islands. Powerful lightning frequently strikes in the gases below.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<!-- Metallum Alloy (Metal) -->
+		<div class="infoHeader">
+			<div class="infoColorBlock" style="background-color:#FFF1E8;"></div>
+			<span class="textMedium textBold">Metallum Alloy (Metal)</span>
+			<div class="infoSubHeader textSmall textLighter">(16.15% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">An fractured planet now stitched back together with the metal once mined from it. The population is mostly robotic in nature.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<!-- Ancient (Unknown) -->
+		<div class="infoHeader">
+			<span class="textMedium textBold">? Ancient (Unknown)</span>
+			<div class="infoSubHeader textSmall textLighter">(3.1% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">These mysterious Invaders have no known planet of origin and are rumored to have extensive ancient knowledge about the galaxy.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<div class="infoSpacer"></div>
+	</div>
+	
+	<!-- Level Explainer -->
+	<div class="view invisibleScroll dark textCenter" ng-if="ctrl.topic=='levelExplainer'">
+		<div class="infoSpan textMedium">The level of an Invader is determined by the number of highlight pixels (which also indicate type) it has divided by two (since each Invader has vertical symetry). In general, the more of these pixels the more rare it is.</div>
+		<div class="infoDivider"></div>
+		
+		<!-- Rarity Chart -->
+		<div class="infoHeader">
+			<span class="textMedium textBold">Level Probabilities</span>
+		</div>
+		<div class="infoLeft textMedium">
+			<div class="infoList textMedium">
+				<div>Level 1 <span class="textSmall textLighter">(9.21%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 2 <span class="textSmall textLighter">(15.1%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 3 <span class="textSmall textLighter">(18.0%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 4 <span class="textSmall textLighter">(17.17%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 5 <span class="textSmall textLighter">(13.93%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 6 <span class="textSmall textLighter">(9.93%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 7 <span class="textSmall textLighter">(6.33%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 8 <span class="textSmall textLighter">(3.65%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 9 <span class="textSmall textLighter">(1.93%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 10 <span class="textSmall textLighter">(0.93%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 11 <span class="textSmall textLighter">(0.44%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 12 <span class="textSmall textLighter">(0.19%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 13 <span class="textSmall textLighter">(0.073%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 14 <span class="textSmall textLighter">(0.028%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 15 <span class="textSmall textLighter">(0.009%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 16 <span class="textSmall textLighter">(0.003%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 17 <span class="textSmall textLighter">(0.001%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+				<div>Level 18 <span class="textSmall textLighter">(&lt;0.001%{{ctrl.screenSize.sm?'':' probability'}})</span></div>
+			</div>
+		</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<div class="infoSpacer"></div>
+	</div>
+	
+	<!-- Attributes Explainer -->
+	<div class="view invisibleScroll dark textCenter" ng-if="ctrl.topic=='attributesExplainer'">
+		<div class="infoSpan textMedium">There are two different attribute categories that determine whether an Invader specializes in Attack/Defense and Long/Short Range. Each attribute is defined by the presence (or absence) of specific base colors.</div>
+		<div class="infoDivider"></div>
+		
+		<!-- Attack vs Defense -->
+		<div class="infoHeader">
+			<div class="infoColorBlock" style="background-color:#83769C;"></div>
+			<span class="textMedium textBold">Attack </span>
+			<div class="infoColorBlock" style="background-color:#5F574F;"></div>
+			<span class="textMedium textBold">Long Range</span>
+			<div class="infoSubHeader textSmall textLighter">(24.3% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">Invader specializing in long range attacks.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		<div class="infoHeader">
+			<div class="infoColorBlock" style="background-color:#83769C;"></div>
+			<span class="textMedium textBold">Attack </span>
+			<div class="infoColorBlock" style="background-color:#1D2B53;"></div>
+			<span class="textMedium textBold">Short Range</span>
+			<div class="infoSubHeader textSmall textLighter">(24.3% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">Invader specializing in short range attacks.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		<div class="infoHeader">
+			<div class="infoColorBlock" style="background-color:#C2C3C7;"></div>
+			<span class="textMedium textBold">Defense </span>
+			<div class="infoColorBlock" style="background-color:#5F574F;"></div>
+			<span class="textMedium textBold">Long Range</span>
+			<div class="infoSubHeader textSmall textLighter">(24.3% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">Invader specializing in short range defense.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		<div class="infoHeader">
+			<div class="infoColorBlock" style="background-color:#C2C3C7;"></div>
+			<span class="textMedium textBold">Defense </span>
+			<div class="infoColorBlock" style="background-color:#1D2B53;"></div>
+			<span class="textMedium textBold">Short Range</span>
+			<div class="infoSubHeader textSmall textLighter">(24.3% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">Invader specializing in short range defense.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<!-- Versatile -->
+		<div class="infoHeader">
+			<span class="textMedium textBold">Versatile </span>
+			<div class="infoColorBlock" style="background-color:#5F574F;"></div>
+			<span class="textMedium textBold">Long or </span>
+			<div class="infoColorBlock" style="background-color:#1D2B53;"></div>
+			<span class="textMedium textBold">Short Range</span>
+			<div class="infoSubHeader textSmall textLighter">(1.41% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">Invader specializing in both attack and defense (indicated by lack of an attack or defense base color).</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<!-- All Range -->
+		<div class="infoHeader">
+			<span class="textMedium textBold">All Range </span>
+			<div class="infoColorBlock" style="background-color:#83769C;"></div>
+			<span class="textMedium textBold">Attack or </span>
+			<div class="infoColorBlock" style="background-color:#C2C3C7;"></div>
+			<span class="textMedium textBold">Defense</span>
+			<div class="infoSubHeader textSmall textLighter">(1.41% probability)</div>
+		</div>
+		<div class="infoLeft textMedium">Invader specializing in both long and short range (indicated by lack of a long or short range base color).</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<div class="infoSpacer"></div>
+	</div>
+	
+	<!-- Mint Explainer -->
+	<div class="view invisibleScroll dark textCenter" ng-if="ctrl.topic=='mintExplainer'">
+		<div class="infoSpan textMedium">New Invaders can be uncovered (minted) by anyone who owns PixelCons.</div>
+		<div class="infoDivider"></div>
+		
+		<!-- Algorithmic Generation -->
+		<div class="infoHeader">
+			<span class="textMedium textBold">Algorithmic Generation</span>
+		</div>
+		<div class="infoLeft textMedium">New Invaders are algorithmically generated using a corresponding PixelCon as a seed. Only PixelCon created before January 1st, 2022 can uncover new Invaders.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		<div class="infoSpacer"></div>
+		<div class="infoLeft textMedium">The older a PixelCon is, the more Invaders it is able to uncover with a max of 6. The current owner of a PixelCon is the only one who can uncover (mint) its new Invaders.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		<div class="infoSpacer"></div>
+		<div class="infoLeft textMedium">Only 1000 Invaders can be Uncovered in total. Once all Invaders from a PixelCon have been uncovered, the PixelCon can no longer uncover new Invaders. There is no fee for uncovering new Invaders (besides gas).</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<!-- Market Buying -->
+		<div class="infoHeader">
+			<span class="textMedium textBold">Scanning for More</span>
+		</div>
+		<div class="infoLeft textMedium">The <i>Scan More</i> feature reports what PixelCons are currently listed for sale on OpenSea and previews the Invaders they can still uncover.</div>
+		<div class="infoRight textMedium" style="background-image:url(/img/info/invaderType_water.png);"></div>
+		
+		<div class="infoSpacer"></div>
+	</div>
+	
+	<div class="dialogCloseButton" ng-click="ctrl.closeDialog()"></div>
+</md-dialog>

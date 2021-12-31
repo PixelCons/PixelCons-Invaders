@@ -6,6 +6,7 @@
 	function DetailsPageCtrl($scope, $mdMedia, $mdDialog, $routeParams, $timeout, $sce, $window, web3Service, coreContract, market, decoder) {
 		var _this = this;
 		_this.isOwner = true;
+		_this.infoHint = infoHint;
 		_this.copyLink = copyLink;
 		_this.shareOnTwitter = shareOnTwitter;
 		_this.shareOnFacebook = shareOnFacebook;
@@ -57,6 +58,19 @@
 		function addInvaderImageData(invader) {
 			invader.image = decoder.generateInvader(invader.id);
 			return invader;
+		}
+		
+		// Gets info on the given topic
+		function infoHint(topic) {
+			$mdDialog.show({
+				controller: 'InfoDialogCtrl',
+				controllerAs: 'ctrl',
+				templateUrl: HTMLTemplates['dialog.info'],
+				parent: angular.element(document.body),
+				locals: { topic: topic },
+				bindToController: true,
+				clickOutsideToClose: true
+			});
 		}
 
 		// Copies share link to the clipboard

@@ -174,160 +174,196 @@
 			await sleep(2000);
 			let testData = [{
 				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
+				priceUSD: 0.11,
 				price: 0.11,
 				unit: 'Ξ',
 				invaders: [null,null]
 			},{
 				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
+				priceUSD: 0.21,
 				price: 0.21,
 				unit: 'Ξ',
 				invaders: [null,null,null,null]
 			},{
 				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
+				priceUSD: 0.43,
 				price: 0.43,
 				unit: 'Ξ',
 				invaders: [null,null,null]
 			},{
 				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
+				priceUSD: 0.632,
 				price: 0.632,
 				unit: 'Ξ',
 				invaders: [null,null,null,null]
 			},{
 				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
+				priceUSD: 1.1,
 				price: 1.1,
 				unit: 'Ξ',
 				invaders: [null,null,null,null,null,null]
 			},{
 				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
+				priceUSD: 2.184,
 				price: 2.184,
 				unit: 'Ξ',
 				invaders: [null,null,null,null,null]
 			},{
 				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
+				priceUSD: 0.11,
 				price: 0.11,
 				unit: 'Ξ',
 				invaders: [null,null]
 			},{
 				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
+				priceUSD: 0.21,
 				price: 0.21,
 				unit: 'Ξ',
 				invaders: [null,null,null,null]
 			},{
 				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
+				priceUSD: 0.43,
 				price: 0.43,
 				unit: 'Ξ',
 				invaders: [null,null,null]
 			},{
 				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
+				priceUSD: 0.632,
 				price: 0.632,
 				unit: 'Ξ',
 				invaders: [null,null,null,null]
 			},{
 				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
+				priceUSD: 1.1,
 				price: 1.1,
 				unit: 'Ξ',
 				invaders: [null,null,null,null,null,null]
 			},{
 				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
+				priceUSD: 2.184,
 				price: 2.184,
 				unit: 'Ξ',
 				invaders: [null,null,null,null,null]
 			},{
 				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
+				priceUSD: 0.11,
 				price: 0.11,
 				unit: 'Ξ',
 				invaders: [null,null]
 			},{
 				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
+				priceUSD: 0.21,
 				price: 0.21,
 				unit: 'Ξ',
 				invaders: [null,null,null,null]
 			},{
 				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
+				priceUSD: 0.43,
 				price: 0.43,
 				unit: 'Ξ',
 				invaders: [null,null,null]
 			},{
 				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
+				priceUSD: 0.632,
 				price: 0.632,
 				unit: 'Ξ',
 				invaders: [null,null,null,null]
 			},{
 				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
+				priceUSD: 1.1,
 				price: 1.1,
 				unit: 'Ξ',
 				invaders: [null,null,null,null,null,null]
 			},{
 				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
+				priceUSD: 2.184,
 				price: 2.184,
 				unit: 'Ξ',
 				invaders: [null,null,null,null,null]
 			},{
 				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
+				priceUSD: 0.11,
 				price: 0.11,
 				unit: 'Ξ',
 				invaders: [null,null]
 			},{
 				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
+				priceUSD: 0.21,
 				price: 0.21,
 				unit: 'Ξ',
 				invaders: [null,null,null,null]
 			},{
 				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
+				priceUSD: 0.43,
 				price: 0.43,
 				unit: 'Ξ',
 				invaders: [null,null,null]
 			},{
 				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
+				priceUSD: 0.632,
 				price: 0.632,
 				unit: 'Ξ',
 				invaders: [null,null,null,null]
 			},{
 				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
+				priceUSD: 1.1,
 				price: 1.1,
 				unit: 'Ξ',
 				invaders: [null,null,null,null,null,null]
 			},{
 				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
+				priceUSD: 2.184,
 				price: 2.184,
 				unit: 'Ξ',
 				invaders: [null,null,null,null,null]
 			},{
 				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
+				priceUSD: 0.11,
 				price: 0.11,
 				unit: 'Ξ',
 				invaders: [null,null]
 			},{
 				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
+				priceUSD: 0.21,
 				price: 0.21,
 				unit: 'Ξ',
 				invaders: [null,null,null,null]
 			},{
 				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
+				priceUSD: 0.43,
 				price: 0.43,
 				unit: 'Ξ',
 				invaders: [null,null,null]
 			},{
 				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
+				priceUSD: 0.632,
 				price: 0.632,
 				unit: 'Ξ',
 				invaders: [null,null,null,null]
 			},{
 				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
+				priceUSD: 1.1,
 				price: 1.1,
 				unit: 'Ξ',
 				invaders: [null,null,null,null,null,null]
 			},{
 				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
+				priceUSD: 2.184,
 				price: 2.184,
 				unit: 'Ξ',
 				invaders: [null,null,null,null,null]
 			}];
 			for(let i=0; i<testData.length; i++) {
+				let maxRarity = 0;
+				let maxLevel = 0;
 				for(let j=0; j<testData[i].invaders.length; j++) {
 					let invader = generateInvader();
 					testData[i].invaders[j] = invaderAnalysis(invader.id);
+					maxRarity = Math.max(maxRarity, testData[i].invaders[j].rarityScore);
+					maxLevel = Math.max(maxLevel, testData[i].invaders[j].level);
 				}
+				testData[i].maxRarity = maxRarity;
+				testData[i].maxLevel = maxLevel;
 			}
 			return testData;
 		}
@@ -722,7 +758,7 @@
 		}
 		
 		function invaderAnalysis(invaderId) {
-			const attackDefence = ['6','d'];
+			const attackDefense = ['6','d'];
 			const longRangeShortRange = ['1','5'];
 			const elementalTypes = ['7','8','9','a','b','c'];
 			invaderId = formatInvaderId(invaderId).substr(2,64);
@@ -736,7 +772,7 @@
 				shadow += (invaderId[i] == '0') ? '0' : '7';
 				level += (elementalTypes.indexOf(invaderId[i]) > -1) ? 1 : 0;
 				typeColor = (elementalTypes.indexOf(invaderId[i]) > -1) ? invaderId[i] : typeColor;
-				skillColor = (attackDefence.indexOf(invaderId[i]) > -1) ? invaderId[i] : skillColor;
+				skillColor = (attackDefense.indexOf(invaderId[i]) > -1) ? invaderId[i] : skillColor;
 				rangeColor = (longRangeShortRange.indexOf(invaderId[i]) > -1) ? invaderId[i] : rangeColor;
 			}
 			level = level/2;
@@ -751,7 +787,7 @@
 			
 			let skill = 'Versatile';
 			if(skillColor == '6') skill = 'Attack';
-			else if(skillColor == 'd') skill = 'Defence';
+			else if(skillColor == 'd') skill = 'Defense';
 			
 			let range = 'All Range';
 			if(rangeColor == '5') range = 'Long Range';
