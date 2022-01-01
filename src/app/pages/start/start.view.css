@@ -101,8 +101,8 @@ div.pixelconStartPage img.stepTabIcon {
 	vertical-align: middle;
 	width: 40px;
 	height: 40px;
-	opacity: 0.7;
-	filter: alpha(opacity=70);
+	opacity: 0.9;
+	filter: alpha(opacity=90);
 }
 div.pixelconStartPage div.checkBadge {
 	display: inline-block;
@@ -156,10 +156,10 @@ div.pixelconStartPage div.stepNavButton {
 	filter: alpha(opacity=70);
 }
 div.pixelconStartPage div.stepNavButton.navBack {
-	background-image: url("/img/icon_back.svg");
+	background-image: url("/img/icon_back_w.svg");
 }
 div.pixelconStartPage div.stepNavButton.navForward {
-	background-image: url("/img/icon_forward.svg");
+	background-image: url("/img/icon_forward_w.svg");
 }
 div.pixelconStartPage div.stepContentImageWrapper {
 	display: inline-block;
@@ -251,30 +251,6 @@ div.pixelconStartPage div.iconImg {
 div.pixelconStartPage div.iconImg.large {
 	margin-top: 3px;
 }
-div.pixelconStartPage div.searchIcon {
-	background-image: url("/img/icon_search.svg");
-}
-div.pixelconStartPage div.createIcon {
-	background-image: url("/img/icon_create.svg");
-}
-div.pixelconStartPage div.listIcon {
-	background-image: url("/img/icon_list.svg");
-}
-div.pixelconStartPage div.accountIcon {
-	background-image: url("/img/icon_wallet.svg");
-}
-div.pixelconStartPage div.expandIcon {
-	background-image: url("/img/icon_expand.svg");
-}
-div.pixelconStartPage div.collapseIcon {
-	background-image: url("/img/icon_collapse.svg");
-}
-div.pixelconStartPage div.expandAllIcon {
-	background-image: url("/img/icon_expandall.svg");
-}
-div.pixelconStartPage div.collapseAllIcon {
-	background-image: url("/img/icon_collapseall.svg");
-}
 div.pixelconStartPage div.centerContent {
 	display: inline-block;
 	width: 100%;
@@ -321,4 +297,34 @@ div.pixelconStartPage div.expandContainerText {
 }
 div.pixelconStartPage.sm div.expandContainerText {
 	padding: 10px 10px 15px 10px;
+}
+div.pixelconStartPage .giantButton {
+	cursor: pointer;
+	padding: 20px 0px;
+}
+div.pixelconStartPage .giantButton:hover {
+    background-color: #00000026;
+}
+div.pixelconStartPage div.giantIcon {
+	display: inline-block;
+	background-size: contain;
+	vertical-align: middle;
+	width: 100px;
+	height: 100px;
+}
+div.pixelconStartPage div.giantIcon.learn {
+	background-image: url("/img/icon_learn_w.svg");
+}
+div.pixelconStartPage div.giantIcon.explore {
+	background-image: url("/img/icon_explore_w.svg");
+}
+div.pixelconStartPage div.giantIcon.mint {
+	background-image: url("/img/icon_scan_w.svg");
+}
+div.pixelconStartPage div.giantText {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: left;
+	margin-left: 20px;
+	width: 300px;
 }
