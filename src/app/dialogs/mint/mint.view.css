@@ -1,9 +1,9 @@
 /* General */
 .mintDialog {
 	position: relative;
-	height: 250px;
-	width: 270px;
-	min-width: 270px;
+	height: 270px;
+	width: 260px;
+	min-width: 260px;
 	margin-bottom: 200px;
 }
 .mintDialog.sm {
@@ -70,16 +70,12 @@
 	display: inline-block;
 	text-align: center;
 	padding: 0px 40px 0px 40px;
+	margin-top: 15px;
 }
 
 /* Error View */
 .mintDialog div.errorTitle {
 	margin-top: 100px;
-}
-
-/* No Account Send View */
-.mintDialog div.noAccountTitle {
-	margin-top: 85px;
 }
 
 /* Loading View */
@@ -97,44 +93,46 @@
 	stroke: #333333;
 }
 
-/* Send Invader View */
-.mintDialog div.sendInvaderTitle {
-	margin-top: 80px;
+/* Mint Invader View */
+.mintDialog div.invaderContainer {
+	width: 64px;
+	height: 64px;
+	margin: 40px auto 5px auto;
 }
-.mintDialog .addressInput {
-	width: 220px;
-	margin-left: 22px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-}
-.mintDialog .addressInput input {
-	text-align: center;
-}
-.mintDialog div.note {
-	position: absolute;
-	left: 15px;
-	bottom: 10px;
+.mintDialog div.detail {
+	padding: 1px 0px;
+	margin-left: 64px;
+	box-sizing: border-box;
 	font-size: 14px;
 }
-
-/* Send Eth View */
-.mintDialog div.sendEthDialogTitle {
+.mintDialog div.subDetail {
 	width: 100%;
-	margin: 8px 0px;
+	box-sizing: border-box;
 }
-.mintDialog div.sendEthTitle {
-	margin-top: 90px;
+.mintDialog div.detail div.color {
+	display: inline-block;
+	vertical-align: top;
+	width: 3px;
+	height: 14px;
+	border: solid 1px #909090;
 }
-.mintDialog div.addressFont {
-	font-size: 18px;
-	text-align: center;
+.mintDialog div.detail span.offset {
+	margin-left: 9px;
 }
-.mintDialog .amountInput {
-	width: 120px;
-	margin-left: 73px;
-	margin-top: 10px;
-	margin-bottom: 10px;
+.mintDialog div.detail div.percentage {
+	position: relative;
+	display: inline-block;
+	margin-left: 2px;
+	font-size: 10px;
 }
-.mintDialog .amountInput input {
-	text-align: center;
+.mintDialog div.detail div.percentage.shared {
+	height: 22px;
+	margin-top: -14px;
+	vertical-align: bottom;
+}
+.mintDialog div.detail div.percentage {
+	position: relative;
+	overflow: visible;
+	display: inline-block;
+	margin-left: 2px;
 }

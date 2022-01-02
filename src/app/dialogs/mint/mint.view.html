@@ -19,19 +19,34 @@
 	
 	<!-- Mint Invader View -->
 	<div class="view" ng-if="ctrl.currView=='mintInvader'" ng-cloak>
-	
-	
-		<div class="infoText sendInvaderTitle">Enter Receiving Address</div>
-		<md-input-container md-no-float class="addressInput textSmall md-block">
-			<input md-autofocus ng-model="ctrl.toAddress" ng-change="ctrl.checkValid()" placeholder="Receiving Address"/>
-		</md-input-container>
+		<div class="invaderContainer">
+			<img class="crispImage" style="width:100%; height:100%;" ng-src="{{ctrl.invaderImg}}"/>
+		</div>
+		<div class="detail">
+			<div class="color" ng-show="ctrl.invaderPixelcon.typeColor" ng-style="{'background-color':ctrl.invaderPixelcon.typeColor}"></div>
+			<span class="textBlack" ng-class="{'offset':!ctrl.invaderPixelcon.typeColor}">{{ctrl.invaderPixelcon.type}}</span>
+			<div class="percentage textBlack textSmall">{{(ctrl.invaderPixelcon.typeRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invaderPixelcon.typeRarity + '%)'}}</div>
+		</div>
+		<div class="detail">
+			<span class="textBlack offset">{{'Level ' + (ctrl.invaderPixelcon.level > 0 ? ctrl.invaderPixelcon.level : 'Uknown')}}</span>
+			<div class="percentage textBlack textSmall">{{(ctrl.invaderPixelcon.levelRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invaderPixelcon.levelRarity + '%)'}}</div>
+		</div>
+		<div class="detail">
+			<div class="subDetail">
+				<div class="color" ng-show="ctrl.invaderPixelcon.skillColor" ng-style="{'background-color':ctrl.invaderPixelcon.skillColor}"></div>
+				<span class="textBlack" ng-class="{'offset':!ctrl.invaderPixelcon.skillColor}">{{ctrl.invaderPixelcon.skill}}</span>
+			</div>
+			<div class="subDetail">
+				<div class="color" ng-show="ctrl.invaderPixelcon.rangeColor" ng-style="{'background-color':ctrl.invaderPixelcon.rangeColor}"></div>
+				<span class="textBlack" ng-class="{'offset':!ctrl.invaderPixelcon.rangeColor}">{{ctrl.invaderPixelcon.range}}</span>
+				<div class="percentage shared textBlack textSmall">{{(ctrl.invaderPixelcon.skillRangeRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invaderPixelcon.skillRangeRarity + '%)'}}</div>
+			</div>
+		</div>
 		
-		
-		
+		<div class="textNote termsNote">By uncovering this Invader, you agree to the <a class="light link textLighter" ng-click="ctrl.closeDialog()" href="/terms">Terms of Use</a></div>
 		<div class="actionButtons">
 			<md-button ng-click="ctrl.mintInvader()">Uncover</md-button>
 		</div>
-		<div class="textNote termsNote">By uncovering this Invader, you agree to the <a class="light link textLighter" ng-click="ctrl.closeDialog()" href="/terms">Terms of Use</a></div>
 	</div>
 	
 	<div class="dialogCloseButton" ng-click="ctrl.closeDialog()"></div>
