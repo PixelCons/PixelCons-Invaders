@@ -110,7 +110,7 @@
 						
 						//TODO
 						//let total = (await contract.errRetry.totalSupply()).toNumber();
-						resolve(getInvaders());
+						resolve(JSON.parse(JSON.stringify(getInvaders())));
 						
 					} catch (err) {
 						console.log(err);
@@ -137,7 +137,7 @@
 						//TODO
 						//let total = (await contract.errRetry.totalSupply()).toNumber();
 						await sleep(1000);
-						resolve(getInvader(index));
+						resolve(JSON.parse(JSON.stringify(getInvader(index))));
 						
 					} catch (err) {
 						console.log(err);
@@ -164,7 +164,11 @@
 			for(let i=0; i<testData.length; i++) {
 				testData[i].invaders = [];
 				let count = i > 1 ? 2 : 3;
-				for(let j=0; j<count; j++) testData[i].invaders.push(generateInvader());
+				for(let j=0; j<count; j++) {
+					let invader = generateInvader();
+					invader.mintIndex = j;
+					testData[i].invaders.push(invader);
+				}
 			}
 			return testData;
 		}

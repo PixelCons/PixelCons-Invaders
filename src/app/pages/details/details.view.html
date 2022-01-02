@@ -19,7 +19,7 @@
 					<md-button class="iconButton more" ng-click="$mdOpenMenu()" aria-label="More"></md-button>
 					<md-menu-content class="shareLinksContextMenu">
 						<md-menu-item ng-show="ctrl.isOwner">
-							<md-button ng-click=""><div class="shareLinkIcon send textBlack"></div>Send To</md-button>
+							<md-button ng-click="ctrl.sendTo()"><div class="shareLinkIcon send textBlack"></div>Send To</md-button>
 						</md-menu-item>
 						<md-menu-item>
 							<md-button ng-click=""><div class="shareLinkIcon wallpaper textBlack"></div>Create Wallpaper</md-button>

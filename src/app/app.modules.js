@@ -83,6 +83,7 @@
 
 			// pre-load dialogs
 			$http.get(HTMLTemplates['dialog.send'], { cache: $templateCache });
+			$http.get(HTMLTemplates['dialog.mint'], { cache: $templateCache });
 			$http.get(HTMLTemplates['dialog.prints'], { cache: $templateCache });
 			$http.get(HTMLTemplates['dialog.settings'], { cache: $templateCache });
 			$http.get(HTMLTemplates['dialog.info'], { cache: $templateCache });

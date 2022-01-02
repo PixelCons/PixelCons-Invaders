@@ -1,24 +1,24 @@
 /* General */
-.sendDialog {
+.mintDialog {
 	position: relative;
 	height: 250px;
 	width: 270px;
 	min-width: 270px;
 	margin-bottom: 200px;
 }
-.sendDialog.sm {
+.mintDialog.sm {
 	margin-bottom: 100px;
 }
-.sendDialog div.view {
+.mintDialog div.view {
 	position: relative;
 	width: 100%;
 	height: 100%;
 }
-.sendDialog div.infoText {
+.mintDialog div.infoText {
 	text-align: center;
 	margin: 10px;
 }
-.sendDialog div.actionButtons {
+.mintDialog div.actionButtons {
 	position: absolute;
 	bottom: 0px;
 	width: 100%;
@@ -26,7 +26,7 @@
 }
 
 /* Header */
-.sendDialog div.dialogCloseButton {
+.mintDialog div.dialogCloseButton {
 	cursor: pointer;
 	position: absolute;
 	left: 0px;
@@ -40,73 +40,77 @@
 	opacity: 0.7;
 	filter: alpha(opacity=70);
 }
-.sendDialog div.dialogCloseButton:hover {
+.mintDialog div.dialogCloseButton:hover {
 	opacity: 1;
 	filter: alpha(opacity=100);
 }
-.sendDialog div.dialogTitle {
+.mintDialog div.dialogTitle {
 	position: absolute;
 	width: 100%;
 	text-align: center;
 	margin-top: 8px;
 	font-size: 22px;
 }
-.sendDialog div.invaderContainer {
+.mintDialog div.uncoverIcon {
 	position: absolute;
 	top: 5px;
 	right: 5px;
-	width: 48px;
-	height: 48px;
+	width: 32px;
+	height: 32px;
+	background-image: url("/img/icon_scan.svg");
+	background-size: contain;
+	opacity: 0.7;
+	filter: alpha(opacity=70);
 }
-.sendDialog .md-errors-spacer {
+.mintDialog .md-errors-spacer {
 	max-height: 0px;
 	min-height: 0px;
 }
-.sendDialog div.termsNote {
+.mintDialog div.termsNote {
 	display: inline-block;
 	text-align: center;
 	padding: 0px 40px 0px 40px;
 }
 
 /* Error View */
-.sendDialog div.errorTitle {
+.mintDialog div.errorTitle {
 	margin-top: 100px;
 }
 
 /* No Account Send View */
-.sendDialog div.noAccountTitle {
+.mintDialog div.noAccountTitle {
 	margin-top: 85px;
 }
 
 /* Loading View */
-.sendDialog div.loadingIcon {
+.mintDialog div.loadingIcon {
 	margin: 0 auto;
 	width: 80px;
 	padding-top: 80px;
 }
-.sendDialog .checkingSend {
+.mintDialog .checkingSend {
 	position: absolute;
 	top: calc(50% - 7px);
 	left: calc(50% - 7px);
 }
-.sendDialog md-progress-circular.checkingSend svg path {
+.mintDialog md-progress-circular.checkingSend svg path {
 	stroke: #333333;
 }
 
 /* Send Invader View */
-.sendDialog div.sendInvaderTitle {
+.mintDialog div.sendInvaderTitle {
 	margin-top: 80px;
 }
-.sendDialog .addressInput {
+.mintDialog .addressInput {
 	width: 220px;
 	margin-left: 22px;
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
-.sendDialog .addressInput input {
+.mintDialog .addressInput input {
 	text-align: center;
 }
-.sendDialog div.note {
+.mintDialog div.note {
 	position: absolute;
 	left: 15px;
 	bottom: 10px;
@@ -114,23 +118,23 @@
 }
 
 /* Send Eth View */
-.sendDialog div.sendEthDialogTitle {
+.mintDialog div.sendEthDialogTitle {
 	width: 100%;
 	margin: 8px 0px;
 }
-.sendDialog div.sendEthTitle {
+.mintDialog div.sendEthTitle {
 	margin-top: 90px;
 }
-.sendDialog div.addressFont {
+.mintDialog div.addressFont {
 	font-size: 18px;
 	text-align: center;
 }
-.sendDialog .amountInput {
+.mintDialog .amountInput {
 	width: 120px;
 	margin-left: 73px;
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
-.sendDialog .amountInput input {
+.mintDialog .amountInput input {
 	text-align: center;
 }

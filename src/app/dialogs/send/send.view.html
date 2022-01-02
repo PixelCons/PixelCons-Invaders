@@ -1,8 +1,10 @@
-<md-dialog class="sendDialog colorDark" ng-class="ctrl.screenSize" aria-label="Send PixelCon">
+<md-dialog class="sendDialog colorDark textBlack" ng-class="ctrl.screenSize" aria-label="Send Invader">
 	
 	<!-- Header -->
 	<div class="dialogTitle" ng-class="{'sendEthDialogTitle': ctrl.ethMode}">{{ctrl.title}}</div>
-	<div class="pixelconContainer md-whiteframe-1dp" ng-if="!ctrl.ethMode"><pixelcon id="ctrl.pixelconId"></pixelcon></div>
+	<div class="invaderContainer" ng-if="!ctrl.ethMode">
+		<img class="invaderImage crispImage" style="width:100%; height:100%;" ng-src="{{ctrl.invaderImg}}"/>
+	</div>
 	
 	<!-- Error View -->
 	<div class="view" ng-show="ctrl.currView=='error'" ng-cloak>
@@ -11,12 +13,12 @@
 	
 	<!-- No Account Send View -->
 	<div class="view" ng-if="ctrl.currView=='sendEthError'" ng-cloak>
-		<div class="infoText noAccountTitle textBlack">
+		<div class="infoText noAccountTitle">
 			<b>You can tip the Devs at the following Ethereum Address:</b>
 			<br/><br/>
 			<div class="addressFont textLighter">{{ctrl.toAddress}}</div>
-			<br/>
-			<div class="textMedium">Thank You!</div>
+			<br/><br/>
+			<div class="textMedium textDark">Thank You!</div>
 		</div>
 	</div>
 	
@@ -28,17 +30,20 @@
 		<div class="infoText">Verifying...</div>
 	</div>
 	
-	<!-- Send PixelCon View -->
-	<div class="view" ng-if="ctrl.currView=='sendPixelcon'" ng-cloak>
-		<div class="infoText sendPixelconTitle">Enter Receiving Address</div>
+	<!-- Send Invader View -->
+	<div class="view" ng-if="ctrl.currView=='sendInvader'" ng-cloak>
+		<div class="infoText sendInvaderTitle">Enter Receiving Address</div>
 		<md-input-container md-no-float class="addressInput textSmall md-block">
 			<input md-autofocus ng-model="ctrl.toAddress" ng-change="ctrl.checkValid()" placeholder="Receiving Address"/>
 		</md-input-container>
 		<div class="actionButtons">
-			<div class="note textLighter">1 <span class="textSmall">PixelCon</span></div>
-			<md-button ng-disabled="!ctrl.canSend" ng-click="ctrl.sendPixelcon()">Send</md-button>
+			<div class="note textLighter">1 <span class="textSmall">Invader</span></div>
+			<md-button ng-disabled="!ctrl.canSend" ng-click="ctrl.sendInvader()">
+				<span>Send</span>
+				<md-progress-circular class="checkingSend" ng-if="ctrl.canSendChecking" md-diameter="14px" md-mode="indeterminate"></md-progress-circular>
+			</md-button>
 		</div>
-		<div class="textNote termsNote">By sending this PixelCon, you agree to the <a class="light link textDark" ng-click="ctrl.closeDialog()" href="/terms">Terms of Use</a></div>
+		<div class="textNote termsNote">By sending this Invader, you agree to the <a class="light link textLighter" ng-click="ctrl.closeDialog()" href="/terms">Terms of Use</a></div>
 	</div>
 	
 	<!-- Send Eth View -->

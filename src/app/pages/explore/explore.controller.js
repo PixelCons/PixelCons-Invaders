@@ -50,6 +50,7 @@
 		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
 		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 		
+		// Loads the filter according to path params
 		loadPathParams();
 		function loadPathParams() {
 			if ($routeParams.sortBy !== undefined) {
@@ -83,6 +84,7 @@
 			}
 		}
 		
+		// Updates the path params according to the current filter
 		function updatePathParams() {
 			if(realtimeFilterInPath) {
 				let excludeTypes = getExcludeTypesPathParam();
@@ -108,6 +110,7 @@
 			}
 		}
 		
+		// Gets the path params as string according to the current filter
 		function getPathParams() {
 			let excludeTypes = getExcludeTypesPathParam();
 			let excludeAttributes = getExcludeAttributesPathParam();
@@ -121,6 +124,7 @@
 			return pathParams;
 		}
 		
+		// Gets list of excluded types for path param
 		function getExcludeTypesPathParam() {
 			let excludeTypes = [];
 			if(!_this.typeWater) excludeTypes.push('water');
@@ -133,7 +137,8 @@
 			if(excludeTypes && excludeTypes != '') return excludeTypes;
 			return null;
 		}
-				
+		
+		// Gets list of excluded attribues for path param
 		function getExcludeAttributesPathParam() {
 			let excludeAttributes = [];
 			if(!_this.attrDefense) excludeAttributes.push('defense');
@@ -145,6 +150,7 @@
 			return null;
 		}
 		
+		// Loads invaders for the page
 		loadInvaders();
 		async function loadInvaders() {
 			_this.invadersLoading = true;
@@ -164,6 +170,7 @@
 			}
 		}
 		
+		// Filters and sorts the loaded invaders
 		function filterInvaders() {
 			if(_this.invaders) {
 				//sort
@@ -202,8 +209,9 @@
 			}
 		}
 		
+		// On filter item changes
 		function onOwnerChange(noWait) {
-			let processOwner = function() {
+			let processOwner = async function() {
 				if(!_this.owner) {
 					_this.ownerAddress = null;
 					_this.ownerAddressName = null;
@@ -216,13 +224,14 @@
 					_this.checkingOwner = false;
 					if(!!_this.ownerAddress) {
 						_this.ownerAddressNameLoading = true;
-						web3Service.awaitState(async function() {
-							let owner = web3Service.formatAddress(_this.owner) || _this.owner;
-							if(owner != _this.ownerAddress)_this.ownerAddressName = _this.owner.toLowerCase();
-							else _this.ownerAddressName = await web3Service.reverseName(_this.ownerAddress);
-							_this.ownerAddressNameLoading = false;
-							$scope.$apply();
-						}, true);
+						await web3Service.awaitState(true);
+						
+						let owner = web3Service.formatAddress(_this.owner) || _this.owner;
+						if(owner != _this.ownerAddress)_this.ownerAddressName = _this.owner.toLowerCase();
+						else _this.ownerAddressName = await web3Service.reverseName(_this.ownerAddress);
+						_this.ownerAddressNameLoading = false;
+						safeApply();
+						
 					} else {
 						_this.ownerAddressName = null;
 					}
@@ -230,22 +239,22 @@
 					filterInvaders();
 					
 				} else {
-					web3Service.awaitState(async function() {
-						_this.ownerAddress = await web3Service.resolveName(_this.owner);
-						_this.checkingOwner = false;
-						if(!!_this.ownerAddress) {
-							_this.ownerAddressNameLoading = true;
-							let owner = web3Service.formatAddress(_this.owner) || _this.owner;
-							if(owner != _this.ownerAddress) _this.ownerAddressName = _this.owner.toLowerCase();
-							else _this.ownerAddressName = await web3Service.reverseName(_this.ownerAddress);
-							_this.ownerAddressNameLoading = false;
-						} else {
-							_this.ownerAddressName = null;
-						}
-						$scope.$apply();
-						updatePathParams();
-						filterInvaders();
-					}, true);
+					await web3Service.awaitState(true);
+					
+					_this.ownerAddress = await web3Service.resolveName(_this.owner);
+					_this.checkingOwner = false;
+					if(!!_this.ownerAddress) {
+						_this.ownerAddressNameLoading = true;
+						let owner = web3Service.formatAddress(_this.owner) || _this.owner;
+						if(owner != _this.ownerAddress) _this.ownerAddressName = _this.owner.toLowerCase();
+						else _this.ownerAddressName = await web3Service.reverseName(_this.ownerAddress);
+						_this.ownerAddressNameLoading = false;
+					} else {
+						_this.ownerAddressName = null;
+					}
+					safeApply();
+					updatePathParams();
+					filterInvaders();
 				}
 			}
 			
@@ -257,7 +266,6 @@
 			if(noWait || !_this.owner) processOwner();
 			else ownerCheckTimeout = $timeout(processOwner, 700);
 		}
-		
 		function onLevelChange(noWait) {
 			let processLevel = function() {
 				if(_this.lastLevelMin != _this.levelMin) {
@@ -292,17 +300,14 @@
 			if(noWait) processLevel();
 			else levelCheckTimeout = $timeout(processLevel, 400);
 		}
-		
 		function onTypeChange() {
 			updatePathParams();
 			filterInvaders();
 		}
-		
 		function onAttributeChange() {
 			updatePathParams();
 			filterInvaders();
 		}
-		
 		function onSortChange() {
 			updatePathParams();
 			filterInvaders();
@@ -326,11 +331,6 @@
 			if(filterTitle == filterTitleStart) return _this.ownerAddress ? '' : 'All Invaders';
 			return filterTitle;
 		}
-		
-		
-		
-		
-		
 		
 		// Show/Hide invader tooltip
 		var tooltipShow = {};
@@ -448,7 +448,7 @@
 
 		// Listen for network data changes
 		web3Service.onNetworkChange(function () {
-			//if(_this.error) $route.reload();
+			if(_this.error) loadInvaders();
 		}, $scope, true);
 
 		// Listen for transactions

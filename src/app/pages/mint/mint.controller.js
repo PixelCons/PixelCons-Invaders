@@ -11,6 +11,7 @@
 		_this.sortBy = sortByDefault;
 		_this.marketSortBy = sortByDefault;
 		_this.loadMarketData = loadMarketData;
+		_this.mintInvader = mintInvader;
 		_this.filterPageData = filterPageData;
 		_this.filterMarketData = filterMarketData;
 		_this.invaderMouseEnter = invaderMouseEnter;
@@ -27,37 +28,37 @@
 		async function loadPageData() {
 			_this.accountAddressLoading = true;
 			_this.error = null;
-			web3Service.awaitState(async function() {
-				try {
-					let web3state = web3Service.getState();
-					if (web3state == "ready") {
-						_this.accountAddress = web3Service.getActiveAccount();
-						if (_this.accountAddress) {
-							_this.accountPixelcons = await coreContract.getAccountPixelcons(_this.accountAddress);
-							_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
-							filterPageData();
-							
-							
-						} else {
-							if (web3Service.isReadOnly()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
-							else if (web3Service.isPrivacyMode()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please connect your Ethereum account');
-							else _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please log into ' + web3Service.getProviderName());
-						}
-					} else if (web3state == "not_enabled") {
-						_this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
+			try {
+				await web3Service.awaitState(true);
+				
+				let web3state = web3Service.getState();
+				if (web3state == "ready") {
+					_this.accountAddress = web3Service.getActiveAccount();
+					if (_this.accountAddress) {
+						_this.accountPixelcons = await coreContract.getAccountPixelcons(_this.accountAddress);
+						_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
+						filterPageData();
+						
+						
 					} else {
-						_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>Unkown Network');
+						if (web3Service.isReadOnly()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
+						else if (web3Service.isPrivacyMode()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please connect your Ethereum account');
+						else _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please log into ' + web3Service.getProviderName());
 					}
-					
-					_this.accountAddressLoading = false;
-					safeApply();
-					
-				} catch(err) {
-					_this.accountAddressLoading = false;
-					_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + err);
-					safeApply();
+				} else if (web3state == "not_enabled") {
+					_this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
+				} else {
+					_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>Unkown Network');
 				}
-			}, true);
+				
+				_this.accountAddressLoading = false;
+				safeApply();
+				
+			} catch(err) {
+				_this.accountAddressLoading = false;
+				_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + err);
+				safeApply();
+			}
 		}
 		
 		// Loads market data for the more section
@@ -74,6 +75,18 @@
 			}
 		}
 		
+		// Mints an invader
+		function mintInvader(invaderPixelcon) {
+			$mdDialog.show({
+				controller: 'MintDialogCtrl',
+				controllerAs: 'ctrl',
+				templateUrl: HTMLTemplates['dialog.mint'],
+				parent: angular.element(document.body),
+				locals: { invaderPixelcon: invaderPixelcon },
+				bindToController: true,
+				clickOutsideToClose: true
+			});
+		}
 		
 		// Filters the page data
 		function filterPageData() {

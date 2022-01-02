@@ -25,7 +25,7 @@
 				<span class="textDark textSmall">{{ctrl.accountPixelcons.length + (ctrl.accountPixelcons.length == 1 ? ' PixelCon' : ' PixelCons')}}</span>
 			</div>
 		</div>
-		<md-button class="scanMoreButton filterButton textDark right" ng-click="ctrl.loadMarketData();" aria-label="Scan">
+		<md-button class="scanMoreButton filterButton textDark right" ng-click="ctrl.loadMarketData()" aria-label="Scan">
 			<div class="buttonIcon scan"></div>
 			<span>{{ctrl.screenSize.sm ? 'More' : 'Find More'}}</span>
 		</md-button>
@@ -66,7 +66,8 @@
 			<div class="invaderPixelcon" ng-repeat="invaderPixelcon in ctrl.accountInvaderPixelcons track by $index">
 				<div class="pixelcon crispImage" ng-class="invaderPixelcon.pixelcon.panelClass" ng-style="{'background-position':invaderPixelcon.pixelcon.panelOffset}"></div>
 				<div class="invader crispImage" ng-class="invaderPixelcon.panelClass" ng-style="{'background-position':invaderPixelcon.panelOffset}"
-						ng-mouseenter="ctrl.invaderMouseEnter(invaderPixelcon, $event)" ng-mouseleave="ctrl.invaderMouseLeave(invaderPixelcon, $event)"></div>
+					ng-mouseenter="ctrl.invaderMouseEnter(invaderPixelcon, $event)" ng-mouseleave="ctrl.invaderMouseLeave(invaderPixelcon, $event)"
+					ng-click="ctrl.mintInvader(invaderPixelcon)"></div>
 			</div>
 		</div>
 	</div>

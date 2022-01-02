@@ -59,7 +59,8 @@
 		}
 		
 		//Generates a single invader image
-		function generateInvader(invaderId) {
+		function generateInvader(invaderId, borderSize) {
+			if(!borderSize) borderSize = 1;
 			const id = formatId(invaderId);
 			const mult = 2;
 			
@@ -73,7 +74,7 @@
 				for (let x = 0; x < 8; x++) {
 					let index = y * 8 + x;
 					if(id[index] != '0') {
-						ctx.fillRect((((x+1) * invaderScale * mult)-1), (((y+1) * invaderScale * mult)-1), (invaderScale * mult)+2, (invaderScale * mult)+2);
+						ctx.fillRect((((x+1) * invaderScale * mult)-borderSize), (((y+1) * invaderScale * mult)-borderSize), (invaderScale * mult)+(borderSize * 2), (invaderScale * mult)+(borderSize * 2));
 					}
 				}
 			}

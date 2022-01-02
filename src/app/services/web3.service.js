@@ -258,7 +258,7 @@
 				if (scope) scope.$on('$destroy', cleanSubscriptions);
 				_onStateChangeFunctions.push({ func: callback, scope: scope });
 			}
-			if(syncWithStateUpdate) awaitState(register);
+			if(syncWithStateUpdate) awaitState().then(register);
 			else register();
 		}
 
@@ -268,7 +268,7 @@
 				if (scope) scope.$on('$destroy', cleanSubscriptions);
 				_onNetworkChangeFunctions.push({ func: callback, scope: scope });
 			}
-			if(syncWithStateUpdate) awaitState(register);
+			if(syncWithStateUpdate) awaitState().then(register);
 			else register();
 		}
 
@@ -281,15 +281,13 @@
 		}
 		
 		// Returns a promise that resolves after the next state update
-		function awaitState(callback, firstStateOnly) {
+		function awaitState(firstStateOnly) {
 			return $q(async function (resolve, reject) {
 				if (_isReadOnly || (firstStateOnly && _firstStateUpdateFinished)) {
 					resolve();
 				} else {
 					_onCheckStateFunctions.push(resolve);
 				}
-			}).then(function() {
-				if(callback) callback();
 			});
 		}
 
@@ -382,7 +380,7 @@
 				if (scope) scope.$on('$destroy', cleanSubscriptions);
 				_onAccountChangeFunctions.push({ func: callback, scope: scope });
 			}
-			if(syncWithStateUpdate) awaitState(register);
+			if(syncWithStateUpdate) awaitState().then(register);
 			else register();
 		}
 

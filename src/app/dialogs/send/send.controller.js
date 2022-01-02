@@ -2,13 +2,15 @@
 	angular.module('App')
 		.controller('SendDialogCtrl', SendDialogCtrl);
 
-	SendDialogCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$sce', 'web3Service', 'coreContract'];
-	function SendDialogCtrl($scope, $mdMedia, $mdDialog, $sce, web3Service, coreContract) {
+	SendDialogCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$timeout', '$sce', 'web3Service', 'coreContract', 'decoder'];
+	function SendDialogCtrl($scope, $mdMedia, $mdDialog, $timeout, $sce, web3Service, coreContract, decoder) {
 		var _this = this;
+		var validCheckTimeout;
+		var validAddress;
 		_this.closeDialog = closeDialog;
 		_this.checkValid = checkValid;
 		_this.checkValidAmount = checkValidAmount;
-		_this.sendPixelcon = sendPixelcon;
+		_this.sendInvader = sendInvader;
 		_this.sendEth = sendEth;
 
 		// Watch for screen size changes
@@ -23,7 +25,7 @@
 			_this.currView = 'loading';
 			if (_this.ethMode) {
 				_this.title = 'Tip the Devs!';
-				_this.toAddress = 'PixelCons.eth';
+				_this.toAddress = 'pixelcons.eth';
 
 				let activeAccount = web3Service.getActiveAccount();
 				if (activeAccount) {
@@ -36,9 +38,11 @@
 					_this.currView = 'sendEthError';
 				}
 			} else {
-				_this.title = 'Send PixelCon';
-				coreContract.verifyTransferPixelcon(_this.pixelconId).then(function (data) {
-					_this.currView = 'sendPixelcon';
+				_this.title = 'Send Invader';
+				coreContract.verifyTransferInvader(_this.invaderId).then(function (data) {
+					_this.currView = 'sendInvader';
+					_this.invaderImg = decoder.generateInvader(_this.invaderId, 2);
+					
 				}, function (reason) {
 					_this.currView = 'error';
 					_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + reason);
@@ -48,7 +52,15 @@
 
 		// Check if address is valid
 		function checkValid() {
-			_this.canSend = web3Service.isAddress(_this.toAddress);
+			_this.canSend = false;
+			_this.canSendChecking = true;
+			
+			if(validCheckTimeout) $timeout.cancel(validCheckTimeout);
+			validCheckTimeout = $timeout(async function() {
+				validAddress = await web3Service.resolveName(_this.toAddress);
+				_this.canSendChecking = false;
+				_this.canSend = !!validAddress;
+			}, 700);
 		}
 
 		// Check if amount is valid
@@ -56,15 +68,15 @@
 			_this.canSend = (_this.sendAmount > 0);
 		}
 
-		// Send pixelcon
-		function sendPixelcon() {
-			let transaction = coreContract.transferPixelcon(_this.pixelconId, web3Service.formatAddress(_this.toAddress));
+		// Send invader
+		function sendInvader() {
+			let transaction = coreContract.transferInvader(_this.invaderId, web3Service.formatAddress(validAddress));
 			$mdDialog.hide({transaction: transaction});
 		}
 
 		// Send ether
 		function sendEth() {
-			let transaction = web3Service.sendEth(_this.toAddress, _this.sendAmount);
+			let transaction = web3Service.sendEth(validAddress, _this.sendAmount);
 			$mdDialog.hide({transaction: transaction});
 		}
 
