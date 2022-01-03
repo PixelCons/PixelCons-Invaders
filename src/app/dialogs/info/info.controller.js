@@ -26,19 +26,7 @@
 				_this.title = 'How to Uncover Invaders';
 			}
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
+		
 		// Closes the dialog window
 		function closeDialog() {
 			$mdDialog.cancel();

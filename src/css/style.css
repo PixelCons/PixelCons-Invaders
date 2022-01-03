@@ -90,9 +90,11 @@
 }
 .textTitleLarge {
 	font-size: 65px;
+	line-height: 60px;
 }
 .textTitleExLarge {
 	font-size: 80px;
+	line-height: 72px;
 }
 .textBold {
 	font-weight: 600;
