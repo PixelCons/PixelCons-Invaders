@@ -21,6 +21,9 @@ const jsonRpc = '';
 /* Redirect link for opensea */
 const openseaLink = 'https://opensea.io/collection/pixelcons?search[sortAscending]=true&search[sortBy]=PRICE&search[stringTraits][0][name]=Genesis&search[stringTraits][0][values][0]=2018%20Genesis';
 
+/* Opensea API key */
+const openseaApiKey = '';
+
 /* Number of genesis pixelcons */
 const genesisCount = 651;
 
