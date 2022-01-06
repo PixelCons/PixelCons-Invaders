@@ -6,23 +6,23 @@ const http = require('http');
 const https = require('https');
 
 // Settings
-const requestTimeout = 2000;
+const requestTimeout = 20000;
 
 // Performs a POST request
-function doPOST(url, data) {
+function doPOST(url, data, headers) {
     return new Promise(function(resolve, reject) {
 		let urlObject = new URL(url);
 		let options = {
 			method: 'POST',
 			hostname: urlObject.hostname,
 			port: urlObject.port,
-			path: urlObject.pathname,
+			path: urlObject.pathname + (urlObject.search ? urlObject.search : ''),
 			timeout: requestTimeout,
 			headers: {
 				'Content-Type': 'application/json',
 				'Content-Length': data.length
 			}
-		};
+		}
 		let protocol = url.indexOf('https') == 0 ? https : http;
         let req = protocol.request(options, res => {
             if (res.statusCode < 200 || res.statusCode >= 300) {
@@ -42,22 +42,25 @@ function doPOST(url, data) {
 		req.on('timeout', function() {
 			req.abort();
 		});
+		if(headers) {
+			for(let h in headers) req.setHeader(h, headers[h]);
+		}
         req.write(data);
         req.end();
     });
 }
 
 // Performs a GET request
-function doGET(url) {
+function doGET(url, headers) {
     return new Promise(function(resolve, reject) {
 		let urlObject = new URL(url);
 		let options = {
 			method: 'GET',
 			hostname: urlObject.hostname,
 			port: urlObject.port,
-			path: urlObject.pathname,
+			path: urlObject.pathname + (urlObject.search ? urlObject.search : ''),
 			timeout: requestTimeout
-		};
+		}
 		let protocol = url.indexOf('https') == 0 ? https : http;
         let req = protocol.request(options, res => {
             if (res.statusCode < 200 || res.statusCode >= 300) {
@@ -77,6 +80,9 @@ function doGET(url) {
 		req.on('timeout', function() {
 			req.abort();
 		});
+		if(headers) {
+			for(let h in headers) req.setHeader(h, headers[h]);
+		}
         req.end();
     });
 }

@@ -12,7 +12,7 @@
 	<md-progress-circular ng-if="ctrl.accountAddressLoading" class="addressLoadingSpinner" md-diameter="80px" md-mode="indeterminate"></md-progress-circular>
 	
 	<!-- Error -->
-	<div class="error textDark textSelectable" ng-if="ctrl.error" ng-bind-html="ctrl.error"></div>
+	<div class="error textDark textMedium textSelectable" ng-if="ctrl.error" ng-bind-html="ctrl.error"></div>
 	
 	<!-- No More to Uncover Message -->
 	
@@ -43,12 +43,15 @@
 			</md-select>
 			<div class="moreOptionContainer textCenter">
 				<md-progress-circular ng-if="ctrl.marketLoading" class="moreLoadingSpinner" md-diameter="50px" md-mode="indeterminate"></md-progress-circular>
-				<div class="marketItemContainer" ng-repeat="item in ctrl.marketData track by $index">
-					<div class="marketItem crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
-					<div class="marketItemTt crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
-					<div class="marketItemPrice textDark textSmall textBold">{{item.price + item.unit}}</div>
-					<div class="marketItemCount textDark textSmall textBold">{{item.invaders.length + (item.invaders.length==1?' Invader':' Invaders')}}</div>
-				</div>
+				<div class="marketError textDark textMedium textSelectable" ng-if="ctrl.marketError" ng-bind-html="ctrl.marketError"></div>
+				<a class="plain" target="_blank" href="" ng-href="{{item.link}}" ng-repeat="item in ctrl.marketData track by $index">
+					<div class="marketItemContainer">
+						<div class="marketItem crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
+						<div class="marketItemTt crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
+						<div class="marketItemPrice textDark textSmall textBold">{{item.price + item.unit}}</div>
+						<div class="marketItemCount textDark textSmall textBold">{{item.invaders.length + (item.invaders.length==1?' Invader':' Invaders')}}</div>
+					</div>
+				</a>
 			</div>
 		</div>
 	</div>

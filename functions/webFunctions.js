@@ -5,6 +5,7 @@
 const metadata = require('./metadata.js');
 const imagedata = require('./imagedata.js');
 const tagdata = require('./tagdata.js');
+const openseadata = require('./openseadata.js');
 
 // Gets the metadata JSON for the given pixelcon id
 async function getMetadata(pixelconId, params) {
@@ -36,6 +37,16 @@ async function getMultiImage(pixelconIds, color) {
 	}
 }
 
+// Gets opensea listing data
+async function getOpenseaListings() {
+	try {
+		return await openseadata.getSaleListings();
+	} catch (err) {
+		if (!err) err = 'Error';
+		return { errorText: err.message ? err.message : err }
+	}
+}
+
 // Gets the main html with the correct tag data
 async function getTagDataHTML(path, plainHTMLPath) {
 	try {
@@ -50,6 +61,6 @@ async function getTagDataHTML(path, plainHTMLPath) {
 module.exports = {
     getMetadata: getMetadata,
 	getStandardImage: getStandardImage,
-	getMultiImage: getMultiImage,
+	getOpenseaListings: getOpenseaListings,
 	getTagDataHTML: getTagDataHTML
 }

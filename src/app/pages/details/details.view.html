@@ -67,7 +67,7 @@
 			</div>
 			<div class="detail" ng-click="ctrl.infoHint('levelExplainer')">
 				<span class="textDark textLarge offset">{{'Level ' + (ctrl.invader.level > 0 ? ctrl.invader.level : 'Uknown')}}</span>
-				<div class="percentage textDark textSmall">
+				<div class="percentage textDark textSmall" ng-if="ctrl.invader.level>0">
 					<span>{{(ctrl.invader.levelRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invader.levelRarity + '%)'}}</span>
 					<div class="hint"></div>
 				</div>

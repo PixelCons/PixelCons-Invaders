@@ -6,11 +6,11 @@
 /* Enables automatically adjusting the HTML tag data with details about the page being requested */
 const customizedHTMLTagsEnabled = false;
 
-/* Enables extra data querying to fetch additional details in a PixelCons metadata */
-const detailedMetadataEnabled = false;
+/* Enables advanced API features */
+const advancedApiEnabled = true;
 
 /* Web domain that the app is hosted on */
-const appWebDomain = 'https://pixelcons.io/';
+const appWebDomain = 'https://invaders.pixelcons.io/';
 
 /* Deployed PixelCons contract address */
 const contractAddress = '0x5536b6aadd29eaf0db112bb28046a5fad3761bd4';
@@ -36,11 +36,12 @@ const defaultGrayBackground = [];
 // Export
 module.exports = {
 	customizedHTMLTagsEnabled: customizedHTMLTagsEnabled,
-	detailedMetadataEnabled: detailedMetadataEnabled,
+	advancedApiEnabled: advancedApiEnabled,
     appWebDomain: appWebDomain,
 	contractAddress: contractAddress,
 	jsonRpc: jsonRpc,
 	openseaLink: openseaLink,
+	openseaApiKey: openseaApiKey,
 	genesisCount: genesisCount,
 	genesisArtists: genesisArtists,
 	defaultGrayBackground: defaultGrayBackground

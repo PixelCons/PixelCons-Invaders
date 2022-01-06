@@ -45,7 +45,7 @@ function start(debugMode) {
 		let metadata = await webFunctions.getMetadata(req.params.id, req.query);
 		if(!metadata.errorText) {
 			res.contentType('application/json');
-			res.send(JSON.stringify(metadata)); 
+			res.send(JSON.stringify(metadata));
 		} else {
 			res.status(500).send(metadata.errorText);
 		}
@@ -59,13 +59,13 @@ function start(debugMode) {
 			res.status(500).send(imageData.errorText);
 		}
 	});
-	app.get('/meta/image_multi/:ids', async function(req, res) {
-		let imageData = await webFunctions.getMultiImage(req.params.ids.split(','), req.query.color);
-		if(!imageData.errorText) {
-			res.contentType('image/png');
-			res.end(imageData, 'binary');
+	app.get('/api/opensea', async function(req, res) {
+		let listings = await webFunctions.getOpenseaListings();
+		if(!listings.errorText) {
+			res.contentType('application/json');
+			res.send(JSON.stringify(listings));
 		} else {
-			res.status(500).send(imageData.errorText);
+			res.status(500).send(listings.errorText);
 		}
 	});
 	

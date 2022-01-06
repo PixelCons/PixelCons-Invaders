@@ -165,9 +165,11 @@
 				testData[i].invaders = [];
 				let count = i > 1 ? 2 : 3;
 				for(let j=0; j<count; j++) {
-					let invader = generateInvader();
-					invader.mintIndex = j;
-					testData[i].invaders.push(invader);
+					let invader = generateInvader(testData[i].id, j);
+					if(invader) {
+						invader.mintIndex = j;
+						testData[i].invaders.push(invader);
+					}
 				}
 			}
 			return testData;
@@ -175,201 +177,40 @@
 		
 		// Gets list of pixelcons for sale and their mintable invaders
 		async function getPixelconsForSale() {
-			await sleep(2000);
-			let testData = [{
-				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
-				priceUSD: 0.11,
-				price: 0.11,
-				unit: 'Ξ',
-				invaders: [null,null]
-			},{
-				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
-				priceUSD: 0.21,
-				price: 0.21,
-				unit: 'Ξ',
-				invaders: [null,null,null,null]
-			},{
-				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
-				priceUSD: 0.43,
-				price: 0.43,
-				unit: 'Ξ',
-				invaders: [null,null,null]
-			},{
-				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
-				priceUSD: 0.632,
-				price: 0.632,
-				unit: 'Ξ',
-				invaders: [null,null,null,null]
-			},{
-				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
-				priceUSD: 1.1,
-				price: 1.1,
-				unit: 'Ξ',
-				invaders: [null,null,null,null,null,null]
-			},{
-				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
-				priceUSD: 2.184,
-				price: 2.184,
-				unit: 'Ξ',
-				invaders: [null,null,null,null,null]
-			},{
-				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
-				priceUSD: 0.11,
-				price: 0.11,
-				unit: 'Ξ',
-				invaders: [null,null]
-			},{
-				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
-				priceUSD: 0.21,
-				price: 0.21,
-				unit: 'Ξ',
-				invaders: [null,null,null,null]
-			},{
-				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
-				priceUSD: 0.43,
-				price: 0.43,
-				unit: 'Ξ',
-				invaders: [null,null,null]
-			},{
-				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
-				priceUSD: 0.632,
-				price: 0.632,
-				unit: 'Ξ',
-				invaders: [null,null,null,null]
-			},{
-				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
-				priceUSD: 1.1,
-				price: 1.1,
-				unit: 'Ξ',
-				invaders: [null,null,null,null,null,null]
-			},{
-				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
-				priceUSD: 2.184,
-				price: 2.184,
-				unit: 'Ξ',
-				invaders: [null,null,null,null,null]
-			},{
-				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
-				priceUSD: 0.11,
-				price: 0.11,
-				unit: 'Ξ',
-				invaders: [null,null]
-			},{
-				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
-				priceUSD: 0.21,
-				price: 0.21,
-				unit: 'Ξ',
-				invaders: [null,null,null,null]
-			},{
-				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
-				priceUSD: 0.43,
-				price: 0.43,
-				unit: 'Ξ',
-				invaders: [null,null,null]
-			},{
-				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
-				priceUSD: 0.632,
-				price: 0.632,
-				unit: 'Ξ',
-				invaders: [null,null,null,null]
-			},{
-				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
-				priceUSD: 1.1,
-				price: 1.1,
-				unit: 'Ξ',
-				invaders: [null,null,null,null,null,null]
-			},{
-				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
-				priceUSD: 2.184,
-				price: 2.184,
-				unit: 'Ξ',
-				invaders: [null,null,null,null,null]
-			},{
-				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
-				priceUSD: 0.11,
-				price: 0.11,
-				unit: 'Ξ',
-				invaders: [null,null]
-			},{
-				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
-				priceUSD: 0.21,
-				price: 0.21,
-				unit: 'Ξ',
-				invaders: [null,null,null,null]
-			},{
-				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
-				priceUSD: 0.43,
-				price: 0.43,
-				unit: 'Ξ',
-				invaders: [null,null,null]
-			},{
-				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
-				priceUSD: 0.632,
-				price: 0.632,
-				unit: 'Ξ',
-				invaders: [null,null,null,null]
-			},{
-				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
-				priceUSD: 1.1,
-				price: 1.1,
-				unit: 'Ξ',
-				invaders: [null,null,null,null,null,null]
-			},{
-				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
-				priceUSD: 2.184,
-				price: 2.184,
-				unit: 'Ξ',
-				invaders: [null,null,null,null,null]
-			},{
-				id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1',
-				priceUSD: 0.11,
-				price: 0.11,
-				unit: 'Ξ',
-				invaders: [null,null]
-			},{
-				id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400',
-				priceUSD: 0.21,
-				price: 0.21,
-				unit: 'Ξ',
-				invaders: [null,null,null,null]
-			},{
-				id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000',
-				priceUSD: 0.43,
-				price: 0.43,
-				unit: 'Ξ',
-				invaders: [null,null,null]
-			},{
-				id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770',
-				priceUSD: 0.632,
-				price: 0.632,
-				unit: 'Ξ',
-				invaders: [null,null,null,null]
-			},{
-				id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0',
-				priceUSD: 1.1,
-				price: 1.1,
-				unit: 'Ξ',
-				invaders: [null,null,null,null,null,null]
-			},{
-				id: '0x00028000028880000027770004970700004977700002877000028777000d7777',
-				priceUSD: 2.184,
-				price: 2.184,
-				unit: 'Ξ',
-				invaders: [null,null,null,null,null]
-			}];
-			for(let i=0; i<testData.length; i++) {
-				let maxRarity = 0;
-				let maxLevel = 0;
-				for(let j=0; j<testData[i].invaders.length; j++) {
-					let invader = generateInvader();
-					testData[i].invaders[j] = invaderAnalysis(invader.id);
-					maxRarity = Math.max(maxRarity, testData[i].invaders[j].rarityScore);
-					maxLevel = Math.max(maxLevel, testData[i].invaders[j].level);
+			let marketListings = await getMarketListings();
+			if(marketListings === null) throw "Data analysis not enabled";
+			if(!marketListings.length) throw "Issue with market API";
+			
+			await sleep(200);
+			let forSale = [];
+			for(let i=0; i<marketListings.length; i++) {
+				let numInvaders = 1;
+				if(marketListings[i].index < 100) numInvaders = 6;
+				else if(marketListings[i].index < 651) numInvaders = 4;
+				else if(marketListings[i].index < 704) numInvaders = 3;
+				else if(marketListings[i].index < 792) numInvaders = 2;
+				marketListings[i].invaders = [];
+				for(let j=0; j<numInvaders; j++) {
+					let invader = generateInvader(marketListings[i].id, j);
+					if(invader) {
+						invader.mintIndex = j;
+						marketListings[i].invaders.push(invader);
+					}
 				}
-				testData[i].maxRarity = maxRarity;
-				testData[i].maxLevel = maxLevel;
+				if(marketListings[i].invaders.length > 0) {
+					let maxRarity = 0;
+					let maxLevel = 0;
+					for(let j=0; j<marketListings[i].invaders.length; j++) {
+						maxRarity = Math.max(maxRarity, marketListings[i].invaders[j].rarityScore);
+						maxLevel = Math.max(maxLevel, marketListings[i].invaders[j].level);
+					}
+					marketListings[i].maxRarity = maxRarity;
+					marketListings[i].maxLevel = maxLevel;
+				
+					forSale.push(marketListings[i]);
+				}
 			}
-			return testData;
+			return forSale;
 		}
 
 
@@ -597,6 +438,26 @@
 			return false;
 		}
 		
+		// Gets current market listings
+		function getMarketListings() {
+			return $q(async function (resolve, reject) {
+				var url = '/api/opensea';
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', url, true);
+				xhr.responseType = 'json';
+				xhr.onload = function() {
+				  var status = xhr.status;
+				  if (status === 200) {
+					resolve(xhr.response);
+				  } else {
+					resolve(null);
+				  }
+				};
+				xhr.send();
+			});
+		}
+		
+		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		var invaders = ["0969969005566550095005900660066060099006000000000000000000055000","9dd00dd91dd00dd100099000000dd000990000990001100000011000000dd000","0000000000000000dd1111dddda11add00daad0011011011dd0dd0dddaaaaaad","00066000000cc000000cc0000000000000000000000000006660066666c00c66","d888888d11811811811001188180081811811811000880000001100000d88d00","1c6006c1c660066c000000000000000000066000000000000000000006c00c60","000cc00000066000c500005ccc0000cc66066066005005000050050055500555","09199190099999900001100000011000ddd00ddd000dd0000009900000000000","5000000507d77d7007d77d700dd00dd07d5005d7d750057dd005500dd005500d","a5a66a5a05600650056006500a6aa6a005a00a5005a00a500555555005666650","6666666600999900009119001106601166911966669119661111111111111111","d000000d0000000000000000d000000d00000000000000000dd11dd009d99d90","0dd00dd00a5005a055a00a55a550055a0dd55dd0500000055000000500000000","a660066a00000000000000000006600000000000000000000000000000000000","006556000050050000a00a0000600600a550055a6a5005a60006600000066000","55c55c5550000005500000050dc00cd0ccdccdccd555555dd005500d500dd005","1dd00dd110011001100dd00100000000011111100d9119d00000000000000000","000dd000000dd0000cdccdc00dcddcd0055005500dd00dd00dc00cd050000005","00000000000000000c6cc6c0066116606660066606c66c600116611011c00c11","5aa00aa55aa00aa5000aa000000dd000000000000050050000a00a00ad0dd0da","00dddd001110011111b00b11000110000000000000000000db0000bddb0000bd","1b0bb0b1b101101bb111111b1bbbbbb1001bb1000010010000b00b001b0000b1","000aa000000aa000000aa000a000000a60000006600000061aa00aa111a00a11","0660066006611660011661100a1001a00a6aa6a0066666600000000000000000","0001100019000091660000666660066666600666999009991101101169099096","5000000559900995669009666990099605500550099009906000000660000006","55b00b55b600006b6b0000b6bb5bb5bb550000555b0000b5000bb00000055000","000aa000000000000000000011a00a1100000000000000000000000000000000","100dd001d001100dd000000dd000000dddd11ddd00011000000cc000c000000c","c665566c000000000000000000c55c0000566500005cc50055c00c5555c00c55","0550055009600690900660095005500590000009665005666650056666500566","ad0dd0dadd0000dda100001aa10dd01a00a11a0000d11d001a0aa0a1da0aa0ad","00d00d0000a00a00a500005a5500005500d00d00d500005dd500005dda5005ad","0dd11dd01cdccdc11dddddd1000cc00011100111ddd00ddd0000000000000000","006556000065560000055000000cc00055055055000000000000000000500500","0860068088888888558668550550055005555550055555500685586006855860","0656656060066006900660096696696699699699695995969000000950000005","6a0000a6650000566555555666a66a6600000000aa0000aa55000055a500005a","06500560665665665c5cc5c5555555550cc00cc00c6006c05cc00cc5c650056c","0dd00dd000000000000000000000000001b11b100bbbbbb00bb00bb00dd00dd0","d550055d0000000000000000550000550058850000855800dd0000dd55000055","d00dd00dd00dd00db00bb00bb000000b00000000000000000000000000000000","bd0000db000dd0000001100000d00d00bb0bb0bbdd0dd0ddddddddddbbdbbdbb","0070070000100100d101101dd101101d001111007110011711100111117dd711","111001110000000000000000000dd0000000000000000000b00dd00bd00dd00d","0181181001811810100880011006600110000001618008166180081600066000","d50dd05d000000000000000000500500ddd00dddd880088d0055550000555500","0001100000011000116116116b1bb1b61110011111000011b100001b00600600","016006100a1001a0011001100000000000000000000000000000000000000000","5500005500055000000cc000000cc000c506605c55066055c506605c66055066","555665556660066666600666500bb0055000000550000005bb6bb6bb5b6bb6b5","dccccccddc0000cd5c0000c5005cc500dd0000dd5500005500c00c0000d00d00","55c55c55555dd555cc0cc0cc550dd055000dd000cdd00ddcdcc00ccd00055000","5d0000d585500558588008858d0550d80080080000800800555dd55558588585","00d00d0000d00d00dd0000dd5700007500d77d00550000555700007575000057","7750057700500500007007000007700067077076660550660007700000077000","6000000666600666666006660006600061800816611001168000000810000001","0595595055d00d5555900955555dd555559dd95555dddd559000000990000009","000dd000000dd00010011001c001100c0000000000011000000110001dd00dd1","5760067555700755550000556600006600555500000550000006600000600600","5860068505855850068668600006600066800866556006550000000000000000","5006600555966955559559555595595509999990066556600665566005655650","05b55b500db55bd00d5005d00d5005d00005500000055000000dd000500dd005","00600600006006000060060000100100611001166a0000a66100001600a00a00","60000006b000000b6000000610000001bbbbbbbbb660066b6b6006b6b000000b","0016610000166100660110666601106666066066669119666661166600000000","0011110000088000000660006808808668000086660000660010010000100100","00d00d0000500500dd5005dddd9009dd000000000050050000d00d0095d55d59","9006600950066005500000055000000550000005555665559999999909699690","6601106600000000000000001100001166066066660660666b0000b611000011","0005500066555566868668686006600666855866665665666686686655655655","0000000000000000671001761160061166000066660660666601106666011066","59000095d595595dd555555d0000000000000000000000009500005955000055","000110000001100001dddd1001dddd100000000011d00d111ad00da111d00d11","11000011d900009d00dddd0000dddd001d0000d19d0000d91d0000d100000000","11000011dd0000dddd0000dddd0110dd1c1cc1c1111dd111dd0000ddcd0000dc","06b00b600bb00bb0566666655b6bb6b560066006000550000005500006666660","da0aa0adaa0aa0aadd0dd0dd000000000001100000011000000dd000000dd000","01a11a100111111001111110066666600000000001a00a1001100110a000000a","add00dda1dd00dd10111111001a11a10000dd0000111111001a11a1001100110","000000000000000005c00c5005500550ddddddddd000000dc000000c00000000","b600006b0000000000000000000bb000b5b55b5b555555555b0000b555000055","000000000000000000011000000110001c1001c1000000000000000066100166","dadaadadadddddda0000000000000000a00dd00a000dd000000aa000100dd001","c5d00d5c55c00c55cd0000dcdd0000ddcd0dd0dc00d00d0000d00d0000500500","0580085055855855855555586000000606655660086886808006600860088006","d180081dd110011d100dd001100dd0011dd11dd1111001111880088118188181","00066000000550000005500000066000000aa0006aa00aa65550055555566555","0086680066666666555665550056650000066000000880006600006686000068","00000000000aa000000550000005500000666600006aa600a566665a5a6aa6a5","66066066a600006a11000011111661111100001166000066660660661a0aa0a1","18d00d81d110011dd10dd01d11011011dd0dd0ddddd00dddd880088d00000000","00000000d909909ddd0dd0dd11dddd1100199100001111000001100000099000","9001100960099006069119600661166000066000019119100111111019199191","5dddddd5d505505d95055059000dd00000d00d00009009000090090000d00d00","0556655005566550000000000000000066600666655005566550055600000000","006bb6000066660000166100000660000000000000000000b110011b11600611","cd0110dc000000000000000000011000000000000000000011dddd1111dddd11","85555558d58dd85d055dd5500d8dd8d0d000000dd005500d8005500885855858","0017710061000016610000160000000000066000000660006707707676066067",
@@ -618,129 +479,176 @@
 		function getInvader(index) {
 			return fillinInvader(invaders[index], index);
 		}
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		function generateInvader(num) {
-			let colors = getColorsTri();
-			let invaderGrid = [];
-			for(let y=0; y<8; y++){ invaderGrid[y] = []; for(let x=0; x<8; x++) invaderGrid[y][x] = '0'; }
+		function generateInvader(pixelconId, index) {
+			let seed = '0xbc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98f';
+			seed = ethers.utils.keccak256('0x' + seed.substr(2,64).padStart(64,'0') + pixelconId.substr(2,64).padStart(64,'0') + (index).toString(16).padStart(64,'0'));
+
+			//flags
+			let horizontalExpand1 = op_ba(seed /*&*/, '0x00000001');
+			let verticalExpand1 = op_ba(seed /*&*/, '0x00000002');
+			let horizontalExpand2 = op_ba(seed /*&*/, '0x00000004');
+			let verticalExpand2 = op_ba(seed /*&*/, '0x00000008');
+			seed = op_sr(seed /*>>*/, 32);
+
+			//colors
+			let colors = getColors(seed);
+			let color1 = colors[0]; let color2 = colors[1]; let color3 = colors[2];
+			seed = op_sr(seed /*>>*/, 32);
+
+			//masks
+			let mask1 = generateMask_5x5(seed, verticalExpand1, horizontalExpand1);
+			seed = op_sr(seed /*>>*/, 32);
+			let mask2 = generateMask_5x5(seed, verticalExpand2, horizontalExpand2);
+			seed = op_sr(seed /*>>*/, 32);
+			let mask3 = generateMask_8x8(seed);
+			seed = op_sr(seed /*>>*/, 64);
+			let combinedMask = op_ba(mask1 /*&*/, mask2);
+			let highlightMask = op_ba(mask1 /*&*/, mask3);
+
+			let result = op_ba(op_ba(op_ba(mask1 /*&*/, op_bn(/*~*/combinedMask)) /*&*/, op_bn(/*~*/highlightMask)) /*&*/, color1);
+			result = op_bo(result, op_ba(op_ba(combinedMask /*&*/, op_bn(/*~*/highlightMask)) /*&*/, color2));
+			result = op_bo(result, op_ba(highlightMask /*&*/, color3));
 			
-			let backGrid = [];
-			for(let y=0; y<5; y++){ backGrid[y] = []; for(let x=0; x<5; x++) backGrid[y][x] = '0'; }
-			for(let y=0; y<5; y++) {
-				for(let x=0; x<2; x++) {
-					let color = Math.floor(Math_random()*2) ? '0' : colors[0];
-					backGrid[y][x] = color;
-					backGrid[y][4-x] = backGrid[y][x];
-				}
-				for(let x=2; x<=2; x++) {
-					let color = Math.floor(Math_random()*2) ? '0' : colors[0];
-					backGrid[y][x] = color;
-				}
-			}
-			
-			let midsGrid = [];
-			for(let y=0; y<5; y++){ midsGrid[y] = []; for(let x=0; x<5; x++) midsGrid[y][x] = '0'; }
-			for(let y=0; y<5; y++) {
-				for(let x=0; x<2; x++) {
-					let color = Math.floor(Math_random()*2) ? '0' : colors[1];
-					midsGrid[y][x] = color;
-					midsGrid[y][4-x] = midsGrid[y][x];
-				}
-				for(let x=2; x<=2; x++) {
-					let color = Math.floor(Math_random()*2) ? '0' : colors[1];
-					midsGrid[y][x] = color;
-				}
-			}
-			
-			let highsGrid = [];
-			for(let y=0; y<8; y++){ highsGrid[y] = []; for(let x=0; x<8; x++) highsGrid[y][x] = '0'; }
-			for(let y=0; y<8; y++) {
-				for(let x=0; x<4; x++) {
-					let color = Math.floor(Math_random()*4) ? '0' : colors[2];
-					highsGrid[y][x] = color;
-					highsGrid[y][4-x] = highsGrid[y][x];
-				}
-				for(let x=4; x<=4; x++) {
-					let color = Math.floor(Math_random()*4) ? '0' : colors[2];
-					highsGrid[y][x] = color;
-				}
-			}
-			
-			//////////////
-			let f1 = Math.floor(Math_random()*2) ? true : false;
-			let f2 = Math.floor(Math_random()*2) ? true : false;
-			for(let y=0; y<8; y++) {
-				let x=0;
-				let bX=0;
-				let bY = Math.round((y/8)*5);
-				let mY = f1 ? y : (7-y);
-				
-				x = 0;
-				bX = 0;
-				invaderGrid[mY][x] = backGrid[bY][bX];
-				invaderGrid[mY][7-x] = invaderGrid[mY][x];
-				
-				x = 1;
-				bX = f2 ? 1 : 0;
-				invaderGrid[mY][x] = backGrid[bY][bX];
-				invaderGrid[mY][7-x] = invaderGrid[mY][x];
-				
-				x = 2;
-				bX = 1;
-				invaderGrid[mY][x] = backGrid[bY][bX];
-				invaderGrid[mY][7-x] = invaderGrid[mY][x];
-				
-				x = 3;
-				bX = 2;
-				invaderGrid[mY][x] = backGrid[bY][bX];
-				invaderGrid[mY][7-x] = invaderGrid[mY][x];
-			}
-			
-			//////////////
-			f1 = Math.floor(Math_random()*2) ? true : false;
-			f2 = Math.floor(Math_random()*2) ? true : false;
-			for(let y=0; y<8; y++) {
-				let x=0;
-				let bX=0;
-				let bY = Math.round((y/8)*5);
-				let mY = f1 ? y : (7-y);
-				
-				x = 0;
-				bX = 0;
-				invaderGrid[mY][x] = invaderGrid[mY][x] != '0' ? (midsGrid[bY][bX] != '0' ? midsGrid[bY][bX] : invaderGrid[mY][x]) : invaderGrid[mY][x];
-				invaderGrid[mY][7-x] = invaderGrid[mY][x];
-				
-				x = 1;
-				bX = f2 ? 1 : 0;
-				invaderGrid[mY][x] = invaderGrid[mY][x] != '0' ? (midsGrid[bY][bX] != '0' ? midsGrid[bY][bX] : invaderGrid[mY][x]) : invaderGrid[mY][x];
-				invaderGrid[mY][7-x] = invaderGrid[mY][x];
-				
-				x = 2;
-				bX = 1;
-				invaderGrid[mY][x] = invaderGrid[mY][x] != '0' ? (midsGrid[bY][bX] != '0' ? midsGrid[bY][bX] : invaderGrid[mY][x]) : invaderGrid[mY][x];
-				invaderGrid[mY][7-x] = invaderGrid[mY][x];
-				
-				x = 3;
-				bX = 2;
-				invaderGrid[mY][x] = invaderGrid[mY][x] != '0' ? (midsGrid[bY][bX] != '0' ? midsGrid[bY][bX] : invaderGrid[mY][x]) : invaderGrid[mY][x];
-				invaderGrid[mY][7-x] = invaderGrid[mY][x];
-			}
-			
-			///////////////////
-			for(let y=0; y<8; y++) {
-				for(let x=0; x<4; x++) {
-					let bX = x;
-					let bY = y;
-					invaderGrid[y][x] = (invaderGrid[y][x] != '0') ? (highsGrid[bY][bX] != '0' ? highsGrid[bY][bX] : invaderGrid[y][x]) : invaderGrid[y][x];
-					invaderGrid[y][7-x] = invaderGrid[y][x];
-				}
-			}
-			
-			let invaderId = gridToId(invaderGrid);
-			return fillinInvader(invaderId, num);
+			return fillinInvader(result);
 		}
+		function generateMask_8x8(seed) {
+			let mask = generateLine_8x8(seed);
+			mask = op_add(op_sl(mask /*<<*/, 32) /*+*/, generateLine_8x8(op_sr(seed /*>>*/, 8)));
+			mask = op_add(op_sl(mask /*<<*/, 32) /*+*/, generateLine_8x8(op_sr(seed /*>>*/, 16)));
+			mask = op_add(op_sl(mask /*<<*/, 32) /*+*/, generateLine_8x8(op_sr(seed /*>>*/, 24)));
+			mask = op_add(op_sl(mask /*<<*/, 32) /*+*/, generateLine_8x8(op_sr(seed /*>>*/, 32)));
+			mask = op_add(op_sl(mask /*<<*/, 32) /*+*/, generateLine_8x8(op_sr(seed /*>>*/, 40)));
+			mask = op_add(op_sl(mask /*<<*/, 32) /*+*/, generateLine_8x8(op_sr(seed /*>>*/, 48)));
+			mask = op_add(op_sl(mask /*<<*/, 32) /*+*/, generateLine_8x8(op_sr(seed /*>>*/, 56)));
+			return mask;
+		}
+		function generateLine_8x8(seed) {
+			let line = '0x00000000';
+			if(op_eq(op_ba(seed /*&*/, '0x00000003') /*==*/, '0x00000001')) line = op_bo(line /*|*/, '0x000ff000');
+			if(op_eq(op_ba(seed /*&*/, '0x0000000c') /*==*/, '0x00000004')) line = op_bo(line /*|*/, '0x00f00f00');
+			if(op_eq(op_ba(seed /*&*/, '0x00000030') /*==*/, '0x00000010')) line = op_bo(line /*|*/, '0x0f0000f0');
+			if(op_eq(op_ba(seed /*&*/, '0x000000c0') /*==*/, '0x00000040')) line = op_bo(line /*|*/, '0xf000000f');
+			return line;
+		}
+		function generateMask_5x5(seed, verticalExpand, horizontalExpand) {
+			let mask = '0x0000000000000000000000000000000000000000000000000000000000000000';
+			let line1 = generateLine_5x5(seed, horizontalExpand);
+			let line2 = generateLine_5x5(op_sr(seed /*>>*/, 3), horizontalExpand);
+			let line3 = generateLine_5x5(op_sr(seed /*>>*/, 6), horizontalExpand);
+			let line4 = generateLine_5x5(op_sr(seed /*>>*/, 9), horizontalExpand);
+			let line5 = generateLine_5x5(op_sr(seed /*>>*/, 12), horizontalExpand);
+			if(op_gt(verticalExpand /*>*/, 0)) {
+				mask = op_add(op_sl(line1 /*<<*/, 224) /*+*/, op_sl(line2 /*<<*/, 192) /*+*/, op_sl(line2 /*<<*/, 160) /*+*/, op_sl(line3 /*<<*/, 128) 
+						/*+*/, op_sl(line4 /*<<*/, 96) /*+*/, op_sl(line4 /*<<*/, 64) /*+*/, op_sl(line5 /*<<*/, 32) /*+*/, (line5));
+			} else {
+				mask = op_add(op_sl(line1 /*<<*/, 224) /*+*/, op_sl(line1 /*<<*/, 192) /*+*/, op_sl(line2 /*<<*/, 160) /*+*/, op_sl(line2 /*<<*/, 128) 
+						/*+*/, op_sl(line3 /*<<*/, 96) /*+*/, op_sl(line4 /*<<*/, 64) /*+*/, op_sl(line4 /*<<*/, 32) /*+*/, (line5));
+			}
+			return mask;
+		}
+		function generateLine_5x5(seed, horizontalExpand) {
+			let line = '0x00000000';
+			if(op_eq(op_ba(seed /*&*/, '0x00000001') /*==*/, '0x00000001')) line = op_bo(line /*|*/, '0x000ff000');
+			if(op_gt(horizontalExpand /*>*/, 0)) {
+				if(op_eq(op_ba(seed /*&*/, '0x00000002') /*==*/, '0x00000002')) line = op_bo(line /*|*/, '0x0ff00ff0');
+				if(op_eq(op_ba(seed /*&*/, '0x00000004') /*==*/, '0x00000004')) line = op_bo(line /*|*/, '0xf000000f');
+			} else {
+				if(op_eq(op_ba(seed /*&*/, '0x00000002') /*==*/, '0x00000002')) line = op_bo(line /*|*/, '0x00f00f00');
+				if(op_eq(op_ba(seed /*&*/, '0x00000004') /*==*/, '0x00000004')) line = op_bo(line /*|*/, '0xff0000ff');
+			}
+			return line;
+		}
+		function getColors(seed) {
+			let color1 = '0x0000000000000000000000000000000000000000000000000000000000000000';
+			let color2 = '0x0000000000000000000000000000000000000000000000000000000000000000';
+			let color3 = '0x0000000000000000000000000000000000000000000000000000000000000000';
+
+			let colorNum = op_ba(seed /*&*/, '0x000000ff');
+			if(op_lt(colorNum /*<*/, '0x00000080')) {
+				if(op_lt(colorNum /*<*/, '0x00000055')) {
+					if(op_lt(colorNum /*<*/, '0x0000002B')) color3 = '0x7777777777777777777777777777777777777777777777777777777777777777';
+					else color3 = '0x8888888888888888888888888888888888888888888888888888888888888888';
+				} else {
+					color3 = '0x9999999999999999999999999999999999999999999999999999999999999999';
+				}
+			} else {
+				if(op_lt(colorNum /*<*/, '0x000000D5')) {
+					if(op_lt(colorNum /*<*/, '0x000000AB')) color3 = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+					else color3 = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+				} else {
+					color3 = '0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc';
+				}
+			}
+
+			if(op_eq(op_ba(seed /*&*/, '0x00000100') /*==*/, '0x00000100')) color1 = '0x1111111111111111111111111111111111111111111111111111111111111111';
+			else color1 = '0x5555555555555555555555555555555555555555555555555555555555555555';
+
+			if(op_eq(op_ba(seed /*&*/, '0x00000200') /*==*/, '0x00000200')) color2 = '0x6666666666666666666666666666666666666666666666666666666666666666';
+			else color2 = '0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd';
+
+			return [color1, color2, color3];
+		}
+
+		//Big number operations
+		function op_lt(n1, n2) { // <
+			return ethers.BigNumber.from(n1).lt(n2);
+		}
+		function op_gt(n1, n2) { // >
+			return ethers.BigNumber.from(n1).gt(n2);
+		}
+		function op_eq(n1, n2) { // ==
+			return ethers.BigNumber.from(n1).eq(n2);
+		}
+		function op_add(n1, n2, n3, n4, n5, n6, n7, n8) { // +
+			let r = ethers.BigNumber.from(n1).add(n2);
+			if(n3) r = r.add(n3);
+			if(n4) r = r.add(n4);
+			if(n5) r = r.add(n5);
+			if(n6) r = r.add(n6);
+			if(n7) r = r.add(n7);
+			if(n8) r = r.add(n8);
+			return '0x' + r.toHexString().substr(2,64).padStart(64,'0');
+		}
+		function op_sub(n1, n2) { // -
+			let r = ethers.BigNumber.from(n1).sub(n2);
+			return '0x' + r.toHexString().substr(2,64).padStart(64,'0');
+		}
+		function op_sl(n1, v) { // <<
+			let r = ethers.BigNumber.from(n1).mul(ethers.BigNumber.from(2).pow(v));
+			return '0x' + r.toHexString().substr(2,64).padStart(64,'0');
+		}
+		function op_sr(n1, v) { // >>
+			let r = ethers.BigNumber.from(n1).div(ethers.BigNumber.from(2).pow(v));
+			return '0x' + r.toHexString().substr(2,64).padStart(64,'0');
+		}
+		function op_ba(n1, n2) { // &
+			n1 = ethers.utils.arrayify('0x' + n1.substr(2,64).padStart(64,'0'));
+			n2 = ethers.utils.arrayify('0x' + n2.substr(2,64).padStart(64,'0'));
+			for(let i=0; i<32; i++) n1[i] = n1[i] & n2[i];
+			return ethers.utils.hexlify(n1);
+		}
+		function op_bo(n1, n2) { // |
+			n1 = ethers.utils.arrayify('0x' + n1.substr(2,64).padStart(64,'0'));
+			n2 = ethers.utils.arrayify('0x' + n2.substr(2,64).padStart(64,'0'));
+			for(let i=0; i<32; i++) n1[i] = n1[i] | n2[i];
+			return ethers.utils.hexlify(n1);
+		}
+		function op_bn(n1) { // ~
+			n1 = ethers.utils.arrayify('0x' + n1.substr(2,64).padStart(64,'0'));
+			for(let i=0; i<32; i++) n1[i] = ~n1[i];
+			return ethers.utils.hexlify(n1);
+		}
+
+  
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
 		
 		function fillinInvader(invaderId, num) {
+			if(invaderId == '0x0000000000000000000000000000000000000000000000000000000000000000') return null;
 			let analysis = invaderAnalysis(invaderId);
 			return {
 				id: invaderId,

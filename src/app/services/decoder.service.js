@@ -193,7 +193,7 @@
 					const marketInvaderOffset = [[72,50],[94,50],[72,28],[94,28],[72,6],[94,6]];
 					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
 						const offsets = marketInvaderOffset[j];
-						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].shadow);
+						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].id);
 						for (let y = 0; y < 8; y++) {
 							for (let x = 0; x < 8; x++) {
 								let index = y * 8 + x;
@@ -238,7 +238,7 @@
 					ctx.fillStyle = '#909090';
 					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
 						const offsets = marketInvaderOffset[marketItems[marketItemIndex].invaders.length-1][j];
-						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].shadow);
+						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].id);
 						for (let y = 0; y < 8; y++) {
 							for (let x = 0; x < 8; x++) {
 								let index = y * 8 + x;
@@ -251,7 +251,7 @@
 					ctx.fillStyle = '#000000';
 					for(let j=0; j<marketItems[marketItemIndex].invaders.length; j++) {
 						const offsets = marketInvaderOffset[marketItems[marketItemIndex].invaders.length-1][j];
-						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].shadow);
+						let invaderShadow = formatId(marketItems[marketItemIndex].invaders[j].id);
 						for (let y = 0; y < 8; y++) {
 							for (let x = 0; x < 8; x++) {
 								let index = y * 8 + x;

@@ -29,7 +29,9 @@
 		</div>
 		<div class="detail">
 			<span class="textBlack offset">{{'Level ' + (ctrl.invaderPixelcon.level > 0 ? ctrl.invaderPixelcon.level : 'Uknown')}}</span>
-			<div class="percentage textBlack textSmall">{{(ctrl.invaderPixelcon.levelRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invaderPixelcon.levelRarity + '%)'}}</div>
+			<div class="percentage textBlack textSmall" ng-if="ctrl.invaderPixelcon.level>0">
+				{{(ctrl.invaderPixelcon.levelRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invaderPixelcon.levelRarity + '%)'}}
+			</div>
 		</div>
 		<div class="detail">
 			<div class="subDetail">

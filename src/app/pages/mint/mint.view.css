@@ -344,3 +344,14 @@ div.invadersMintPage div.error {
 	padding: 15px;
 	background-color: #80808093;
 }
+div.invadersMintPage div.marketError {
+	position: absolute;
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	margin: -100px -153px;
+	width: 276px;
+	min-height: 42px;
+	max-height: 100px;
+	padding: 15px;
+}

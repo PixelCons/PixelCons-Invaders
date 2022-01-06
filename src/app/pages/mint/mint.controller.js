@@ -64,14 +64,22 @@
 		// Loads market data for the more section
 		async function loadMarketData() {
 			_this.scanOpen = !_this.scanOpen;
-			if(_this.marketData === undefined) {
+			if(_this.scanOpen && _this.marketData === undefined) {
 				_this.marketLoading = true;
-				let marketData = await coreContract.getPixelconsForSale();
-				_this.marketData = addMarketItemImageData(marketData);
-				filterMarketData();
-				
-				_this.marketLoading = false;
-				safeApply();
+				_this.marketError = null;
+				try {
+					let marketData = await coreContract.getPixelconsForSale();
+					_this.marketData = addMarketItemImageData(marketData);
+					filterMarketData();
+					
+					_this.marketLoading = false;
+					safeApply();
+					
+				} catch(err) {
+					_this.marketLoading = false;
+					_this.marketError = $sce.trustAsHtml('<b>Market Error:</b><br/>' + err);
+					safeApply();
+				}
 			}
 		}
 		
