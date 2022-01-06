@@ -2,6 +2,8 @@
  * settings.js
  * Defines a set of common settings accross multiple modules
  ***********************************************************************/
+let privateSettings = {};
+try{ privateSettings = require('./settings.private.json'); }catch(e){}
 
 /* Enables automatically adjusting the HTML tag data with details about the page being requested */
 const customizedHTMLTagsEnabled = false;
@@ -34,7 +36,7 @@ const genesisArtists = ['0x9f2fedfff291314e5a86661e5ed5e6f12e36dd37', '0x3bf6400
 const defaultGrayBackground = [];
 
 // Export
-module.exports = {
+let settings = {
 	customizedHTMLTagsEnabled: customizedHTMLTagsEnabled,
 	advancedApiEnabled: advancedApiEnabled,
     appWebDomain: appWebDomain,
@@ -46,3 +48,5 @@ module.exports = {
 	genesisArtists: genesisArtists,
 	defaultGrayBackground: defaultGrayBackground
 }
+for(let n in settings) if(privateSettings[n]) settings[n] = privateSettings[n];
+module.exports = settings;

@@ -17,7 +17,7 @@ const maxMarketSearch = 50;
 // Grabs the current for sale listings
 async function getSaleListings(url, data) {
 	return await cachedata.cacheData('openseadata_getSaleListings()', async function() {
-		if(!advancedApiEnabled) throw "API not enabled";
+		if(!advancedApiEnabled || !openseaApiKey) throw "API not enabled";
 		try {
 			let marketItems = await getMarketState();
 			let forSale = [];
