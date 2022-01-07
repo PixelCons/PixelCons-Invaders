@@ -20,19 +20,19 @@
     "chai": "^4.3.4",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.4.7",
-    "hardhat": "^2.6.4",
+    "hardhat": "^2.8.1",
+    "html-minifier": "^4.0.0",
     "mocha": "^9.1.2",
+    "node-watch": "^0.7.2",
     "rimraf": "^3.0.2",
     "ts-node": "^10.2.1",
-    "node-watch": "^0.7.2",
     "typescript": "^4.4.3",
-    "html-minifier": "^4.0.0",
     "uglify-js": "^3.14.2",
     "uglifycss": "^0.0.29"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "fast-png": "^5.0.4",
+    "fast-png": "^6.1.0",
     "qrcode": "^1.4.4"
   }
 }
