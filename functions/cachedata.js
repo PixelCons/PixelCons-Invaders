@@ -9,7 +9,7 @@ const maxEntrySize = 10000;
 // Data
 var data_cache = {};
 
-// Gets pixelcon details
+// Cache data wrapper
 async function cacheData(key, fetchPromise, lifetime) {
 	if(lifetime > 0) {
 		let data = cacheFetch(key);

@@ -1,98 +1,48 @@
 /***********************************************************************
  * metadata.js
- * Provides functions for reporting the metadata of PixelCons
+ * Provides functions for reporting the metadata of Invaders
  ***********************************************************************/
 const settings = require('./settings.js');
-const matchdata = require('./matchdata.js');
-const ethdata = require('./ethdata.js');
 
 // Settings
 const appWebDomain = settings.appWebDomain;
 const detailedMetadataEnabled = settings.detailedMetadataEnabled;
-const genesisCount = settings.genesisCount;
-const genesisArtists = settings.genesisArtists;
-const defaultGrayBackground = settings.defaultGrayBackground;
 
-// Gets the metadata JSON for the given pixelcon id
-async function getMetadata(pixelconId, params) {
-	let id = formatId(pixelconId);
-	if(!id) throw "Invalid ID";
-	if(!params.name || !params.index || !params.collection || !params.creator || !params.created) throw "Missing Parameters";
+// Gets the metadata JSON for the given invader id
+async function getMetadata(invaderId, params) {
+	let id = formatId(invaderId);
+	let index = formatIndex(params.index);
+	if(id === null) throw "Invalid ID";
+	if(index === null) throw "Invalid Index";
 	
 	//calculate data
-	let name = getName(params.name, params.index);
-	let description = getDescription(params.name, params.index, params.collection, null, params.creator, params.created, null);
-	let creator = formatAddress(params.creator);
-	let created = parseInt(params.created, 16);
-	let index = parseInt(params.index, 16);
-	let collection = parseInt(params.collection, 16);
+	let analysis = invaderAnalysis(id);
+	let name = "Invader " + index;
+	let description = "Level " + (analysis.level == 0 ? '?' : analysis.level) + " - " + analysis.type + " - " + analysis.range + " " + analysis.skill;
 	
 	//construct metadata
 	let metadata = {
 		"name": name,
 		"description": description, 
-		"image": appWebDomain + "meta/image/" + id + getColorModifier('0x' + id),
-		"image_url": appWebDomain + "meta/image/" + id + getColorModifier('0x' + id),
-		"external_url": appWebDomain + "details/" + id,
-		"home_url": appWebDomain + "details/" + id,
-		"background_color": getColor('0x' + id),
-		"color": getColor('0x' + id),
+		"image": appWebDomain + "meta/image/" + id,
+		"image_url": appWebDomain + "meta/image/" + id,
+		"external_url": appWebDomain + "details/" + index,
+		"home_url": appWebDomain + "details/" + index,
+		"background_color": '000000',
+		"color": '000000',
 		"attributes": [{
-			"display_type": "date", 
-			"trait_type": "Created", 
-			"value": created
+			"trait_type": "Type", 
+			"value": analysis.type
 		},{
-			"trait_type": "Creator", 
-			"value": creator
+			"trait_type": "Level", 
+			"value": "Level " + (analysis.level == 0 ? '?' : analysis.level)
+		},{
+			"trait_type": "Range", 
+			"value": analysis.range
+		},{
+			"trait_type": "Skill", 
+			"value": analysis.skill
 		}]
-	}
-		
-	//add attributes
-	if(index < 100) {
-		metadata["attributes"].push({
-			"trait_type": "Genesis", 
-			"value": "First 100"
-		});
-	}
-	if(index < genesisCount) {
-		metadata["attributes"].push({
-			"trait_type": "Genesis", 
-			"value": "2018 Genesis"
-		});
-	}
-	if(genesisArtists.indexOf('0x' + creator) > -1) {
-		metadata["attributes"].push({
-			"trait_type": "Genesis", 
-			"value": "Genesis Artist"
-		});
-	}
-				
-	//add additional details
-	if(detailedMetadataEnabled) {
-		let match = await matchdata.getCloseMatch('0x' + id);
-		let collectionName = null;
-		
-		//collection data
-		if(collection) {
-			let collectionData = await ethdata.getCollection(collection);
-			if(collectionData) {
-				collectionName = collectionData.name;
-				metadata["attributes"].push({
-					"trait_type": "Collection",
-					"value": "Collection " + collection + (collectionName ? " [" + collectionName + "]": "")
-				});
-			}
-		}
-		
-		//better description with collection and match data
-		metadata["description"] = getDescription(params.name, params.index, params.collection, collectionName, params.creator, params.created, match);
-		
-		//similarity properties
-		let similarity = match ? (match.verified ? 'Similar to Same Creator' : 'Similar to Different Creator') : 'Unique';
-		metadata["attributes"].push({
-			"trait_type": "Similarity", 
-			"value": similarity
-		});
 	}
 				
 	return metadata;
@@ -101,93 +51,58 @@ async function getMetadata(pixelconId, params) {
 // Utils
 const hexCharacters = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
 function formatId(id) {
-	if(id) {
-		id = id.toLowerCase();
-		if(id.indexOf('0x') == 0) id = id.substr(2,id.length);
-		if(id.length != 64) return null;
-		for(let i=0; i<64; i++) if(hexCharacters.indexOf(id[i]) == -1) return null;
-		return id;
-	}
+	if(!id) return null;
+	id = id.toLowerCase();
+	if(id.indexOf('0x') == 0) id = id.substr(2, id.length);
+	if(id.length != 64) return null;
+	for(let i=0; i<64; i++) if(hexCharacters.indexOf(id[i]) == -1) return null;
+	return id;
+}
+function formatIndex(index) {
+	index = parseInt('' + index);
+	if(!isNaN(index)) return index;
 	return null;
 }
-function formatAddress(address) {
-	if(address) {
-		address = address.toLowerCase();
-		if(address.indexOf('0x') == 0) address = address.substr(2,address.length);
-		if(address.length < 40) return null;
-		if(address.length > 40) address = address.substring(address.length-40, address.length);
-		for(let i=0; i<40; i++) if(hexCharacters.indexOf(address[i]) == -1) return null;
-		return address;
-	}
-	return null;
-}
-function formatDate(dateHex) {
-	if(dateHex) {
-		let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-		let dateMillis = parseInt(dateHex, 16) * 1000;
-		let date = new Date(dateMillis);
-		
-		let day = (''+date.getDate()).padStart(2,'0');
-		let month = months[date.getMonth()];
-		let year = date.getFullYear();
-		return day + ' ' + month + ' ' + year;
-	}
-	return null;
-}
-function toUtf8(hex) {
-	if(hex.substr(0,2) == '0x') hex = hex.substr(2,hex.length);
-	if(hex.length%2 == 1) hex = '0' + hex;
-	try {
-		let utf8 = decodeURIComponent(hex.replace(/\s+/g, '').replace(/[0-9a-f]{2}/g, '%$&'));
-		if(utf8.indexOf('\x00') > -1) utf8 = utf8.substring(0, utf8.indexOf('\x00'));
-		return utf8;
-	} catch(err) {}
-	return '';
-}
-function toInt(hex) {
-	return "" + parseInt(hex,16);
-}
-function getName(name, index) {
-	index = toInt(index);
+function invaderAnalysis(invaderId) {
+	const attackDefense = ['6','d'];
+	const longRangeShortRange = ['1','5'];
+	const elementalTypes = ['7','8','9','a','b','c'];
+	invaderId = formatId(invaderId);
 	
-	let result = "";
-	if(name) result = toUtf8(name);
-	if(result != "") result += ' ';
-	result += '#' + index + (index < genesisCount ? '✨' : '');
-	return result;
-}
-function getDescription(name, index, collection, collectionName, creator, created, match) {
-	index = toInt(index);
-	collection = toInt(collection);
-	creator = formatAddress(creator);
-	created = formatDate(created);
-	let result = "";
+	let level = 0;
+	let typeColor = null;
+	let skillColor = null;
+	let rangeColor = null;
+	for(let i=0; i<invaderId.length; i++) {
+		level += (elementalTypes.indexOf(invaderId[i]) > -1) ? 1 : 0;
+		typeColor = (elementalTypes.indexOf(invaderId[i]) > -1) ? invaderId[i] : typeColor;
+		skillColor = (attackDefense.indexOf(invaderId[i]) > -1) ? invaderId[i] : skillColor;
+		rangeColor = (longRangeShortRange.indexOf(invaderId[i]) > -1) ? invaderId[i] : rangeColor;
+	}
+	level = level/2;
 	
-	if(index) result += "PixelCon #" + index;
-	if(index < genesisCount) result += " - ✨Genesis";
-	if(!match && collection > 0) {
-		result += " - Collection " + collection;
-		if(collectionName) result += " [" + collectionName + "]";
+	let type = 'Unknown Type (Ancient)';
+	if(typeColor == '7') type = 'Metal Type (Metallum Alloy)';
+	else if(typeColor == '8') type = 'Fire Type (Ignis Magma)';
+	else if(typeColor == '9') type = 'Desert Type (Sicco Solar)';
+	else if(typeColor == 'a') type = 'Electric Type (Lectricus Zap)';
+	else if(typeColor == 'b') type = 'Forest Type (Silva Brush)';
+	else if(typeColor == 'c') type = 'Water Type (Imber Drench)';
+	
+	let skill = 'Versatile';
+	if(skillColor == '6') skill = 'Attack';
+	else if(skillColor == 'd') skill = 'Defense';
+	
+	let range = 'All Range';
+	if(rangeColor == '5') range = 'Long Range';
+	else if(rangeColor == '1') range = 'Short Range';
+	
+	return {
+		level: level,
+		type: type,
+		skill: skill,
+		range: range
 	}
-	if(created) result += " - " + created;
-	if(match) {
-		if(match.verified) result += " - ✔️Similar to creator's older [PixelCon #" + match.index + "](" + appWebDomain + "details/" + match.id.substr(2,64) + ")";
-		else result += " - ⚠️Very similar to older [PixelCon #" + match.index + "](" + appWebDomain + "details/" + match.id.substr(2,64) + ")";
-		if(collection > 0) {
-			result += " - Collection " + collection;
-			if(collectionName) result += " [" + collectionName + "]";
-		}
-	}
-	if(creator) result += " - Creator 0x" + creator.substr(0,4) + "…" + creator.substr(36,4);
-	return result;
-}
-function getColorModifier(id) {
-	if(defaultGrayBackground && defaultGrayBackground.indexOf && defaultGrayBackground.indexOf(id) > -1) return '?color=5F574F';
-	return '';
-}
-function getColor(id) {
-	if(defaultGrayBackground && defaultGrayBackground.indexOf && defaultGrayBackground.indexOf(id) > -1) return '5F574F';
-	return '000000';
 }
 
 // Export

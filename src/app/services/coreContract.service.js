@@ -473,11 +473,11 @@
 		
 		function getInvaders() {
 			let allInvaders = [];
-			for(let i=0; i<invaders.length; i++) allInvaders.push(fillinInvader(invaders[i], i));
+			for(let i=0; i<invaders.length; i++) allInvaders.push(fillinInvader('0x'+invaders[i], i));
 			return allInvaders;
 		}
 		function getInvader(index) {
-			return fillinInvader(invaders[index], index);
+			return fillinInvader('0x'+invaders[index], index);
 		}
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -675,13 +675,11 @@
 			const elementalTypes = ['7','8','9','a','b','c'];
 			invaderId = formatInvaderId(invaderId).substr(2,64);
 			
-			let shadow = '0x';
 			let level = 0;
 			let typeColor = null;
 			let skillColor = null;
 			let rangeColor = null;
 			for(let i=0; i<invaderId.length; i++) {
-				shadow += (invaderId[i] == '0') ? '0' : '7';
 				level += (elementalTypes.indexOf(invaderId[i]) > -1) ? 1 : 0;
 				typeColor = (elementalTypes.indexOf(invaderId[i]) > -1) ? invaderId[i] : typeColor;
 				skillColor = (attackDefense.indexOf(invaderId[i]) > -1) ? invaderId[i] : skillColor;
@@ -741,7 +739,6 @@
 			else if(level == 0) rarityScore += 100; //ancient 3.1
 			
 			return {
-				shadow: shadow,
 				level: level,
 				levelRarity: levelRarity,
 				type: type,

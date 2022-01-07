@@ -1,66 +1,40 @@
 /***********************************************************************
  * imagedata.js
- * Provides functions for generating PixelCon images
+ * Provides functions for generating Invader images
  ***********************************************************************/
 const settings = require('./settings.js');
 const png = require('fast-png');
 const qrcode = require('qrcode');
 
 // Settings
-const qrCodeImageLink = settings.appWebDomain + '_';
+const qrCodeImageLink = settings.appWebDomain + 'details/';
 const standardImageScaleMultiplier = 2;
-const multiImageScaleMultiplier = 8;
 
-// Gets the standard PNG for the given pixelcon id
-async function getStandardImage(pixelconId, index, color) {
+// Gets the standard PNG for the given invader id
+async function getStandardImage(invaderId, index) {
 	const width = 265 * standardImageScaleMultiplier;
 	const height = 175 * standardImageScaleMultiplier;
-	const pixelconScale = 15 * standardImageScaleMultiplier;
+	const invaderScale = 15 * standardImageScaleMultiplier;
 	const qrCodeMargin = 5 * standardImageScaleMultiplier;
 	let dataArray = new Uint8Array(width*height*3);
 	
-	let id = formatId(pixelconId);
+	let id = formatId(invaderId);
 	if(!id) throw "Invalid ID";
 	
 	//draw the background
-	let backgroundColor = formatColor(color);
-	drawSquare(dataArray, width, height, 0, 0, width, height, backgroundColor);
+	drawSquare(dataArray, width, height, 0, 0, width, height, [0,0,0]);
 	
 	//draw the qr code
 	index = Number.isInteger(parseInt(index)) ? parseInt(index) : null;
 	if(index !== null && index !== undefined) {
-		let linkStr = qrCodeImageLink + ModifiedBase64.fromInt(index).padStart(4, '0');
+		let linkStr = qrCodeImageLink + index;
 		drawQrCode_b(dataArray, width, height, qrCodeMargin, qrCodeMargin, standardImageScaleMultiplier, linkStr, [250,250,250]);
 	}
 	
-	//draw the pixelcon
-	const offsetX = Math.round((width-(pixelconScale*8))/2);
-	const offsetY = Math.round((height-(pixelconScale*8))/2);
-	drawPixelcon(dataArray, width, height, offsetX, offsetY, pixelconScale, id);
-	
-	return Buffer.from(png.encode({width:width, height:height, data:dataArray, channels:3}));
-}
-
-// Gets a multi pixelcon PNG for the given pixelcon ids
-async function getMultiImage(pixelconIds, color) {
-	const width = 82 * multiImageScaleMultiplier;
-	const height = 42 * multiImageScaleMultiplier;
-	const pixelconScale = 2 * multiImageScaleMultiplier;
-	const positionMap = [[[33,13]],  [[20,13],[46,13]],  [[8,13],[33,13],[58,13]],  [[20,3],[46,3],[20,23],[46,23]],  [[8,3],[33,3],[58,3],[20,23],[46,23]],  [[8,3],[33,3],[58,3],[8,23],[33,23],[58,23]]];
-	let dataArray = new Uint8Array(width*height*3);
-	
-	let ids = formatIds(pixelconIds);
-	if(!ids) throw "Invalid ID";
-	
-	//draw the background
-	let backgroundColor = formatColor(color);
-	drawSquare(dataArray, width, height, 0, 0, width, height, backgroundColor);
-	
-	//draw the pixelcons
-	let positions = positionMap[Math.min(ids.length, 6) - 1];
-	for(let i=0; i<positions.length; i++) {
-		drawPixelcon(dataArray, width, height, positions[i][0]*multiImageScaleMultiplier, positions[i][1]*multiImageScaleMultiplier, pixelconScale, ids[i]);
-	}
+	//draw the invader
+	const offsetX = Math.round((width-(invaderScale*8))/2);
+	const offsetY = Math.round((height-(invaderScale*8))/2);
+	drawInvader(dataArray, width, height, offsetX, offsetY, invaderScale, id);
 	
 	return Buffer.from(png.encode({width:width, height:height, data:dataArray, channels:3}));
 }
@@ -72,27 +46,6 @@ function formatId(id) {
 	if(id.length != 64) return null;
 	for(let i=0; i<64; i++) if(hexCharacters.indexOf(id[i]) == -1) return null;
 	return id;
-}
-function formatIds(ids) {
-	if(!Array.isArray(ids)) ids = [ids];
-	let allIds = [];
-	for(let i=0; i<ids.length; i++) {
-		let id = ids[i].toLowerCase();
-		id = id.split('0x').join('');
-		if(id.length%64 != 0) return null;
-		for(let j=0; j<id.length; j++) if(hexCharacters.indexOf(id[j]) == -1) return null;
-		for(let j=0; j<id.length; j+=64) allIds.push(id.substr(j,64));
-	}
-	return allIds;
-}
-function formatColor(colorHex) {
-	const defaultBackground = [0,0,0];
-	if(!colorHex || !colorHex.length) return defaultBackground;
-	colorHex = colorHex.toLowerCase();
-	if(colorHex.indexOf('#') == 0) colorHex = colorHex.substr(1,colorHex.length);
-	if(colorHex.length != 6) return defaultBackground;
-	for(let i=0; i<6; i++) if(hexCharacters.indexOf(colorHex[i]) == -1) return defaultBackground;
-	return [parseInt(colorHex.substr(0,2), 16), parseInt(colorHex.substr(2,2), 16), parseInt(colorHex.substr(4,2), 16)];
 }
 function drawSquare(dataArray, arrayW, arrayH, x, y, w, h, color) {
 	let xStart = Math.max(Math.min(x, arrayW),0);
@@ -126,43 +79,13 @@ function drawQrCode(dataArray, arrayW, arrayH, x, y, s, str, color) {
 function drawQrCode_b(dataArray, arrayW, arrayH, x, y, s, str, color) {
 	drawQrCode(dataArray, arrayW, arrayH, x, arrayH - (y + 25*s), s, str, color);
 }
-function drawPixelcon(dataArray, arrayW, arrayH, x, y, s, id) {
+function drawInvader(dataArray, arrayW, arrayH, x, y, s, id) {
 	for(let i=0; i<id.length; i++) {
 		let xPos = x + (i%8)*s;
 		let yPos = y + Math.floor(i/8)*s;
 		drawSquare(dataArray, arrayW, arrayH, xPos, yPos, s, s, colorPalette[id[i]]);
 	}
 }
-
-// Util classes
-const ModifiedBase64 = (function () {
-    var digitsStr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+-";
-    var digits = digitsStr.split('');
-    var digitsMap = {};
-    for (let i = 0; i < digits.length; i++) digitsMap[digits[i]] = i;
-    return {
-        fromInt: function(int32) {
-			if(!Number.isInteger(int32)) return null;
-            let result = '';
-            while (true) {
-                result = digits[int32 & 0x3f] + result;
-                int32 >>>= 6;
-                if (int32 === 0) break;
-            }
-            return result;
-        },
-        toInt: function(digitsStr) {
-            let result = 0;
-            let digitsArr = digitsStr.split('');
-            for (let i = 0; i < digitsArr.length; i++) {
-				let digitVal = digitsMap[digitsArr[i]];
-				if(digitVal === undefined) return null;
-                result = (result << 6) + digitVal;
-            }
-            return result;
-        }
-    };
-})();
 
 // Data Constants
 const hexCharacters = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
@@ -187,6 +110,5 @@ const colorPalette = {
 
 // Export
 module.exports = {
-	getStandardImage: getStandardImage,
-	getMultiImage: getMultiImage
+	getStandardImage: getStandardImage
 }

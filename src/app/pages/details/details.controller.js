@@ -2,8 +2,8 @@
 	angular.module('App')
 		.controller('DetailsPageCtrl', DetailsPageCtrl);
 
-	DetailsPageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$routeParams', '$timeout', '$sce', '$window', 'web3Service', 'coreContract', 'market', 'decoder'];
-	function DetailsPageCtrl($scope, $mdMedia, $mdDialog, $routeParams, $timeout, $sce, $window, web3Service, coreContract, market, decoder) {
+	DetailsPageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$routeParams', '$timeout', '$sce', '$window', '$location', 'web3Service', 'coreContract', 'market', 'decoder'];
+	function DetailsPageCtrl($scope, $mdMedia, $mdDialog, $routeParams, $timeout, $sce, $window, $location, web3Service, coreContract, market, decoder) {
 		var _this = this;
 		_this.isOwner = false;
 		_this.infoHint = infoHint;
@@ -32,6 +32,7 @@
 				await web3Service.awaitState(true);
 				let invader = await coreContract.fetchInvader($routeParams.index);
 				_this.invader = addInvaderImageData(invader);
+				$location.search('id', _this.invader.id).replace();
 				
 				_this.detailsLoading = false;
 				checkOwner();

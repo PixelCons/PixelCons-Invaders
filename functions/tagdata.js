@@ -3,13 +3,11 @@
  * Provides functions inserting tag data into the plain typical HTML
  ***********************************************************************/
 const settings = require('./settings.js');
-const ethdata = require('./ethdata.js');
 const webdata = require('./webdata.js');
 
 // Settings
 const customizedHTMLTagsEnabled = settings.customizedHTMLTagsEnabled;
 const appWebDomain = settings.appWebDomain;
-const genesisCount = settings.genesisCount;
 const tagEntryPoint = '<!-- Tag Inserts -->';
 
 // Data
@@ -21,64 +19,16 @@ async function getTagDataHTML(path, plainHTMLPath) {
 	if(!htmlData.taglessHTML || !customizedHTMLTagsEnabled) return htmlData.plainHTML;
 	
 	if(path.indexOf('/details/') === 0) {
-		let id = formatId(path.substring(path.lastIndexOf('/') + 1, (path.indexOf('?') > -1) ? path.indexOf('?') : path.length));
-		if(id) {
-			//get pixelcon details
-			let pixelconData = await ethdata.getPixelcon(id);
-			if(pixelconData) {
-				let type = 'summary';
-				let name = 'PixelCon' + (pixelconData.name ? (' [' + pixelconData.name + ']') : '');
-				let description = getDescription(pixelconData.name, pixelconData.index, pixelconData.collection, pixelconData.creator, pixelconData.date);
-				let imageUrl = appWebDomain + 'meta/image/' + id + getColorModifier([id]);
-	
-				let tagHTML = insertTagData(htmlData, type, name, description, imageUrl);
-				return tagHTML;
-			}
-		}
-	} else if(path.indexOf('/collection/') === 0) {
 		let index = formatIndex(path.substring(path.lastIndexOf('/') + 1, (path.indexOf('?') > -1) ? path.indexOf('?') : path.length));
-		if(index) {
-			//get collection details
-			let collectionData = await ethdata.getCollection(index);
-			if(collectionData) {
-				let type = 'summary_large_image';
-				let name = 'PixelCon Collection' + (collectionData.name ? (' [' + collectionData.name + ']') : '');
-				let description = 'Collection ' + index;
-				let imageUrl = appWebDomain + 'meta/image_multi/' + getIdsList(collectionData.pixelcons) + getColorModifier(collectionData.pixelcons);
-	
-				let tagHTML = insertTagData(htmlData, type, name, description, imageUrl);
-				return tagHTML;
-			}
-		}
-	} else if(path.indexOf('/creator/') === 0) {
-		let creator = formatAddress(path.substring(path.lastIndexOf('/') + 1, (path.indexOf('?') > -1) ? path.indexOf('?') : path.length));
-		if(creator) {
-			//get creator details
-			let creatorData = await ethdata.getCreator(creator);
-			if(creatorData) {
-				let type = 'summary_large_image';
-				let name = 'PixelCon Creator';
-				let description = creator;
-				let imageUrl = appWebDomain + 'meta/image_multi/' + getIdsList(creatorData.pixelcons) + getColorModifier(creatorData.pixelcons);
-	
-				let tagHTML = insertTagData(htmlData, type, name, description, imageUrl);
-				return tagHTML;
-			}
-		}
-	} else if(path.indexOf('/owner/') === 0) {
-		let owner = formatAddress(path.substring(path.lastIndexOf('/') + 1, (path.indexOf('?') > -1) ? path.indexOf('?') : path.length));
-		if(owner) {
-			//get owner details
-			let ownerData = await ethdata.getOwner(owner);
-			if(ownerData) {
-				let type = 'summary_large_image';
-				let name = 'PixelCon Wallet';
-				let description = owner;
-				let imageUrl = appWebDomain + 'meta/image_multi/' + getIdsList(ownerData.pixelcons);
-	
-				let tagHTML = insertTagData(htmlData, type, name, description, imageUrl);
-				return tagHTML;
-			}
+		let id = formatId((path.indexOf('?id=') == -1) ? null : path.substring(path.lastIndexOf('?id=') + 4, path.length));
+		if(index !== null && id !== null) {
+			let type = 'summary';
+			let name = 'Invader ' + index;
+			let description = getDescription(id);
+			let imageUrl = appWebDomain + 'meta/image/' + id;
+
+			let tagHTML = insertTagData(htmlData, type, name, description, imageUrl);
+			return tagHTML;
 		}
 	}
 	
@@ -134,7 +84,7 @@ function insertTagData(htmlData, type, title, description, imageUrl) {
 		+ htmlData.whitespace + '<meta name="twitter:title" content="' + title + '">' + htmlData.lineEnding
 		+ htmlData.whitespace + '<meta name="twitter:description" content="' + description + '">' + htmlData.lineEnding
 		+ htmlData.whitespace + '<meta name="twitter:image" content="' + imageUrl + '">' + htmlData.lineEnding
-		+ htmlData.whitespace + '<meta property="og:url" content="https://pixelcons.io/">' + htmlData.lineEnding
+		+ htmlData.whitespace + '<meta property="og:url" content="https://invaders.pixelcons.io/">' + htmlData.lineEnding
 		+ htmlData.whitespace + '<meta property="og:title" content="' + title + '">' + htmlData.lineEnding
 		+ htmlData.whitespace + '<meta property="og:description" content="' + description + '">' + htmlData.lineEnding
 		+ htmlData.whitespace + '<meta property="og:image" content="' + imageUrl + '">' + htmlData.lineEnding
@@ -142,79 +92,63 @@ function insertTagData(htmlData, type, title, description, imageUrl) {
 	
 	return tagHTML;
 }
-function formatAddress(address) {
-	address = address.toLowerCase();
-	if(address.indexOf('0x') == 0) address = address.substr(2, address.length);
-	if(address.length == 64) address = address.substring(24,64);
-	if(address.length != 40) return null;
-	for(let i=0; i<40; i++) if(hexCharacters.indexOf(address[i]) == -1) return null;
-	return '0x' + address;
-}
 function formatIndex(index) {
 	index = parseInt('' + index);
 	if(!isNaN(index)) return index;
 	return null;
 }
 function formatId(id) {
+	if(!id) return null;
 	id = id.toLowerCase();
 	if(id.indexOf('0x') == 0) id = id.substr(2, id.length);
 	if(id.length != 64) return null;
 	for(let i=0; i<64; i++) if(hexCharacters.indexOf(id[i]) == -1) return null;
-	return '0x' + id;
+	return id;
 }
-function formatDate(millis) {
-	if(millis) {
-		let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-		let date = new Date(millis);
-		
-		let day = (''+date.getDate()).padStart(2,'0');
-		let month = months[date.getMonth()];
-		let year = date.getFullYear();
-		return day + ' ' + month + ' ' + year;
-	}
-	return null;
+function getDescription(invaderId) {
+	let analysis = invaderAnalysis(invaderId);
+	return "Level " + (analysis.level == 0 ? '?' : analysis.level) + " - " + analysis.type + " - " + analysis.range + " " + analysis.skill;
 }
-function getDescription(name, index, collection, creator, created) {
-	let result = "";
+function invaderAnalysis(invaderId) {
+	const attackDefense = ['6','d'];
+	const longRangeShortRange = ['1','5'];
+	const elementalTypes = ['7','8','9','a','b','c'];
+	invaderId = formatId(invaderId);
 	
-	if(index) result += "PixelCon #" + index;
-	if(index < genesisCount) result += " - ✨Genesis";
-	if(collection > 0) {
-		result += " - Collection " + collection;
+	let level = 0;
+	let typeColor = null;
+	let skillColor = null;
+	let rangeColor = null;
+	for(let i=0; i<invaderId.length; i++) {
+		level += (elementalTypes.indexOf(invaderId[i]) > -1) ? 1 : 0;
+		typeColor = (elementalTypes.indexOf(invaderId[i]) > -1) ? invaderId[i] : typeColor;
+		skillColor = (attackDefense.indexOf(invaderId[i]) > -1) ? invaderId[i] : skillColor;
+		rangeColor = (longRangeShortRange.indexOf(invaderId[i]) > -1) ? invaderId[i] : rangeColor;
 	}
-	if(created) result += " - " + formatDate(created);
-	if(creator) result += " - Creator " + creator;
-	return result;
-}
-function scrambleList(list) {
-	let seed = 123456789;
-	list.sort(function(a,b) {
-		seed = (1103515245 * seed + 12345) % 2147483648;
-		let v1 = seed;
-		seed = (1103515245 * seed + 12345) % 2147483648;
-		let v2 = seed;
-		return v1-v2;
-	});
-	return list;
-}
-function getIdsList(list) {
-	let ids = '';
-	list = scrambleList(list);
-	for(let i=0; i<list.length && i<6; i++) ids += list[i].id.substring(2, 66);
-	return ids;
-}
-function getColorModifier(ids) {
-	if(settings.defaultGrayBackground && settings.defaultGrayBackground.indexOf) {
-		let allGrayBackground = true;
-		for(let i=0; i<ids.length; i++) {
-			if(settings.defaultGrayBackground.indexOf(ids[i]) == -1) {
-				allGrayBackground = false;
-				break;
-			}
-		}
-		if(allGrayBackground) return '?color=5F574F';
+	level = level/2;
+	
+	let type = 'Unknown Type (Ancient)';
+	if(typeColor == '7') type = 'Metal Type (Metallum Alloy)';
+	else if(typeColor == '8') type = 'Fire Type (Ignis Magma)';
+	else if(typeColor == '9') type = 'Desert Type (Sicco Solar)';
+	else if(typeColor == 'a') type = 'Electric Type (Lectricus Zap)';
+	else if(typeColor == 'b') type = 'Forest Type (Silva Brush)';
+	else if(typeColor == 'c') type = 'Water Type (Imber Drench)';
+	
+	let skill = 'Versatile';
+	if(skillColor == '6') skill = 'Attack';
+	else if(skillColor == 'd') skill = 'Defense';
+	
+	let range = 'All Range';
+	if(rangeColor == '5') range = 'Long Range';
+	else if(rangeColor == '1') range = 'Short Range';
+	
+	return {
+		level: level,
+		type: type,
+		skill: skill,
+		range: range
 	}
-	return '';
 }
 
 // Export
