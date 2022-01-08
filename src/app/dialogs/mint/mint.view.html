@@ -25,12 +25,12 @@
 		<div class="detail">
 			<div class="color" ng-show="ctrl.invaderPixelcon.typeColor" ng-style="{'background-color':ctrl.invaderPixelcon.typeColor}"></div>
 			<span class="textBlack" ng-class="{'offset':!ctrl.invaderPixelcon.typeColor}">{{ctrl.invaderPixelcon.type}}</span>
-			<div class="percentage textBlack textSmall">{{(ctrl.invaderPixelcon.typeRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invaderPixelcon.typeRarity + '%)'}}</div>
+			<div class="percentage textBlack textSmall">{{(ctrl.invaderPixelcon.typeRarity &lt; 0.01) ? '(&lt;0.01%)' : '(' + ctrl.invaderPixelcon.typeRarity + '%)'}}</div>
 		</div>
 		<div class="detail">
 			<span class="textBlack offset">{{'Level ' + (ctrl.invaderPixelcon.level > 0 ? ctrl.invaderPixelcon.level : 'Uknown')}}</span>
 			<div class="percentage textBlack textSmall" ng-if="ctrl.invaderPixelcon.level>0">
-				{{(ctrl.invaderPixelcon.levelRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invaderPixelcon.levelRarity + '%)'}}
+				{{(ctrl.invaderPixelcon.levelRarity &lt; 0.01) ? '(&lt;0.01%)' : '(' + ctrl.invaderPixelcon.levelRarity + '%)'}}
 			</div>
 		</div>
 		<div class="detail">
@@ -41,7 +41,7 @@
 			<div class="subDetail">
 				<div class="color" ng-show="ctrl.invaderPixelcon.rangeColor" ng-style="{'background-color':ctrl.invaderPixelcon.rangeColor}"></div>
 				<span class="textBlack" ng-class="{'offset':!ctrl.invaderPixelcon.rangeColor}">{{ctrl.invaderPixelcon.range}}</span>
-				<div class="percentage shared textBlack textSmall">{{(ctrl.invaderPixelcon.skillRangeRarity < 0.01) ? '(<0.01%)' : '(' + ctrl.invaderPixelcon.skillRangeRarity + '%)'}}</div>
+				<div class="percentage shared textBlack textSmall">{{(ctrl.invaderPixelcon.skillRangeRarity &lt; 0.01) ? '(&lt;0.01%)' : '(' + ctrl.invaderPixelcon.skillRangeRarity + '%)'}}</div>
 			</div>
 		</div>
 		
