@@ -39,7 +39,6 @@
 						_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
 						filterPageData();
 						
-						
 					} else {
 						if (web3Service.isReadOnly()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
 						else if (web3Service.isPrivacyMode()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please connect your Ethereum account');

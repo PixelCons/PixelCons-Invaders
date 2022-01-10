@@ -10,8 +10,6 @@ import "./openzeppelin/IERC721Receiver.sol";
 import "./openzeppelin/IERC721Metadata.sol";
 import "./openzeppelin/Strings.sol";
 
-//TODO: update 'required' error messages
-
 
 /**
  * @title PixelConInvaders Core
@@ -30,7 +28,8 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	// Constants
-	uint64 constant MAX_PIXELCON_INDEX = 1217;
+	uint64 constant MAX_TOKENS = 1000;
+	uint64 constant MINT1_PIXELCON_INDEX = 1217;
 	uint64 constant MINT2_PIXELCON_INDEX = 792;
 	uint64 constant MINT3_PIXELCON_INDEX = 704;
 	uint64 constant MINT4_PIXELCON_INDEX = 651;
@@ -89,7 +88,7 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
 	 * @notice Contract constructor
 	 */
 	constructor(address pixelconsContract) Ownable() {
-		require(pixelconsContract != address(0), "x10"); //error code 0x10 [Invalid address]
+		require(pixelconsContract != address(0), "Invalid address");
 		_pixelconsContract = pixelconsContract;
 		_generationSeed = uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), block.difficulty)));
 	}
@@ -118,25 +117,25 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
 	 * @return ID of the new invader
 	 */
 	function mintToken(uint256 pixelconId, uint32 generationIndex) public returns (uint256) {
-		require(pixelconId != uint256(0), "x12"); //error code 0x12 [Invalid ID]
+		require(generationIndex == 0 || generationIndex == 1 || generationIndex == 2 || generationIndex == 3 || generationIndex == 4 || generationIndex == 5, "Invalid index");
+		require(pixelconId != uint256(0), "Invalid ID");
 		address minter = _msgSender();
 		
 		//check that minter owns the pixelcon and that the index is valid for the pixelcon
 		address pixelconOwner = IPixelCons(_pixelconsContract).ownerOf(pixelconId);
 		uint64 pixelconIndex = IPixelCons(_pixelconsContract).getTokenIndex(pixelconId);
-		require(pixelconOwner == minter);
-		require(generationIndex == 0 || generationIndex == 1 || generationIndex == 2 || generationIndex == 3 || generationIndex == 4 || generationIndex == 5);
-		if(generationIndex == 5) require(pixelconIndex < MINT6_PIXELCON_INDEX);
-		if(generationIndex == 4) require(pixelconIndex < MINT5_PIXELCON_INDEX);
-		if(generationIndex == 3) require(pixelconIndex < MINT4_PIXELCON_INDEX);
-		if(generationIndex == 2) require(pixelconIndex < MINT3_PIXELCON_INDEX);
-		if(generationIndex == 1) require(pixelconIndex < MINT2_PIXELCON_INDEX);
-		if(generationIndex == 0) require(pixelconIndex < MAX_PIXELCON_INDEX);
+		require(pixelconOwner == minter, "Minter not PixelCon owner");
+		if(generationIndex == 5) require(pixelconIndex < MINT6_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 4) require(pixelconIndex < MINT5_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 3) require(pixelconIndex < MINT4_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 2) require(pixelconIndex < MINT3_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 1) require(pixelconIndex < MINT2_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 0) require(pixelconIndex < MINT1_PIXELCON_INDEX, "Index out of bounds");
 		
 		//generate the invader
 		uint256 invaderId = _generate(pixelconId, generationIndex);
 		TokenData storage tokenData = _tokenData[invaderId];
-		require(tokenData.owner == address(0), "x21"); //error code 0x21 [Token already exists]
+		require(tokenData.owner == address(0), "Token already exists");
 		
 		//mint the pixelcon
 		IPixelCons(_pixelconsContract).create(minter, invaderId, bytes8(0));
@@ -164,6 +163,15 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
         return _tokenTotal;
     }
 	
+    /**
+     * @dev Returns the current seed used in generation
+	 * @return Current generation seed
+     */
+    function generationSeed() public view returns (uint256) {
+        return _generationSeed;
+    }
+	
+	
 	////////////////// Web3 Only //////////////////
 
 	/**
@@ -175,7 +183,7 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
 		address[] memory owners = new address[](tokenIds.length);
 		for (uint i = 0; i < tokenIds.length; i++) {
 			address owner = _tokenData[tokenIds[i]].owner;
-			require(owner != address(0), "x20"); //error code 0x20 [Token does not exist]
+			require(owner != address(0), "Token does not exist");
 			
 			owners[i] = owner;
 		}
@@ -200,7 +208,7 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
      * @dev See {IERC721-balanceOf}.
      */
     function balanceOf(address owner) public view override returns (uint256) {
-		require(owner != address(0), "x10"); //error code 0x10 [Invalid address]
+		require(owner != address(0), "Invalid address");
 		return _ownerBalance[owner];
     }
 
@@ -209,7 +217,7 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
      */
     function ownerOf(uint256 tokenId) public view override returns (address) {
 		address owner = _tokenData[tokenId].owner;
-        require(owner != address(0), "x20"); //error code 0x20 [Token does not exist]
+        require(owner != address(0), "Token does not exist");
         return owner;
     }
 	
@@ -217,10 +225,10 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
      * @dev See {IERC721-approve}.
      */
     function approve(address to, uint256 tokenId) public override {
-		require(tokenId != uint256(0), "x12"); //error code 0x12 [Invalid ID]
+		require(tokenId != uint256(0), "Invalid ID");
 		address owner = _tokenData[tokenId].owner;
-        require(to != owner, "x40"); //error code 0x40 [Cannot approve self]
-        require(_msgSender() == owner || _operatorApprovals[owner][_msgSender()], "x42"); //error code 0x42 [Not owner nor approved for all]
+        require(to != owner, "Cannot approve self");
+        require(_msgSender() == owner || _operatorApprovals[owner][_msgSender()], "Not owner nor approved for all");
 		_approve(owner, to, tokenId);
     }
 
@@ -229,7 +237,7 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
      */
     function getApproved(uint256 tokenId) public view override returns (address) {
 		address owner = _tokenData[tokenId].owner;
-        require(owner != address(0), "x20"); //error code 0x20 [Token does not exist]
+        require(owner != address(0), "Token does not exist");
         return _tokenApprovals[tokenId];
     }
 
@@ -237,8 +245,8 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
      * @dev See {IERC721-setApprovalForAll}.
      */
     function setApprovalForAll(address operator, bool approved) public override {
-		require(operator != address(0), "x10"); //error code 0x10 [Invalid address]
-        require(operator != _msgSender(), "x40"); //error code 0x40 [Cannot approve self]
+		require(operator != address(0), "Invalid address");
+        require(operator != _msgSender(), "Cannot approve self");
         _operatorApprovals[_msgSender()][operator] = approved;
         emit ApprovalForAll(_msgSender(), operator, approved);
     }
@@ -247,7 +255,7 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
      * @dev See {IERC721-isApprovedForAll}.
      */
     function isApprovedForAll(address owner, address operator) public view override returns (bool) {
-		require(owner != address(0) && operator != address(0), "x10"); //error code 0x10 [Invalid address]
+		require(owner != address(0) && operator != address(0), "Invalid address");
         return _operatorApprovals[owner][operator];
     }
 
@@ -255,9 +263,9 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
      * @dev See {IERC721-transferFrom}.
      */
     function transferFrom(address from, address to, uint256 tokenId) public override {
-		require(to != address(0), "x10"); //error code 0x10 [Invalid address]
-		require(tokenId != uint256(0), "x12"); //error code 0x12 [Invalid ID]
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "x42"); //error code 0x42 [Not owner nor approved for all]
+		require(to != address(0), "Invalid address");
+		require(tokenId != uint256(0), "Invalid ID");
+        require(_isApprovedOrOwner(_msgSender(), tokenId), "Not owner nor approved for all");
         _transfer(from, to, tokenId);
     }
 
@@ -274,7 +282,7 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data_p) public override {
 		//requirements are checked in 'transferFrom' function
 		transferFrom(from, to, tokenId);
-        require(_checkOnERC721Received(from, to, tokenId, data_p), "x50"); //error code 0x50 [Transfer to non ERC721Receiver implementer]
+        require(_checkOnERC721Received(from, to, tokenId, data_p), "Transfer to non ERC721Receiver implementer");
     }
 	
 
@@ -339,7 +347,7 @@ contract PixelConInvaders is Ownable, ERC165, IERC721, IERC721Metadata {
      */
     function _transfer(address from, address to, uint256 tokenId) private {
 		TokenData storage tokenData = _tokenData[tokenId];
-		require(tokenData.owner == from, "x51"); //error code 0x51 [Incorrect from address]
+		require(tokenData.owner == from, "Incorrect from address");
 		
         //clear approvals
 		if(_tokenApprovals[tokenId] != address(0)) {

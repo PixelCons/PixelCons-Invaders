@@ -5,6 +5,19 @@
 	web3Service.$inject = ['$interval', '$timeout', '$window', '$mdDialog', '$q'];
 	function web3Service($interval, $timeout, $window, $mdDialog, $q) {
 		const _networkConfig = [{
+			name: 'Local Testnet',
+			chainId: '1337',
+			nativeCurrency: {
+				name: 'ETH',
+				symbol: 'ETH',
+				decimals: 18
+			},
+			icon: '/img/network_mainnet.png',
+			fallbackRPCs: [],
+			blockExplorer: 'https://etherscan.io/',
+			transactionLU: '/tx/<txHash>',
+			accountLU: '/address/<address>'
+		},{
 			name: 'Mainnet',
 			chainId: '1',
 			nativeCurrency: {
@@ -984,7 +997,7 @@
 				let scope = functions[i].scope;
 
 				func(data);
-				if (scope && scope.$root.$$phase != '$apply' && scope.$root.$$phase != '$digest') {
+				if (scope && scope.$root && scope.$root.$$phase != '$apply' && scope.$root.$$phase != '$digest') {
 					scope.$apply();
 				}
 			}
