@@ -9,7 +9,7 @@
 		
 	<!-- Details -->	
 	<div class="detailsCard" ng-if="ctrl.invader">
-		<div class="backButton" ng-click="ctrl.goBack()"></div>
+		<div class="backButton" ng-click="ctrl.goBack()" ng-if="!ctrl.screenSize.sm && ctrl.backVisible"></div>
 		<img class="invaderImage crispImage" ng-src="{{ctrl.invader.image}}"/>
 		<div class="detailContainer textSelectable">
 		

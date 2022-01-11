@@ -2,14 +2,15 @@
 	angular.module('App')
 		.controller('ExplorePageCtrl', ExplorePageCtrl);
 
-	ExplorePageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', '$timeout', 'decoder', 'web3Service', 'coreContract'];
-	function ExplorePageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, $timeout, decoder, web3Service, coreContract) {
+	ExplorePageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', '$timeout', 'decoder', 'storage', 'web3Service', 'coreContract'];
+	function ExplorePageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, $timeout, decoder, storage, web3Service, coreContract) {
 		var _this = this;
 		var ownerCheckTimeout;
 		var levelCheckTimeout;
 		const levelMinDefault = null;
 		const levelMaxDefault = null;
 		const sortByDefault = 'createdAsc';
+		const smallViewDefault = $mdMedia('xs');
 		const realtimeFilterInPath = false;
 		const tooltipDelay = 300;
 		_this.getFilterTitleOwnerString = getFilterTitleOwnerString;
@@ -24,8 +25,9 @@
 		_this.onTypeChange = onTypeChange;
 		_this.onAttributeChange = onAttributeChange;
 		_this.onSortChange = onSortChange;
+		_this.onViewSizeChange = onViewSizeChange;
 		_this.filterOpen = false;
-		_this.smallView = $mdMedia('xs');
+		_this.smallView = smallViewDefault
 		_this.sortBy = sortByDefault;
 		_this.levelMin = levelMinDefault;
 		_this.levelMax = levelMaxDefault;
@@ -53,8 +55,37 @@
 		// Loads the filter according to path params
 		loadPathParams();
 		function loadPathParams() {
+			let ownerChanged = false;
+				
+			//first apply stored values
+			let pathParams = storage.getItem('explore_page_filters', { level: storage.LEVEL_PAGE });
+			if(pathParams) {
+				_this.levelMin = pathParams.lvlMin;
+				_this.levelMax = pathParams.lvlMax;
+				_this.sortBy = pathParams.sortBy;
+				_this.smallView = pathParams.smallView;
+				_this.typeWater = (!pathParams.excludeTypes || (pathParams.excludeTypes.indexOf('water') == -1));
+				_this.typeForest = (!pathParams.excludeTypes || (pathParams.excludeTypes.indexOf('forest') == -1));
+				_this.typeFire = (!pathParams.excludeTypes || (pathParams.excludeTypes.indexOf('fire') == -1));
+				_this.typeDesert = (!pathParams.excludeTypes || (pathParams.excludeTypes.indexOf('desert') == -1));
+				_this.typeElectric = (!pathParams.excludeTypes || (pathParams.excludeTypes.indexOf('electric') == -1));
+				_this.typeMetal = (!pathParams.excludeTypes || (pathParams.excludeTypes.indexOf('metal') == -1));
+				_this.attrDefense = (!pathParams.excludeAttributes || (pathParams.excludeAttributes.indexOf('defense') == -1));
+				_this.attrAttack = (!pathParams.excludeAttributes || (pathParams.excludeAttributes.indexOf('attack') == -1));
+				_this.attrLongRange = (!pathParams.excludeAttributes || (pathParams.excludeAttributes.indexOf('longrange') == -1));
+				_this.attrShortRange = (!pathParams.excludeAttributes || (pathParams.excludeAttributes.indexOf('shortrange') == -1));
+				if(pathParams.owner) {
+					_this.owner = pathParams.owner;
+					ownerChanged = true;
+				}
+			}
+			
+			//then apply path param values
 			if ($routeParams.sortBy !== undefined) {
 				_this.sortBy = $routeParams.sortBy;
+			}
+			if ($routeParams.smallView !== undefined) {
+				_this.smallView = ($routeParams.smallView == 'true');
 			}
 			if ($routeParams.lvlMin !== undefined) {
 				_this.levelMin = parseInt($routeParams.lvlMin);
@@ -80,15 +111,17 @@
 			}
 			if ($routeParams.owner !== undefined) {
 				_this.owner = $routeParams.owner;
-				onOwnerChange(true);
+				ownerChanged = true;
 			}
+			
+			if(ownerChanged) onOwnerChange(true);
 		}
 		
 		// Updates the path params according to the current filter
 		function updatePathParams() {
+			let excludeTypes = getExcludeTypesPathParam();
+			let excludeAttributes = getExcludeAttributesPathParam();
 			if(realtimeFilterInPath) {
-				let excludeTypes = getExcludeTypesPathParam();
-				let excludeAttributes = getExcludeAttributesPathParam();
 				if (($routeParams.owner === undefined && _this.ownerAddress) || ($routeParams.owner !== undefined && _this.ownerAddress != $routeParams.owner)) {
 					$location.search('owner', (_this.ownerAddress) ? _this.ownerAddress : undefined).replace();
 				}
@@ -107,7 +140,32 @@
 				if (($routeParams.sortBy === undefined && _this.sortBy !== sortByDefault) || ($routeParams.sortBy !== undefined && _this.sortBy != $routeParams.sortBy)) {
 					$location.search('sortBy', (_this.sortBy !== sortByDefault) ? _this.sortBy : undefined).replace();
 				}
+				if (($routeParams.smallView === undefined && _this.smallView !== smallViewDefault) || ($routeParams.smallView !== undefined && _this.smallView != $routeParams.smallView)) {
+					$location.search('smallView', (_this.smallView !== smallViewDefault) ? _this.smallView : undefined).replace();
+				}
+			} else {
+				
+				// at least clear mismatched path params
+				if ($routeParams.owner !== undefined && _this.ownerAddress != $routeParams.owner) $location.search('owner', undefined).replace();
+				if ($routeParams.lvlMin !== undefined && _this.levelMin != $routeParams.lvlMin) $location.search('lvlMin', undefined).replace();
+				if ($routeParams.lvlMax !== undefined && _this.levelMax != $routeParams.lvlMax) $location.search('lvlMax', undefined).replace();
+				if ($routeParams.excludeTypes !== undefined && excludeTypes != $routeParams.excludeTypes) $location.search('excludeTypes', undefined).replace();
+				if ($routeParams.excludeAttributes !== undefined && excludeAttributes != $routeParams.excludeAttributes) $location.search('excludeAttributes', undefined).replace();
+				if ($routeParams.sortBy !== undefined && _this.sortBy != $routeParams.sortBy) $location.search('sortBy', undefined).replace();
+				if ($routeParams.smallView !== undefined && _this.smallView != $routeParams.smallView) $location.search('smallView', undefined).replace();
 			}
+			
+			//save params in storage
+			let pathParams = {
+				owner: _this.ownerAddress,
+				lvlMin: _this.levelMin,
+				lvlMax: _this.levelMax,
+				excludeTypes: excludeTypes,
+				excludeAttributes: excludeAttributes,
+				sortBy: _this.sortBy,
+				smallView: _this.smallView
+			}
+			storage.setItem('explore_page_filters', pathParams, { level: storage.LEVEL_PAGE });
 		}
 		
 		// Gets the path params as string according to the current filter
@@ -121,6 +179,7 @@
 			if (excludeTypes) pathParams += (pathParams == '' ? '?' : '&') + 'excludeTypes=' + excludeTypes;
 			if (excludeAttributes) pathParams += (pathParams == '' ? '?' : '&') + 'excludeAttributes=' + excludeAttributes;
 			if (_this.sortBy !== sortByDefault) pathParams += (pathParams == '' ? '?' : '&') + 'sortBy=' + _this.sortBy;
+			if (_this.smallView !== smallViewDefault) pathParams += (pathParams == '' ? '?' : '&') + 'smallView=' + _this.smallView;
 			return pathParams;
 		}
 		
@@ -311,6 +370,10 @@
 		function onSortChange() {
 			updatePathParams();
 			filterInvaders();
+		}
+		function onViewSizeChange(smallView) {
+			_this.smallView = smallView;
+			updatePathParams();
 		}
 		
 		// Returns the owner portion of title for filter

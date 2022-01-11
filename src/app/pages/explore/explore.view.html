@@ -10,10 +10,10 @@
 			<md-progress-circular ng-if="ctrl.ownerAddressNameLoading" class="filterAddressLoading" md-diameter="14px" md-mode="indeterminate"></md-progress-circular>
 			<span ng-class="{'shiftLeft':ctrl.ownerAddress}">{{ctrl.getFilterTitleString()}}</span>
 		</md-button>
-		<md-button class="topFilterButton right" ng-click="ctrl.smallView = false" aria-label="Large View">
+		<md-button class="topFilterButton right" ng-click="ctrl.onViewSizeChange(false)" aria-label="Large View">
 			<div class="buttonIcon large"></div>
 		</md-button>
-		<md-button class="topFilterButton right" ng-click="ctrl.smallView = true" aria-label="Small View">
+		<md-button class="topFilterButton right" ng-click="ctrl.onViewSizeChange(true)" aria-label="Small View">
 			<div class="buttonIcon small"></div>
 		</md-button>
 		<div class="topFilterButtonDivider right"></div>

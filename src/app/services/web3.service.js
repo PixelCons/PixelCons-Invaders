@@ -2,8 +2,8 @@
 	angular.module('App')
 		.service('web3Service', web3Service);
 
-	web3Service.$inject = ['$interval', '$timeout', '$window', '$mdDialog', '$q'];
-	function web3Service($interval, $timeout, $window, $mdDialog, $q) {
+	web3Service.$inject = ['$interval', '$timeout', '$window', '$mdDialog', '$q', 'storage'];
+	function web3Service($interval, $timeout, $window, $mdDialog, $q, storage) {
 		const _networkConfig = [{
 			name: 'Local Testnet',
 			chainId: '1337',
@@ -80,7 +80,6 @@
 		const _invalidAddressError = 'Invalid Address';
 		const _messageSettingsButton = '<div class="messageSettingsLink" onclick="web3ServiceOpenSettings();">settings</div>';
 		const _messageStartButton = '<a class="textDark" href="/start">start</a>';
-		const _localStorage = window.localStorage;
 		
 		var _state = "not_enabled";
 		var _chainId = null;
@@ -341,7 +340,7 @@
 			if(chainId) {
 				if(rpcEndpoint) {
 					//set to new value
-					_localStorage.setItem('rpc_backup_' + chainId, '' + rpcEndpoint);
+					storage.setItem('rpc_backup_' + chainId, '' + rpcEndpoint);
 					for(let i = 0; i < _networkConfig.length; i++) {
 						if(_networkConfig[i].chainId == chainId) {
 							let provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
@@ -352,7 +351,7 @@
 				} else {
 					
 					//clear (revert back to hardcoded)
-					_localStorage.removeItem('rpc_backup_' + chainId);
+					storage.removeItem('rpc_backup_' + chainId);
 					for(let i = 0; i < _networkConfig.length; i++) {
 						if(_networkConfig[i].chainId == chainId) {
 							if(_networkConfig[i].fallbackRPCs && _networkConfig[i].fallbackRPCs[0]) {
@@ -371,7 +370,7 @@
 		// Gets a fallback RPC endpoint
 		function getFallbackRPC(chainId) {
 			if(chainId) {
-				return _localStorage.getItem('rpc_backup_' + chainId);
+				return storage.getItem('rpc_backup_' + chainId);
 			}
 			return null;
 		}
@@ -1156,14 +1155,12 @@
 		async function loadWaitingTransactions() {
 			let account = getActiveAccount();
 			_waitingTransactions = [];
-			if (account && _localStorage && _state == "ready") {
+			if (account && _state == "ready") {
 				try {
 					let accountHash = ethers.utils.keccak256(account);
 					let storageLocation = ethers.utils.keccak256(accountHash);
-					let storedWaitingTransactions = _localStorage['pixelcons_' + storageLocation];
+					let storedWaitingTransactions = storage.getItem('pixelcons_' + storageLocation, { encryptionKey: accountHash });
 					if (storedWaitingTransactions) {
-						storedWaitingTransactions = CryptoJS.AES.decrypt(storedWaitingTransactions, accountHash).toString(CryptoJS.enc.Utf8);
-						storedWaitingTransactions = JSON.parse(storedWaitingTransactions);
 
 						//check the state of each transaction
 						let now = (new Date()).getTime();
@@ -1198,14 +1195,12 @@
 		// Helper function to store currently waiting transactions for later recovery
 		async function storeWaitingTransactions() {
 			let account = getActiveAccount();
-			if (account && _localStorage && _state == "ready") {
+			if (account && _state == "ready") {
 				try {
 					let accountHash = ethers.utils.keccak256(account);
 					let storageLocation = ethers.utils.keccak256(accountHash);
-					let data = JSON.stringify(_waitingTransactions);
-					data = CryptoJS.AES.encrypt(data, accountHash).toString();
-
-					_localStorage['pixelcons_' + storageLocation] = data;
+					storage.setItem('pixelcons_' + storageLocation, _waitingTransactions, { encryptionKey: accountHash });
+					
 				} catch (err) {
 					console.log("Something went wrong trying to store transaction history...");
 				}

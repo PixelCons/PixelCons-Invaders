@@ -3,8 +3,8 @@
 		.directive('appHeader', appHeader)
 		.controller('HeaderCtrl', HeaderCtrl);
 
-	HeaderCtrl.$inject = ['$scope', '$mdMedia', '$mdToast', '$mdMenu', '$timeout', '$location', '$window', '$route', 'web3Service', 'market'];
-	function HeaderCtrl($scope, $mdMedia, $mdToast, $mdMenu, $timeout, $location, $window, $route, web3Service, market) {
+	HeaderCtrl.$inject = ['$scope', '$mdMedia', '$mdToast', '$mdMenu', '$timeout', '$location', '$window', '$route', 'storage', 'web3Service', 'market'];
+	function HeaderCtrl($scope, $mdMedia, $mdToast, $mdMenu, $timeout, $location, $window, $route, storage, web3Service, market) {
 		var _this = this;
 		_this.noWeb3 = false;
 		_this.loggedIn = false;
@@ -124,6 +124,7 @@
 
 		// Go to the specified path
 		function goPath(path) {
+			storage.removeItem('explore_page_filters', { level: storage.LEVEL_PAGE });
 			if (path.indexOf($location.path()) == 0) {
 				$timeout(function() {
 					$route.reload();

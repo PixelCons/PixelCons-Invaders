@@ -49,6 +49,7 @@
 	}]);
 	app.run(['$route', '$rootScope', '$location', '$timeout', '$templateCache', '$http', '$window', 'web3Service', 'coreContract', 'decoder',
 		function ($route, $rootScope, $location, $timeout, $templateCache, $http, $window, web3Service, coreContract, decoder) {
+			var prevPath = null;
 			var lastPage = $location.path();
 			var replacementRoute = null;
 
@@ -67,9 +68,14 @@
 						});
 					}
 				}
+				if(lastPage != currPage) prevPath = lastPage;
 				lastPage = currPage;
 			});
 			
+			// add prevPath function
+			$location.pathPrev = function() {
+				return prevPath;
+			}
 			
 			// add reload parameter to the location path function
 			var _locationPath = $location.path;

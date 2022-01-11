@@ -16,6 +16,7 @@
 		_this.goBack = goBack;
 		_this.marketEnabled = market.isEnabled();
 		_this.marketLink = market.getItemLink();
+		_this.backVisible = $location.pathPrev() && ($location.pathPrev().indexOf('/explore') == 0);
 		
 		// Watch for screen size changes
 		_this.screenSize = {};

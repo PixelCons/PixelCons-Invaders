@@ -24,6 +24,7 @@ const appScripts = [
 	resolvePath("src/app/services/coreContract.service.js"),
 	resolvePath("src/app/services/market.service.js"),
 	resolvePath("src/app/services/decoder.service.js"),
+	resolvePath("src/app/services/storage.service.js"),
 	resolvePath("src/app/pages/details/details.controller.js"),
 	resolvePath("src/app/pages/mint/mint.controller.js"),
 	resolvePath("src/app/pages/explore/explore.controller.js"),

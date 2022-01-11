@@ -58,9 +58,6 @@ div.pixelconDetailsPage div.detailsCard div.backButton:hover {
 	opacity: 0.9;
 	filter: alpha(opacity=90);
 }
-div.pixelconDetailsPage.sm div.detailsCard div.backButton {
-	display: none;
-}
 div.pixelconDetailsPage div.detailContainer {
 	position: relative;
 	background-color: #80808093;
