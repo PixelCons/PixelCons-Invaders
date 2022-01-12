@@ -67,6 +67,7 @@
 				<md-progress-circular ng-show="ctrl.checkingOwner" class="ownerLoading" md-diameter="16px" md-mode="indeterminate"></md-progress-circular>
 				<accounticon ng-show="!ctrl.checkingOwner && ctrl.ownerAddress" class="ownerIcon" address="ctrl.ownerAddress" border="2"></accounticon>
 				<div ng-show="!ctrl.checkingOwner && !ctrl.ownerAddress && ctrl.owner" class="ownerUnknown textDark textBold textMedium">??</div>
+				<md-button class="ownerClear" ng-if="ctrl.owner" ng-click="ctrl.clearOwner()"></md-button>
 			</div>
 			<br/>
 			<md-checkbox class="colorCheckbox water textDark textMedium" ng-model="ctrl.typeWater" ng-change="ctrl.onTypeChange()">Water</md-checkbox>
@@ -82,13 +83,12 @@
 			<md-checkbox class="colorCheckbox longRange textDark textMedium" ng-model="ctrl.attrLongRange" ng-change="ctrl.onAttributeChange()">Long Range</md-checkbox>
 			<md-checkbox class="colorCheckbox shortRange textDark textMedium" ng-model="ctrl.attrShortRange" ng-change="ctrl.onAttributeChange()">Short Range</md-checkbox>
 		</div>
-			
 	</div>
 	
 	<!-- Invaders -->
 	<div class="invadersContainer" ng-class="{'small':ctrl.smallView}" ng-if="!ctrl.error">
 		<md-progress-circular ng-if="ctrl.invadersLoading" class="invadersLoading" md-diameter="80px" md-mode="indeterminate"></md-progress-circular>
-		<div ng-if="!invader.hidden" class="invader crispImage" ng-class="invader.panelClass" ng-style="{'background-position':invader.panelOffset}" 
+		<div ng-if="!invader.hidden" class="invader crispImage" ng-class="invader.panelClass" ng-style="{'background-position':invader.panelOffset}" ng-click="ctrl.onInvaderClick()" 
 				ng-repeat="invader in ctrl.invaders track by $index" ng-mouseenter="ctrl.invaderMouseEnter(invader, $event)" ng-mouseleave="ctrl.invaderMouseLeave(invader, $event)">
 			<a ng-href="{{'/details/' + invader.number}}" href="" class="plain buttonLink textDark"></a>
 		</div>

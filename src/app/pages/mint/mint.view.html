@@ -6,6 +6,7 @@
 			<span>How does it work</span>
 			<div class="hint"></div>
 		</md-button>
+		<span class="explainerText right textCenter textDark textBold textSmall">{{ctrl.totalSupply}} out of {{ctrl.maxSupply}}</br>Invaders Uncovered</span>
 	</div>
 	
 	<!-- Loading -->
@@ -15,9 +16,15 @@
 	<div class="error textDark textMedium textSelectable" ng-if="ctrl.error" ng-bind-html="ctrl.error"></div>
 	
 	<!-- No More to Uncover Message -->
+	<div class="noMore textDark textSelectable" ng-if="ctrl.noMore">
+		<span class="textLarge textBold">The maximum number of Invaders have been uncovered!</span><br/>
+		<a class="plain" target="_blank" href="https://pixelcons.io">
+			<md-button class="textDark transBack" ng-click="">Explore the Collection</md-button>
+		</a>
+	</div>
 	
 	<!-- Scan -->
-	<div class="scanMore" ng-if="!ctrl.accountAddressLoading && !ctrl.error" ng-click="$event.stopPropagation()" ng-class="{'expanded': ctrl.scanOpen}">
+	<div class="scanMore" ng-if="!ctrl.accountAddressLoading && !ctrl.error && !ctrl.noMore" ng-click="$event.stopPropagation()" ng-class="{'expanded': ctrl.scanOpen}">
 		<div class="scanTitleCard">
 			<accounticon class="titleCardAccount" address="ctrl.accountAddress" border="2"></accounticon>
 			<div class="titleCardText">
@@ -45,7 +52,7 @@
 				<md-progress-circular ng-if="ctrl.marketLoading" class="moreLoadingSpinner" md-diameter="50px" md-mode="indeterminate"></md-progress-circular>
 				<div class="marketError textDark textMedium textSelectable" ng-if="ctrl.marketError" ng-bind-html="ctrl.marketError"></div>
 				<a class="plain" target="_blank" href="" ng-href="{{item.link}}" ng-repeat="item in ctrl.marketData track by $index">
-					<div class="marketItemContainer">
+					<div class="marketItemContainer" ng-mouseenter="ctrl.marketMouseEnter(item, $event)" ng-mousemove="ctrl.marketMouseMove(item, $event)" ng-mouseleave="ctrl.marketMouseLeave(item, $event)">
 						<div class="marketItem crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
 						<div class="marketItemTt crispImage" ng-class="item.panelClass" ng-style="{'background-position':item.panelOffset}"></div>
 						<div class="marketItemPrice textDark textSmall textBold">{{item.price + item.unit}}</div>
@@ -57,12 +64,13 @@
 	</div>
 	
 	<!-- Mintable Invaders -->
-	<div class="mintableInvaders" ng-if="!ctrl.accountAddressLoading && !ctrl.error">
+	<div class="mintableInvaders" ng-if="!ctrl.accountAddressLoading && !ctrl.error && !ctrl.noMore">
 		<div>
 			<span class="textMedium textDark textBold">Your Uncoverable Invaders</span>
 			<md-select class="md-no-underline right" ng-model="ctrl.sortBy" ng-change="ctrl.filterPageData()" aria-label="Sort">
 				<md-option value="rarityDesc">Rarity Desc</md-option>
 				<md-option value="levelDesc">Level Desc</md-option>
+				<md-option value="pixelconDesc">PixelCon Desc</md-option>
 			</md-select>
 		</div>
 		<div class="invaderPixelconsContainer textCenter">

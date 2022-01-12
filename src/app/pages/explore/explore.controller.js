@@ -17,6 +17,7 @@
 		_this.getFilterTitleString = getFilterTitleString;
 		_this.invaderMouseEnter = invaderMouseEnter;
 		_this.invaderMouseLeave = invaderMouseLeave;
+		_this.clearOwner = clearOwner;
 		_this.copyLink = copyLink;
 		_this.shareOnTwitter = shareOnTwitter;
 		_this.shareOnFacebook = shareOnFacebook;
@@ -26,6 +27,7 @@
 		_this.onAttributeChange = onAttributeChange;
 		_this.onSortChange = onSortChange;
 		_this.onViewSizeChange = onViewSizeChange;
+		_this.onInvaderClick = onInvaderClick;
 		_this.filterOpen = false;
 		_this.smallView = smallViewDefault
 		_this.sortBy = sortByDefault;
@@ -219,6 +221,19 @@
 				_this.invaders = addInvaderImageData(invaders);
 				filterInvaders();
 				
+				//restore scroll position
+				let pathParams = storage.getItem('explore_page_filters', { level: storage.LEVEL_PAGE });
+				if(pathParams && pathParams.scrollTop && pathParams.scrollHeight) {
+					$window.document.getElementById('contentBackground').style.height = pathParams.scrollHeight + 'px';
+					$window.document.getElementById('scrollTarget').scrollTop = pathParams.scrollTop;
+					delete pathParams.scrollHeight;
+					delete pathParams.scrollTop;
+					storage.setItem('explore_page_filters', pathParams, { level: storage.LEVEL_PAGE });
+					$timeout(function(){
+						$window.document.getElementById('contentBackground').style.height = null;
+					});
+				}
+				
 				_this.invadersLoading = false;
 				safeApply();
 				
@@ -375,6 +390,12 @@
 			_this.smallView = smallView;
 			updatePathParams();
 		}
+		function onInvaderClick() {
+			let pathParams = storage.getItem('explore_page_filters', { level: storage.LEVEL_PAGE }) || {};
+			pathParams.scrollTop = $window.document.getElementById('scrollTarget').scrollTop;
+			pathParams.scrollHeight = $window.document.getElementById('contentBackground').offsetHeight;
+			storage.setItem('explore_page_filters', pathParams, { level: storage.LEVEL_PAGE });
+		}
 		
 		// Returns the owner portion of title for filter
 		function getFilterTitleOwnerString() {
@@ -401,7 +422,7 @@
 		function invaderMouseEnter(invader, ev) {
 			if(tooltipShow[invader.id]) $timeout.cancel(tooltipShow[invader.id]);
 			tooltipShow[invader.id] = $timeout(function() {
-				const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+				const vw = Math.max(document.documentElement.clientWidth || 0, $window.innerWidth || 0);
 				const rightMargin = vw - ev.srcElement.getBoundingClientRect().right;
 				let tooltip = generateTooltip(invader, rightMargin < 140);
 				tooltipElement[invader.id] = tooltip;
@@ -454,6 +475,12 @@
 				line.appendChild(percentageDiv);
 			}
 			tooltip.appendChild(line);
+		}
+		
+		// Clears owner data
+		function clearOwner() {
+			_this.owner = null;
+			onOwnerChange(true);
 		}
 		
 		// Copies share link to the clipboard

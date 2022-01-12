@@ -46,6 +46,11 @@ div.invadersMintPage button.explainerButton div.hint {
 	background-image: url(/img/icon_hint_w.svg);
 	background-size: 16px;
 }
+div.invadersMintPage .explainerText {
+	margin: 10px 0px;
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+}
 
 /* Top Filter */
 div.invadersMintPage div.scanMore {
@@ -341,6 +346,16 @@ div.invadersMintPage div.error {
 	width: 276px;
 	min-height: 42px;
 	max-height: 100px;
+	padding: 15px;
+	background-color: #80808093;
+}
+div.invadersMintPage div.noMore {
+	position: absolute;
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	margin: -120px -190px;
+	width: 350px;
 	padding: 15px;
 	background-color: #80808093;
 }

@@ -16,6 +16,9 @@
 		_this.filterMarketData = filterMarketData;
 		_this.invaderMouseEnter = invaderMouseEnter;
 		_this.invaderMouseLeave = invaderMouseLeave;
+		_this.marketMouseEnter = marketMouseEnter;
+		_this.marketMouseMove = marketMouseMove;
+		_this.marketMouseLeave = marketMouseLeave;
 		
 		// Watch for screen size changes
 		_this.screenSize = {};
@@ -31,23 +34,30 @@
 			try {
 				await web3Service.awaitState(true);
 				
-				let web3state = web3Service.getState();
-				if (web3state == "ready") {
-					_this.accountAddress = web3Service.getActiveAccount();
-					if (_this.accountAddress) {
-						_this.accountPixelcons = await coreContract.getAccountPixelcons(_this.accountAddress);
-						_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
-						filterPageData();
-						
-					} else {
-						if (web3Service.isReadOnly()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
-						else if (web3Service.isPrivacyMode()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please connect your Ethereum account');
-						else _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please log into ' + web3Service.getProviderName());
-					}
-				} else if (web3state == "not_enabled") {
-					_this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
+				_this.maxSupply = await coreContract.getMaxInvaders();
+				_this.totalSupply = await coreContract.getTotalInvaders();
+				if(_this.totalSupply >= _this.maxSupply) {
+					_this.noMore = true;
+				
 				} else {
-					_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>Unkown Network');
+					let web3state = web3Service.getState();
+					if (web3state == "ready") {
+						_this.accountAddress = web3Service.getActiveAccount();
+						if (_this.accountAddress) {
+							_this.accountPixelcons = await coreContract.getAccountPixelcons(_this.accountAddress);
+							_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
+							filterPageData();
+							
+						} else {
+							if (web3Service.isReadOnly()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
+							else if (web3Service.isPrivacyMode()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please connect your Ethereum account');
+							else _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please log into ' + web3Service.getProviderName());
+						}
+					} else if (web3state == "not_enabled") {
+						_this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
+					} else {
+						_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>Unkown Network');
+					}
 				}
 				
 				_this.accountAddressLoading = false;
@@ -103,6 +113,9 @@
 						return invB.level - invA.level;
 					} else if(_this.sortBy == 'rarityDesc') {
 						return invB.rarityScore - invA.rarityScore;
+					} else if(_this.sortBy == 'pixelconDesc') {
+						if(invB.pixelcon.index == invA.pixelcon.index) return invA.mintIndex - invB.mintIndex;
+						return invB.pixelcon.index - invA.pixelcon.index;
 					}
 				});
 			}
@@ -192,6 +205,7 @@
 				for(let j=0; j<pixelcons[i].invaders.length; j++) {
 					pixelcons[i].invaders[j].pixelcon = {
 						id: pixelcons[i].id,
+						index: pixelcons[i].index,
 						panelClass:	pixelcons[i].panelClass,
 						panelOffset: pixelcons[i].panelOffset
 					}
@@ -235,6 +249,7 @@
 				tooltipElement[invader.id] = tooltip;
 				ev.srcElement.appendChild(tooltip);
 				$timeout(function() { tooltip.classList.add('show'); }, 10);
+				delete tooltipShow[invader.id];
 			}, tooltipDelay);
 		}
 		function invaderMouseLeave(invader, ev) {
@@ -259,6 +274,15 @@
 			
 			return tooltip;
 		}
+		function updateTooltip(tooltip, invader) {
+			while (tooltip.firstChild) tooltip.removeChild(tooltip.firstChild);
+			
+			addTooltipLine(tooltip, 'Invader ' + ((invader.number || invader.number===0) ? invader.number : ''), null, null, false, true);
+			addTooltipLine(tooltip, invader.type, invader.typeColor, invader.typeRarity);
+			addTooltipLine(tooltip, 'Level ' + (invader.level > 0 ? invader.level : 'Uknown'), null, invader.levelRarity);
+			addTooltipLine(tooltip, invader.skill, invader.skillColor);
+			addTooltipLine(tooltip, invader.range, invader.rangeColor, invader.skillRangeRarity, true);
+		}
 		function addTooltipLine(tooltip, lineText, color, rarity, rarityShared, isTitle) {
 			let line = document.createElement('div');
 			line.className = 'line textLeft textSmall textDark' + (isTitle ? ' textBold' : '');
@@ -282,6 +306,63 @@
 				line.appendChild(percentageDiv);
 			}
 			tooltip.appendChild(line);
+		}
+		
+		// Show/Hide market tooltip
+		var marketTooltipShow = {};
+		var marketTooltipElement = {};
+		var marketTooltipInvaderIndex = {};
+		function marketMouseEnter(item, ev) {
+			if(marketTooltipShow[item.id]) $timeout.cancel(marketTooltipShow[item.id]);
+			marketTooltipShow[item.id] = $timeout(function() {
+				let srcEle = ev.srcElement;
+				while(!srcEle.classList.contains('marketItemContainer')) srcEle = srcEle.parentElement;
+				let contEle = ev.srcElement;
+				while(!contEle.classList.contains('moreOptionContainer')) contEle = contEle.parentElement;
+				const rightMargin = contEle.getBoundingClientRect().right - srcEle.getBoundingClientRect().right;
+				let invaderIndex = marketTooltipInvaderIndex[item.id] ? marketTooltipInvaderIndex[item.id] : 0;
+				let tooltip = generateTooltip(item.invaders[invaderIndex], rightMargin < 140);
+				marketTooltipElement[item.id] = tooltip;
+				srcEle.appendChild(tooltip);
+				$timeout(function() { tooltip.classList.add('show'); }, 10);
+				delete marketTooltipShow[item.id];
+			}, tooltipDelay);
+		}
+		function marketMouseLeave(item, ev) {
+			if(marketTooltipShow[item.id]) $timeout.cancel(marketTooltipShow[item.id]);
+			if(marketTooltipElement[item.id]) {
+				let tooltip = marketTooltipElement[item.id];
+				delete marketTooltipElement[item.id];
+				delete marketTooltipInvaderIndex[item.id];
+				tooltip.classList.remove('show');
+				$timeout(function() { tooltip.remove(); }, 100);
+			}
+		}
+		function marketMouseMove(item, ev) {
+			let invaderIndex = null;
+			if(ev.layerX > 90) {
+				if(ev.layerY > 48) {
+					if(item.invaders.length > 1) invaderIndex = 1;
+				} else if(ev.layerY > 26) {
+					if(item.invaders.length > 3) invaderIndex = 3;
+				} else {
+					if(item.invaders.length > 5) invaderIndex = 5;
+				}
+			} else if(ev.layerX > 67) {
+				if(ev.layerY > 48) {
+					if(item.invaders.length > 0) invaderIndex = 0;
+				} else if(ev.layerY > 26) {
+					if(item.invaders.length > 2) invaderIndex = 2;
+				} else {
+					if(item.invaders.length > 4) invaderIndex = 4;
+				}
+			}
+			if(invaderIndex != null && invaderIndex != marketTooltipInvaderIndex[item.id]) {
+				let tooltip = marketTooltipElement[item.id];
+				if(tooltip) updateTooltip(tooltip, item.invaders[invaderIndex]);
+				
+				marketTooltipInvaderIndex[item.id] = invaderIndex;
+			}
 		}
 		
 		// Gets info on the given topic
