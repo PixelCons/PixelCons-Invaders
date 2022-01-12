@@ -62,10 +62,10 @@
 			//first apply stored values
 			let pathParams = storage.getItem('explore_page_filters', { level: storage.LEVEL_PAGE });
 			if(pathParams) {
-				_this.levelMin = pathParams.lvlMin;
-				_this.levelMax = pathParams.lvlMax;
-				_this.sortBy = pathParams.sortBy;
-				_this.smallView = pathParams.smallView;
+				_this.levelMin = (pathParams.lvlMin !== undefined) ? pathParams.lvlMin : levelMinDefault;
+				_this.levelMax = (pathParams.lvlMax !== undefined) ? pathParams.lvlMax : levelMaxDefault;
+				_this.sortBy = (pathParams.sortBy !== undefined) ? pathParams.sortBy : sortByDefault;;
+				_this.smallView = (pathParams.smallView !== undefined) ? pathParams.smallView : smallViewDefault;;
 				_this.typeWater = (!pathParams.excludeTypes || (pathParams.excludeTypes.indexOf('water') == -1));
 				_this.typeForest = (!pathParams.excludeTypes || (pathParams.excludeTypes.indexOf('forest') == -1));
 				_this.typeFire = (!pathParams.excludeTypes || (pathParams.excludeTypes.indexOf('fire') == -1));
