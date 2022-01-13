@@ -126,6 +126,20 @@
 		function goBack() {
 			$window.history.back();
 		}
+
+		// Update from transaction
+		function updateFromTransaction(transactionData) {
+			if (transactionData && transactionData.success && transactionData.invader) {
+				
+				//update invader
+				if(_this.invader && _this.invader.id == transactionData.invader.id) {
+					angular.extend(_this.invader, transactionData.invader);
+					
+					checkOwner();
+					safeApply();
+				}
+			}
+		}
 		
 		// Safe apply to ensure fatest response possible
 		function safeApply() {
@@ -144,8 +158,7 @@
 
 		// Listen for transactions
 		web3Service.onWaitingTransactionsChange(function (transactionData) {
-			//if (transaction.type == _mintTypeDescription[0]) loadInvaders();
-			//dirtyDatabaseData = transactionData && transactionData.success;
+			updateFromTransaction(transactionData);
 		}, $scope);
 	}
 }());

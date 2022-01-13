@@ -245,7 +245,7 @@
 			tooltipShow[invader.id] = $timeout(function() {
 				const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
 				const rightMargin = vw - ev.srcElement.getBoundingClientRect().right;
-				let tooltip = generateTooltip(invader, rightMargin < 140);
+				let tooltip = generateTooltip(invader, rightMargin < 140, false);
 				tooltipElement[invader.id] = tooltip;
 				ev.srcElement.appendChild(tooltip);
 				$timeout(function() { tooltip.classList.add('show'); }, 10);
@@ -261,10 +261,11 @@
 				$timeout(function() { tooltip.remove(); }, 100);
 			}
 		}
-		function generateTooltip(invader, left) {
+		function generateTooltip(invader, left, dark) {
 			let tooltip = document.createElement('div');
 			tooltip.classList.add('tooltip');
 			if(left) tooltip.classList.add('left');
+			if(dark) tooltip.classList.add('dark');
 			
 			addTooltipLine(tooltip, 'Invader ' + ((invader.number || invader.number===0) ? invader.number : ''), null, null, false, true);
 			addTooltipLine(tooltip, invader.type, invader.typeColor, invader.typeRarity);
@@ -321,7 +322,7 @@
 				while(!contEle.classList.contains('moreOptionContainer')) contEle = contEle.parentElement;
 				const rightMargin = contEle.getBoundingClientRect().right - srcEle.getBoundingClientRect().right;
 				let invaderIndex = marketTooltipInvaderIndex[item.id] ? marketTooltipInvaderIndex[item.id] : 0;
-				let tooltip = generateTooltip(item.invaders[invaderIndex], rightMargin < 140);
+				let tooltip = generateTooltip(item.invaders[invaderIndex], rightMargin < 140, true);
 				marketTooltipElement[item.id] = tooltip;
 				srcEle.appendChild(tooltip);
 				$timeout(function() { tooltip.classList.add('show'); }, 10);
@@ -377,6 +378,53 @@
 				clickOutsideToClose: true
 			});
 		}
+
+		// Update from transaction
+		function updateFromTransaction(transactionData) {
+			if (transactionData && transactionData.success && transactionData.invader) {
+				let updated = false;
+				
+				//remove now minted invaders
+				if(_this.accountInvaderPixelcons) {
+					let index = -1;
+					for(let i=0; i<_this.accountInvaderPixelcons.length; i++) {
+						if(_this.accountInvaderPixelcons[i].id == transactionData.invader.id) {
+							index = i;
+							break;
+						}
+					}
+					if(index > -1) {
+						_this.accountInvaderPixelcons.splice(index, 1);
+						filterPageData();
+						updated = true;
+					}
+				}
+				
+				//remove now minted invaders from market
+				if(_this.marketData) {
+					let marketIndex = -1;
+					let invaderIndex = -1;
+					for(let i=0; i<_this.marketData.length; i++) {
+						for(let j=0; j<_this.marketData[i].invaders.length; j++) {
+							if(_this.marketData[i].invaders[j].id == transactionData.invader.id) {
+								marketIndex = i;
+								invaderIndex = j;
+								break;
+							}
+						}
+						if(marketIndex > -1) break;
+					}
+					if(marketIndex > -1 && invaderIndex > -1) {
+						if(_this.marketData[marketIndex].invaders[invaderIndex].length <= 1) _this.marketData.splice(marketIndex, 1);
+						else _this.marketData[marketIndex].invaders.splice(invaderIndex, 1);
+						filterMarketData();
+						updated = true;
+					}
+				}
+				
+				if(updated) safeApply();
+			}
+		}
 		
 		// Safe apply to ensure fatest response possible
 		function safeApply() {
@@ -395,8 +443,7 @@
 
 		// Listen for transactions
 		web3Service.onWaitingTransactionsChange(function (transactionData) {
-			//if (transaction.type == _mintTypeDescription[0]) loadInvaders();
-			//dirtyDatabaseData = transactionData && transactionData.success;
+			updateFromTransaction(transactionData);
 		}, $scope);
 		
 	}

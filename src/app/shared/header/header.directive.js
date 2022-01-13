@@ -3,8 +3,8 @@
 		.directive('appHeader', appHeader)
 		.controller('HeaderCtrl', HeaderCtrl);
 
-	HeaderCtrl.$inject = ['$scope', '$mdMedia', '$mdToast', '$mdMenu', '$timeout', '$location', '$window', '$route', 'storage', 'web3Service', 'market'];
-	function HeaderCtrl($scope, $mdMedia, $mdToast, $mdMenu, $timeout, $location, $window, $route, storage, web3Service, market) {
+	HeaderCtrl.$inject = ['$scope', '$mdMedia', '$mdToast', '$mdMenu', '$timeout', '$location', '$window', '$route', 'storage', 'web3Service', 'decoder', 'market'];
+	function HeaderCtrl($scope, $mdMedia, $mdToast, $mdMenu, $timeout, $location, $window, $route, storage, web3Service, decoder, market) {
 		var _this = this;
 		_this.noWeb3 = false;
 		_this.loggedIn = false;
@@ -12,6 +12,7 @@
 		_this.waitingTransactions = [];
 		_this.setAccount = setAccount;
 		_this.getNetworkStyle = getNetworkStyle;
+		_this.getInvaderImage = getInvaderImage;
 		_this.goPath = goPath;
 		_this.goDetails = goDetails;
 		_this.closeMenu = $mdMenu.hide;
@@ -23,6 +24,7 @@
 		_this.marketEnabled = market.isEnabled();
 		_this.marketLink = market.getMarketLink();
 		var showMenuPromise = null;
+		var invaderImages = {};
 
 		// Watch for screen size changes
 		_this.screenSize = {};
@@ -60,7 +62,7 @@
 				_this.accountAddress = null;
 				_this.userAccountId = '';
 			}
-		};
+		}
 
 		// Configure transaction indicator
 		updateTransactionIndicator();
@@ -103,7 +105,7 @@
 					}
 				}
 			}
-		};
+		}
 		
 		// Gets the network badge style
 		function getNetworkStyle(chainId) {
@@ -156,6 +158,12 @@
 		// Connect account
 		function connect() {
 			web3Service.requestAccess();
+		}
+		
+		// Gets an invader image
+		function getInvaderImage(id) {
+			if(!invaderImages[id]) invaderImages[id] = decoder.generateInvader(id, 2);
+			return invaderImages[id];
 		}
 
 		// Listen for account data changes and waiting transactions

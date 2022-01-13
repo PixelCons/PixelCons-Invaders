@@ -80,13 +80,13 @@
 				</div>
 				<md-button style="display:none" ng-click="" aria-label="null"></md-button>
 				<div ng-repeat="transaction in ctrl.waitingTransactions track by $index" class="headerDropdownRow">
-					<div ng-if="transaction.params.pixelconIds.length==1" class="headerDropdownIcon"><pixelcon class="md-whiteframe-1dp" id="transaction.params.pixelconIds[0]"></pixelcon></div>
-					<div ng-if="transaction.params.pixelconIds.length>1" class="headerDropdownIconCollection">
-						<pixelcon ng-if="transaction.params.pixelconIds[0]" class="md-whiteframe-1dp" id="transaction.params.pixelconIds[0]"></pixelcon>
-						<pixelcon ng-if="transaction.params.pixelconIds[1]" class="md-whiteframe-1dp" id="transaction.params.pixelconIds[1]"></pixelcon>
-						<pixelcon ng-if="transaction.params.pixelconIds[2]" class="md-whiteframe-1dp" id="transaction.params.pixelconIds[2]"></pixelcon>
-						<pixelcon ng-if="transaction.params.pixelconIds[3]" class="md-whiteframe-1dp" id="transaction.params.pixelconIds[3]"></pixelcon>
+					<div class="headerDropdownIcon">
+						<img class="crispImage" style="width:100%; height:100%;" ng-src="{{ctrl.getInvaderImage(transaction.params.invaderId)}}"/>
+					
+					
 					</div>
+					
+					
 					<div class="headerDropdownTextItem textLighter">{{transaction.description}}</div>
 					<md-button class="headerDropdownButton md-primary" ng-click="">
 						<div class="networkBadge" ng-style="ctrl.getNetworkStyle(transaction.chainId)"></div>

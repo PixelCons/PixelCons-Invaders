@@ -2,8 +2,8 @@
 	angular.module('App')
 		.controller('ExplorePageCtrl', ExplorePageCtrl);
 
-	ExplorePageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$sce', '$timeout', 'decoder', 'storage', 'web3Service', 'coreContract'];
-	function ExplorePageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $sce, $timeout, decoder, storage, web3Service, coreContract) {
+	ExplorePageCtrl.$inject = ['$scope', '$mdMedia', '$routeParams', '$route', '$location', '$window', '$mdDialog', '$sce', '$timeout', 'decoder', 'storage', 'web3Service', 'coreContract'];
+	function ExplorePageCtrl($scope, $mdMedia, $routeParams, $route, $location, $window, $mdDialog, $sce, $timeout, decoder, storage, web3Service, coreContract) {
 		var _this = this;
 		var ownerCheckTimeout;
 		var levelCheckTimeout;
@@ -21,6 +21,7 @@
 		_this.copyLink = copyLink;
 		_this.shareOnTwitter = shareOnTwitter;
 		_this.shareOnFacebook = shareOnFacebook;
+		_this.infoHint = infoHint;
 		_this.onLevelChange = onLevelChange;
 		_this.onOwnerChange = onOwnerChange;
 		_this.onTypeChange = onTypeChange;
@@ -220,18 +221,23 @@
 				let invaders = await coreContract.fetchAllInvaders();
 				_this.invaders = addInvaderImageData(invaders);
 				filterInvaders();
-				
-				//restore scroll position
-				let pathParams = storage.getItem('explore_page_filters', { level: storage.LEVEL_PAGE });
-				if(pathParams && pathParams.scrollTop && pathParams.scrollHeight) {
-					$window.document.getElementById('contentBackground').style.height = pathParams.scrollHeight + 'px';
-					$window.document.getElementById('scrollTarget').scrollTop = pathParams.scrollTop;
-					delete pathParams.scrollHeight;
-					delete pathParams.scrollTop;
-					storage.setItem('explore_page_filters', pathParams, { level: storage.LEVEL_PAGE });
-					$timeout(function(){
-						$window.document.getElementById('contentBackground').style.height = null;
-					});
+				if(!invaders.length) {
+					//no invaders
+					_this.error = $sce.trustAsHtml('No Invaders');
+					
+				} else {
+					//restore scroll position
+					let pathParams = storage.getItem('explore_page_filters', { level: storage.LEVEL_PAGE });
+					if(pathParams && pathParams.scrollTop && pathParams.scrollHeight) {
+						$window.document.getElementById('contentBackground').style.height = pathParams.scrollHeight + 'px';
+						$window.document.getElementById('scrollTarget').scrollTop = pathParams.scrollTop;
+						delete pathParams.scrollHeight;
+						delete pathParams.scrollTop;
+						storage.setItem('explore_page_filters', pathParams, { level: storage.LEVEL_PAGE });
+						$timeout(function(){
+							$window.document.getElementById('contentBackground').style.height = null;
+						});
+					}
 				}
 				
 				_this.invadersLoading = false;
@@ -506,6 +512,19 @@
 			return url;
 		}
 		
+		// Gets info on the given topic
+		function infoHint(topic) {
+			$mdDialog.show({
+				controller: 'InfoDialogCtrl',
+				controllerAs: 'ctrl',
+				templateUrl: HTMLTemplates['dialog.info'],
+				parent: angular.element(document.body),
+				locals: { topic: topic },
+				bindToController: true,
+				clickOutsideToClose: true
+			});
+		}
+		
 		// Generates images and adds class and offset details to the invader objects
 		function addInvaderImageData(invaders) {
 			const numPanels = Math.ceil(invaders.length / decoder.invadersPerPanel);
@@ -530,6 +549,33 @@
 			}
 			return invaders;
 		}
+
+		// Update from transaction
+		function updateFromTransaction(transactionData) {
+			if (transactionData && transactionData.success && transactionData.invader) {
+				
+				//update invaders
+				if(_this.invaders) {
+					let index = -1;
+					for(let i=0; i<_this.invaders.length; i++) {
+						if(_this.invaders[i].id == transactionData.invader.id) {
+							index = i;
+							break;
+						}
+					}
+					if(index > -1) {
+						angular.extend(_this.invaders[index], transactionData.invader);
+						filterInvaders();
+						safeApply();
+					} else {
+						_this.invaders.push(transactionData.invader);
+						_this.invaders = addInvaderImageData(_this.invaders);
+						filterInvaders();
+						safeApply();
+					}
+				}
+			}
+		}
 		
 		// Safe apply to ensure fatest response possible
 		function safeApply() {
@@ -543,8 +589,7 @@
 
 		// Listen for transactions
 		web3Service.onWaitingTransactionsChange(function (transactionData) {
-			//if (transaction.type == _mintTypeDescription[0]) loadInvaders();
-			//dirtyDatabaseData = transactionData && transactionData.success;
+			updateFromTransaction(transactionData);
 		}, $scope);
 	}
 }());

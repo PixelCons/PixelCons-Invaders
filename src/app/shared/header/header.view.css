@@ -269,20 +269,6 @@ div.headerDropdownIcon {
 	margin-right: 3px;
 	font-size: 0px;
 }
-div.headerDropdownIconCollection {
-	display: inline-block;
-	vertical-align: middle;
-	width: 32px;
-	height: 32px;
-	margin-left: -2px;
-	font-size: 0px;
-}
-div.headerDropdownIconCollection pixelcon {
-	display: inline-block;
-	width: 14px;
-	height: 14px;
-	margin: 1px;
-}
 accounticon.headerDropdownAccountIcon {
 	position: relative;
 	display: inline-block;

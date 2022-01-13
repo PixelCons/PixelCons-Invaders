@@ -259,6 +259,7 @@
 		// Verifies the invader can be minted
 		function verifyMintInvader(pixelconId, index) {
 			pixelconId = formatInvaderId(pixelconId);
+			let invaderId = generateInvader(pixelconId, index);
 			return $q(async function (resolve, reject) {
 				let state = web3Service.getState();
 				if (state == "not_enabled") reject(_notEnabledError);
@@ -267,7 +268,7 @@
 				else if (web3Service.isReadOnly()) reject(_noAccountError);
 				else if (web3Service.isPrivacyMode()) reject(_accountPrivateError);
 				else if (pixelconId == null) reject(_invalidIdError);
-				else if (isDuplicateTransaction(_mintTypeDescription[0], [pixelconId])) reject(_duplicateTransactionError);
+				else if (isDuplicateTransaction(_mintTypeDescription[0], invaderId)) reject(_duplicateTransactionError);
 				else {
 					try {
 						let chainId = web3Service.getMainNetwork(_pixelconsContractNetworkIndex).chainId;
@@ -286,7 +287,6 @@
 							else {
 							
 								//invader already exist
-								let invaderId = generateInvader(pixelconId, index);
 								let exists = await doesPixelconExist(contract, invaderId);
 								if(exists) reject('Invader already exists');
 								else {
@@ -303,8 +303,8 @@
 		}
 
 		// Verifies the invader can be transfered
-		function verifyTransferInvader(id) {
-			id = formatInvaderId(id);
+		function verifyTransferInvader(invaderId) {
+			invaderId = formatInvaderId(invaderId);
 			return $q(async function (resolve, reject) {
 				let state = web3Service.getState();
 				if (state == "not_enabled") reject(_notEnabledError);
@@ -312,14 +312,14 @@
 				else if (state != "ready") reject(_unknownError);
 				else if (web3Service.isReadOnly()) reject(_noAccountError);
 				else if (web3Service.isPrivacyMode()) reject(_accountPrivateError);
-				else if (id == null) reject(_invalidIdError);
-				else if (isDuplicateTransaction(_transferTypeDescription[0], [id])) reject(_duplicateTransactionError);
+				else if (invaderId == null) reject(_invalidIdError);
+				else if (isDuplicateTransaction(_transferTypeDescription[0], invaderId)) reject(_duplicateTransactionError);
 				else {
 					try {
 						let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
 						let address = web3Service.getActiveAccount();
 						let contract = await web3Service.getContractWithSigner(_contractPath, chainId);
-						let owner = web3Service.formatAddress(await contract.errRetry.ownerOf(id));
+						let owner = web3Service.formatAddress(await contract.errRetry.ownerOf(invaderId));
 						if (owner == address) resolve({ owner: owner });
 						else reject('Account does not own this Invader');
 						
@@ -338,8 +338,8 @@
 
 
 		// Mints a new invader
-		function mintInvader(pixelconId, index) {
-			pixelconId = formatInvaderId(pixelconId);
+		function mintInvader(invaderId, index) {
+			invaderId = formatInvaderId(invaderId);
 			return $q(async function (resolve, reject) {
 				let state = web3Service.getState();
 				if (state == "not_enabled") reject(_notEnabledError);
@@ -347,7 +347,7 @@
 				else if (state != "ready") reject(_unknownError);
 				else if (web3Service.isReadOnly()) reject(_noAccountError);
 				else if (web3Service.isPrivacyMode()) reject(_accountPrivateError);
-				else if (pixelconId == null) reject(_invalidIdError);
+				else if (invaderId == null) reject(_invalidIdError);
 				else {
 					try {
 						let to = web3Service.getActiveAccount();
@@ -355,10 +355,10 @@
 						//do transaction
 						let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
 						let contractWithSigner = await web3Service.getContractWithSigner(_contractPath, chainId);
-						let tx = await contractWithSigner.mintToken(pixelconId, index, _defaultGasParameters);
+						let tx = await contractWithSigner.mintToken(invaderId, index, _defaultGasParameters);
 
 						//add the waiting transaction to web3Service list
-						let transactionParams = { invaderId:generateInvader(pixelconId, index), data: {pixelconId:pixelconId, index:index} };
+						let transactionParams = { invaderId:generateInvader(invaderId, index), data: {invaderId:invaderId, index:index} };
 						resolve(web3Service.addWaitingTransaction(tx.hash, transactionParams, _mintTypeDescription[0], _mintTypeDescription[1]));
 						
 					} catch (err) {
@@ -442,7 +442,6 @@
 			if(list && !Array.isArray(list)) list = [list];
 			if(!max) max = 1000;
 			
-			
 			let subLists = [];
 			let subList = [];
 			for(let i=0; i<list.length; i++) {
@@ -462,44 +461,15 @@
 				results = results.concat(await queries[i]);
 			}
 			
-			/*
-			let subList = [];
-			let results = [];
-			for(let i=0; i<list.length; i++) {
-				if(subList.length >= max) {
-					results = results.concat(await querySubset(subList));
-					subList = [];
-				}
-				subList.push(list[i]);
-			}
-			if(subList.length > 0) results = results.concat(await querySubset(subList));
-			*/
-			
 			return results;
 		}
 		
 		// Checks if the given data looks like a currently processing transaction
-		function isDuplicateTransaction(transactionType, pixelconIds) {
+		function isDuplicateTransaction(transactionType, invaderId) {
 			let transactions = web3Service.getWaitingTransactions();
 			for (let i = 0; i < transactions.length; i++) {
-				if (transactions[i].type == transactionType && transactions[i].params) {
-					if (transactions[i].params.pixelconIds && transactions[i].params.pixelconIds.length == pixelconIds.length) {
-						let containsAll = true;
-						for (let x = 0; x < pixelconIds.length; x++) {
-							let found = false;
-							for (let y = 0; y < transactions[i].params.pixelconIds.length; y++) {
-								if (pixelconIds[x] == transactions[i].params.pixelconIds[y]) {
-									found = true;
-									break;
-								}
-							}
-							if (!found) {
-								containsAll = false;
-								break;
-							}
-						}
-						if (containsAll) return true;
-					}
+				if (transactions[i].type == transactionType && transactions[i].params && transactions[i].params.invaderId == invaderId) {
+					return true;
 				}
 			}
 			return false;

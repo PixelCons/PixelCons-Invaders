@@ -54,11 +54,12 @@
 			<md-option value="rarityDesc">Rarity Desc</md-option>
 			</md-select>
 			<br/>
-			<div class="levelSelect textDark textMedium">
+			<div class="hintGroup levelSelect textDark textMedium">
 				<span>Level</span>
 				<input class="levelInput" type="number" step="any" name="levelMin" ng-model="ctrl.levelMin" ng-change="ctrl.onLevelChange()" min="0" max="30"/>
 				<span>to</span>
 				<input class="levelInput" type="number" step="any" name="levelMax" ng-model="ctrl.levelMax" ng-change="ctrl.onLevelChange()" min="0" max="30"/>
+				<div class="hint" ng-click="ctrl.infoHint('levelExplainer')"></div>
 			</div>
 			<br/>
 			<div class="ownerSelect textDark textMedium">
@@ -67,21 +68,27 @@
 				<md-progress-circular ng-show="ctrl.checkingOwner" class="ownerLoading" md-diameter="16px" md-mode="indeterminate"></md-progress-circular>
 				<accounticon ng-show="!ctrl.checkingOwner && ctrl.ownerAddress" class="ownerIcon" address="ctrl.ownerAddress" border="2"></accounticon>
 				<div ng-show="!ctrl.checkingOwner && !ctrl.ownerAddress && ctrl.owner" class="ownerUnknown textDark textBold textMedium">??</div>
-				<md-button class="ownerClear" ng-if="ctrl.owner" ng-click="ctrl.clearOwner()"></md-button>
+				<md-button class="ownerClear" ng-if="ctrl.owner" ng-click="ctrl.clearOwner()"  aria-label="Clear Owner"></md-button>
 			</div>
-			<br/>
-			<md-checkbox class="colorCheckbox water textDark textMedium" ng-model="ctrl.typeWater" ng-change="ctrl.onTypeChange()">Water</md-checkbox>
-			<md-checkbox class="colorCheckbox forest textDark textMedium" ng-model="ctrl.typeForest" ng-change="ctrl.onTypeChange()">Forest</md-checkbox>
-			<md-checkbox class="colorCheckbox fire textDark textMedium" ng-model="ctrl.typeFire" ng-change="ctrl.onTypeChange()">Fire</md-checkbox>
-			<md-checkbox class="colorCheckbox desert textDark textMedium" ng-model="ctrl.typeDesert" ng-change="ctrl.onTypeChange()">Desert</md-checkbox>
-			<md-checkbox class="colorCheckbox electric textDark textMedium" ng-model="ctrl.typeElectric" ng-change="ctrl.onTypeChange()">Electric</md-checkbox>
-			<md-checkbox class="colorCheckbox metal textDark textMedium" ng-model="ctrl.typeMetal" ng-change="ctrl.onTypeChange()">Metal</md-checkbox>
-			<br/>
-			<md-checkbox class="colorCheckbox defense textDark textMedium" ng-model="ctrl.attrDefense" ng-change="ctrl.onAttributeChange()">Defense</md-checkbox>
-			<md-checkbox class="colorCheckbox attack textDark textMedium" ng-model="ctrl.attrAttack" ng-change="ctrl.onAttributeChange()">Attack</md-checkbox>
-			<br/>
-			<md-checkbox class="colorCheckbox longRange textDark textMedium" ng-model="ctrl.attrLongRange" ng-change="ctrl.onAttributeChange()">Long Range</md-checkbox>
-			<md-checkbox class="colorCheckbox shortRange textDark textMedium" ng-model="ctrl.attrShortRange" ng-change="ctrl.onAttributeChange()">Short Range</md-checkbox>
+			<div class="hintGroup">
+				<md-checkbox class="colorCheckbox water textDark textMedium" ng-model="ctrl.typeWater" ng-change="ctrl.onTypeChange()">Water</md-checkbox>
+				<md-checkbox class="colorCheckbox forest textDark textMedium" ng-model="ctrl.typeForest" ng-change="ctrl.onTypeChange()">Forest</md-checkbox>
+				<md-checkbox class="colorCheckbox fire textDark textMedium" ng-model="ctrl.typeFire" ng-change="ctrl.onTypeChange()">Fire</md-checkbox>
+				<md-checkbox class="colorCheckbox desert textDark textMedium" ng-model="ctrl.typeDesert" ng-change="ctrl.onTypeChange()">Desert</md-checkbox>
+				<md-checkbox class="colorCheckbox electric textDark textMedium" ng-model="ctrl.typeElectric" ng-change="ctrl.onTypeChange()">Electric</md-checkbox>
+				<md-checkbox class="colorCheckbox metal textDark textMedium" ng-model="ctrl.typeMetal" ng-change="ctrl.onTypeChange()">Metal</md-checkbox>
+				<div class="hint" ng-click="ctrl.infoHint('typeExplainer')"></div>
+			</div>
+			<div class="hintGroup">
+				<md-checkbox class="colorCheckbox defense textDark textMedium" ng-model="ctrl.attrDefense" ng-change="ctrl.onAttributeChange()">Defense</md-checkbox>
+				<md-checkbox class="colorCheckbox attack textDark textMedium" ng-model="ctrl.attrAttack" ng-change="ctrl.onAttributeChange()">Attack</md-checkbox>
+				<div class="hint" ng-click="ctrl.infoHint('attributeExplainer')"></div>
+			</div>
+			<div class="hintGroup">
+				<md-checkbox class="colorCheckbox longRange textDark textMedium" ng-model="ctrl.attrLongRange" ng-change="ctrl.onAttributeChange()">Long Range</md-checkbox>
+				<md-checkbox class="colorCheckbox shortRange textDark textMedium" ng-model="ctrl.attrShortRange" ng-change="ctrl.onAttributeChange()">Short Range</md-checkbox>
+				<div class="hint" ng-click="ctrl.infoHint('attributeExplainer')"></div>
+			</div>
 		</div>
 	</div>
 	

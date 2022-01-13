@@ -54,12 +54,12 @@
 			else if(options.level == _LEVEL_PAGE) keyValue = _pageStorage[keyName];
 			if(keyValue === null || keyValue === undefined) return null;
 			
+			if(options.encryptionKey) keyValue = CryptoJS.AES.decrypt(keyValue, options.encryptionKey).toString(CryptoJS.enc.Utf8);
 			try {
 				keyValue = JSON.parse(keyValue);
 			} catch(err) {
 				return null;
 			}
-			if(options.encryptionKey) keyValue = CryptoJS.AES.decrypt(keyValue, options.encryptionKey).toString(CryptoJS.enc.Utf8);
 			return keyValue;
 		}
 		
