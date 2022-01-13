@@ -257,6 +257,7 @@ div.invadersMintPage.sm div.mintableInvaders {
 }
 div.invadersMintPage div.mintableInvaders div.invaderPixelconsContainer {
 	display: inline-block;
+	width: 100%;
 }
 div.invadersMintPage div.mintableInvaders div.invaderPixelcon {
 	position: relative;
