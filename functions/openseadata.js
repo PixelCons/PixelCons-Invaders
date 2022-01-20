@@ -67,50 +67,52 @@ async function getMarketState() {
 		
 		let assets = JSON.parse(data).assets;
 		for(let i=0; i<assets.length; i++) {
-			let asset = assets[i];
-			let id = asset.token_metadata.substr(asset.token_metadata.indexOf('0x'), 66);
-			let metadataParse = asset.token_metadata.split('?')[1].split('&');
-			let index = '';
-			let creator = '';
-			let created = '';
-			for(let i=0; i<metadataParse.length; i++) {
-				if(metadataParse[i].indexOf('index=') > -1) index = metadataParse[i].substring('index='.length);
-				if(metadataParse[i].indexOf('creator=') > -1) creator = metadataParse[i].substring('creator='.length);
-				if(metadataParse[i].indexOf('created=') > -1) created = metadataParse[i].substring('created='.length);
-			}
-			let lastSale = null;
-			if(asset.last_sale && asset.last_sale.event_type=="successful" && !asset.last_sale.asset_bundle) {
-				lastSale = {
-					seller: asset.last_sale.transaction.from_account.address.toLowerCase(),
-					buyer: asset.last_sale.transaction.to_account.address.toLowerCase(),
-					amount: Math.round(parseInt(asset.last_sale.total_price) / (Math.pow(10, asset.last_sale.payment_token.decimals - 3 ))) / 1000,
-					token: asset.last_sale.payment_token.symbol,
-					valueUSD: parseInt(asset.last_sale.total_price) / (Math.pow(10, asset.last_sale.payment_token.decimals)) * asset.last_sale.payment_token.usd_price,
-					timestamp: (new Date(asset.last_sale.transaction.timestamp)).getTime() - (new Date()).getTimezoneOffset()*60*1000
+			if(asset.token_metadata) {
+				let asset = assets[i];
+				let id = asset.token_metadata.substr(asset.token_metadata.indexOf('0x'), 66);
+				let metadataParse = asset.token_metadata.split('?')[1].split('&');
+				let index = '';
+				let creator = '';
+				let created = '';
+				for(let i=0; i<metadataParse.length; i++) {
+					if(metadataParse[i].indexOf('index=') > -1) index = metadataParse[i].substring('index='.length);
+					if(metadataParse[i].indexOf('creator=') > -1) creator = metadataParse[i].substring('creator='.length);
+					if(metadataParse[i].indexOf('created=') > -1) created = metadataParse[i].substring('created='.length);
 				}
-			}
-			let listing = null;
-			if(asset.sell_orders && asset.sell_orders[0] && asset.sell_orders[0].sale_kind==0) {
-				listing = {
-					seller: asset.sell_orders[0].maker.address.toLowerCase(),
-					amount: Math.round(parseInt(asset.sell_orders[0].current_price) / (Math.pow(10, asset.sell_orders[0].payment_token_contract.decimals - 3 ))) / 1000,
-					token: asset.sell_orders[0].payment_token_contract.symbol,
-					valueUSD: parseInt(asset.sell_orders[0].current_price) / (Math.pow(10, asset.sell_orders[0].payment_token_contract.decimals)) * asset.sell_orders[0].payment_token_contract.usd_price,
-					timestamp: asset.sell_orders[0].listing_time * 1000
+				let lastSale = null;
+				if(asset.last_sale && asset.last_sale.event_type=="successful" && !asset.last_sale.asset_bundle) {
+					lastSale = {
+						seller: asset.last_sale.transaction.from_account.address.toLowerCase(),
+						buyer: asset.last_sale.transaction.to_account.address.toLowerCase(),
+						amount: Math.round(parseInt(asset.last_sale.total_price) / (Math.pow(10, asset.last_sale.payment_token.decimals - 3 ))) / 1000,
+						token: asset.last_sale.payment_token.symbol,
+						valueUSD: parseInt(asset.last_sale.total_price) / (Math.pow(10, asset.last_sale.payment_token.decimals)) * asset.last_sale.payment_token.usd_price,
+						timestamp: (new Date(asset.last_sale.transaction.timestamp)).getTime() - (new Date()).getTimezoneOffset()*60*1000
+					}
 				}
+				let listing = null;
+				if(asset.sell_orders && asset.sell_orders[0] && asset.sell_orders[0].sale_kind==0) {
+					listing = {
+						seller: asset.sell_orders[0].maker.address.toLowerCase(),
+						amount: Math.round(parseInt(asset.sell_orders[0].current_price) / (Math.pow(10, asset.sell_orders[0].payment_token_contract.decimals - 3 ))) / 1000,
+						token: asset.sell_orders[0].payment_token_contract.symbol,
+						valueUSD: parseInt(asset.sell_orders[0].current_price) / (Math.pow(10, asset.sell_orders[0].payment_token_contract.decimals)) * asset.sell_orders[0].payment_token_contract.usd_price,
+						timestamp: asset.sell_orders[0].listing_time * 1000
+					}
+				}
+				marketItems.push({
+					id: id,
+					index: parseInt(index, 16),
+					name: asset.name,
+					image: asset.image_original_url,
+					link: asset.permalink,
+					owner: asset.owner.address.toLowerCase(),
+					creator: creator.toLowerCase(),
+					created: parseInt(created, 16) * 1000,
+					lastSale: lastSale,
+					listing: listing
+				});
 			}
-			marketItems.push({
-				id: id,
-				index: parseInt(index, 16),
-				name: asset.name,
-				image: asset.image_original_url,
-				link: asset.permalink,
-				owner: asset.owner.address.toLowerCase(),
-				creator: creator.toLowerCase(),
-				created: parseInt(created, 16) * 1000,
-				lastSale: lastSale,
-				listing: listing
-			});
 		}
 		
 		if(assets.length < maxMarketSearch) break;

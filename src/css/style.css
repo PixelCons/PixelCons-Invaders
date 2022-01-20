@@ -176,18 +176,29 @@
 }
 
 /* App Layout */
+body {
+	background: linear-gradient(52deg, #2c2c2c 0%, #00000000 30%, #00000000 60%, #486cd9 75%, #00000000 85%, #131313 100%), 
+				linear-gradient(152deg, #a98ab0  0%, #716184  20%, #4b5375  40%, #3d53be 60%, #1b2a35  80%, #527cff 90%, #52c4ff 100%)
+}
 div.appContainer {
 	height: 100%;
 	width: 100%;
-	background-color: #dddddd;
+	-ms-interpolation-mode: nearest-neighbor;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-crisp-edges;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+	background-image: url("../img/background_clouds.png");
+	background-size: cover;
 }
 div.pageContent {
 	width: 100%;
 	height: 100%;
+	background-image: url("../img/background_stars.png");
 }
 div.pageContentBackground {
 	min-height: 100%;
-	background-image: url("../img/back.png");
 }
 div.pageContentBackground.groupOverride {
 	background-image: url("../img/back.png");
