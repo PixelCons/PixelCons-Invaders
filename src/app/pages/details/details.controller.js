@@ -20,8 +20,8 @@
 		
 		// Watch for screen size changes
 		_this.screenSize = {};
-		$scope.$watch(function () { return $mdMedia('gt-md'); }, function (lg) { _this.screenSize['lg'] = lg; });
-		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
+		$scope.$watch(function () { return $mdMedia('gt-sm'); }, function (lg) { _this.screenSize['lg'] = lg; });
+		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-sm'); }, function (md) { _this.screenSize['md'] = md; });
 		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 
 		// Loads the page
@@ -34,6 +34,26 @@
 				let invader = await coreContract.fetchInvader($routeParams.index);
 				_this.invader = addInvaderImageData(invader);
 				$location.search('id', _this.invader.id).replace();
+				
+				//set planet image
+				var planetType = 'Planet_Ancient';
+				if(_this.invader.type == 'Metallum Alloy') planetType = 'Planet_Metal';
+				else if(_this.invader.type == 'Ignis Magma') planetType = 'Planet_Fire';
+				else if(_this.invader.type == 'Sicco Solar') planetType = 'Planet_Desert';
+				else if(_this.invader.type == 'Lectricus Zap') planetType = 'Planet_Electric';
+				else if(_this.invader.type == 'Silva Brush') planetType = 'Planet_Forest';
+				else if(_this.invader.type == 'Imber Drench') planetType = 'Planet_Water';
+				if(planetType == 'Planet_Ancient' || planetType == 'Planet_Desert') _this.size150 = true;
+				if(planetType == 'Planet_Forest') _this.size120 = true;
+				let planetContainer = $window.document.getElementById('planetContainer');
+				let planetImage = $window.document.getElementById('planetImage');
+				planetContainer.style.backgroundImage = 'url(/img/planets/' + planetType + '.png)';
+				planetImage.onload = function() {
+					planetContainer.style.backgroundImage = '';
+					planetImage.style.display = 'block';
+				}
+				planetImage.src = '/img/planets/' + planetType + '.gif';
+				_this.showPlanet = true;
 				
 				_this.detailsLoading = false;
 				checkOwner();
@@ -118,7 +138,8 @@
 		
 		// Link to view this invader on pixelcons
 		function viewOnPixelcons() {
-			let url = "https://pixelcons.io/details/" + _this.invader.id;
+			let url = '';
+			if(_this.invader) url = "https://pixelcons.io/details/" + _this.invader.id;
 			return url;
 		}
 		

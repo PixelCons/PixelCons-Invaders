@@ -177,8 +177,11 @@
 
 /* App Layout */
 body {
-	background: linear-gradient(52deg, #2c2c2c 0%, #00000000 30%, #00000000 60%, #486cd9 75%, #00000000 85%, #131313 100%), 
-				linear-gradient(152deg, #a98ab0  0%, #716184  20%, #4b5375  40%, #3d53be 60%, #1b2a35  80%, #527cff 90%, #52c4ff 100%)
+	background: linear-gradient(52deg, #486cd900 60%, #486cd9 75%, #486cd900 85%), 
+				linear-gradient(52deg, #2c2c2c 0%, #2c2c2c00 30%, #2c2c2c00 85%, #2c2c2c 100%), 
+				linear-gradient(152deg, #c592d1 0%, #95719d00 50%), 
+				linear-gradient(152deg, #486cd900 40%, #486cd9 60%, #486cd900 80%, #486cd9 90%), 
+				linear-gradient(52deg, #2c2c2c 0%, #2c2c2c 100%)
 }
 div.appContainer {
 	height: 100%;

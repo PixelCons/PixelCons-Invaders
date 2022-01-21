@@ -8,10 +8,13 @@
 	<div class="error textDark textSelectable" ng-if="ctrl.error" ng-bind-html="ctrl.error"></div>
 		
 	<!-- Details -->	
-	<div class="detailsCard" ng-if="ctrl.invader">
-		<div class="backButton" ng-click="ctrl.goBack()" ng-if="!ctrl.screenSize.sm && ctrl.backVisible"></div>
+	<div class="detailsCard" ng-show="ctrl.invader">
+		<div id="planetContainer" class="planet crispImage" ng-class="{'show':ctrl.showPlanet, 'size120':ctrl.size120, 'size150':ctrl.size150}">
+			<div class="backButton" ng-click="ctrl.goBack()" ng-if="!ctrl.screenSize.sm && ctrl.backVisible"></div>
+			<img id="planetImage" src="" style="display:none; width:100%; height:100%"></img>
+		</div>
 		<img class="invaderImage crispImage" ng-src="{{ctrl.invader.image}}"/>
-		<div class="detailContainer textSelectable">
+		<div class="detailContainer textSelectable" ng-if="ctrl.invader">
 		
 			<!-- Buttons -->
 			<div class="buttonsContainer">
