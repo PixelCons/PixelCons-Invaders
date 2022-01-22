@@ -70,6 +70,9 @@
 				}
 				if(lastPage != currPage) prevPath = lastPage;
 				lastPage = currPage;
+				
+				//clear gradient
+				clearBackgroundGradient($window);
 			});
 			
 			// add prevPath function
@@ -124,52 +127,11 @@
 	// Utils //
 	///////////
 	
-	//Updates the background image
-	var backgroundUpdateTimeout = null;
-	function updateBackground(backgroundImage, delay) {
-		if(backgroundUpdateTimeout) clearTimeout(backgroundUpdateTimeout);
-		backgroundUpdateTimeout = null;
-		if(delay) {
-			backgroundUpdateTimeout = setTimeout(function() {
-				backgroundUpdateTimeout = null;
-				updateBackgroundImage(backgroundImage);
-			}, delay);
-		} else {
-			updateBackgroundImage(backgroundImage);
-		}
-	}
-		
-	//Updates the background image
-	function updateBackgroundImage(backgroundImage) {
-		if(backgroundImage) {
-			//find the style rule
-			let styleRule = null;
-			for(let i = 0; i < document.styleSheets.length; i++) {
-				if(document.styleSheets[i].href && (document.styleSheets[i].href.indexOf('/style.css') > -1 || document.styleSheets[i].href.indexOf('/style.min.css') > -1)) {
-					for(let j = 0; j < document.styleSheets[i].cssRules.length; j++) {
-						if(document.styleSheets[i].cssRules[j].selectorText.indexOf('div.pageContentBackground.groupOverride') > -1) {
-							styleRule = document.styleSheets[i].cssRules[j];
-							break;
-						}
-					}
-					if(styleRule) break;
-				}
-			}
-			if(styleRule) {
-				//update and add background class list
-				styleRule.style['background-image'] = 'url(' + backgroundImage + ')';
-				let background = document.getElementById('contentBackground');
-				if(background) background.classList.add('groupOverride');
-				
-			} else {
-				//remove background class list
-				let background = document.getElementById('contentBackground');
-				if(background) background.classList.remove('groupOverride');
-			}
-		} else {
-			//remove background class list
-			let background = document.getElementById('contentBackground');
-			if(background) background.classList.remove('groupOverride');
-		}
+	//Sets the background gradient
+	function clearBackgroundGradient($window) {
+		//clear
+		let colorGradient = $window.document.getElementById('colorGradient');
+		colorGradient.style.opacity = '0.0';
+		colorGradient.style.transition = 'opacity cubic-bezier(0.35, 0, 0.25, 1) 0.6s'
 	}
 }());

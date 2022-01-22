@@ -55,6 +55,9 @@
 				planetImage.src = '/img/planets/' + planetType + '.gif';
 				_this.showPlanet = true;
 				
+				//update gradient
+				updateGradient();
+				
 				_this.detailsLoading = false;
 				checkOwner();
 				safeApply();
@@ -165,6 +168,28 @@
 		// Safe apply to ensure fatest response possible
 		function safeApply() {
 			if($scope.$root && $scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') $scope.$apply();
+		}
+		
+		// Applies the gradient
+		function updateGradient() {
+			let colorGradient = $window.document.getElementById('colorGradient');
+			colorGradient.classList.remove('gradientWhite');
+			colorGradient.classList.remove('gradientRed');
+			colorGradient.classList.remove('gradientOrange');
+			colorGradient.classList.remove('gradientYellow');
+			colorGradient.classList.remove('gradientGreen');
+			colorGradient.classList.remove('gradientBlue');
+			colorGradient.classList.remove('gradientBlack');
+			
+			if(_this.invader.type == 'Metallum Alloy') colorGradient.classList.add('gradientWhite');
+			else if(_this.invader.type == 'Ignis Magma') colorGradient.classList.add('gradientRed');
+			else if(_this.invader.type == 'Sicco Solar') colorGradient.classList.add('gradientOrange');
+			else if(_this.invader.type == 'Lectricus Zap') colorGradient.classList.add('gradientYellow');
+			else if(_this.invader.type == 'Silva Brush') colorGradient.classList.add('gradientGreen');
+			else if(_this.invader.type == 'Imber Drench') colorGradient.classList.add('gradientBlue');
+			else colorGradient.classList.add('gradientBlack');
+			colorGradient.style.opacity = '1.0';
+			colorGradient.style.transition = 'opacity cubic-bezier(0.35, 0, 0.25, 1) 2.1s'
 		}
 		
 		// Listen for account data changes

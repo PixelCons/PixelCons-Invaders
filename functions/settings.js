@@ -14,6 +14,9 @@ const advancedApiEnabled = true;
 /* Web domain that the app is hosted on */
 const appWebDomain = 'https://invaders.pixelcons.io/';
 
+/* Web path for static files */
+const appWebStatic = 'https://invaders.pixelcons.io/';
+
 /* Deployed PixelCons contract address */
 const contractAddress = '0x5536b6aadd29eaf0db112bb28046a5fad3761bd4';
 
@@ -28,6 +31,7 @@ let settings = {
 	customizedHTMLTagsEnabled: customizedHTMLTagsEnabled,
 	advancedApiEnabled: advancedApiEnabled,
     appWebDomain: appWebDomain,
+	appWebStatic: appWebStatic,
 	contractAddress: contractAddress,
 	openseaLink: openseaLink,
 	openseaApiKey: openseaApiKey

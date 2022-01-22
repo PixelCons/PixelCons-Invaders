@@ -67,8 +67,8 @@ async function getMarketState() {
 		
 		let assets = JSON.parse(data).assets;
 		for(let i=0; i<assets.length; i++) {
+			let asset = assets[i];
 			if(asset.token_metadata) {
-				let asset = assets[i];
 				let id = asset.token_metadata.substr(asset.token_metadata.indexOf('0x'), 66);
 				let metadataParse = asset.token_metadata.split('?')[1].split('&');
 				let index = '';

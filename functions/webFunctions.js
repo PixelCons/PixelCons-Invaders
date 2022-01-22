@@ -48,9 +48,9 @@ async function getOpenseaListings() {
 }
 
 // Gets the main html with the correct tag data
-async function getTagDataHTML(path, plainHTMLPath) {
+async function getTagDataHTML(path) {
 	try {
-		return await tagdata.getTagDataHTML(path, plainHTMLPath);
+		return await tagdata.getTagDataHTML(path);
 	} catch (err) {
 		if (!err) err = 'Error';
 		return { errorText: err.message ? err.message : err }

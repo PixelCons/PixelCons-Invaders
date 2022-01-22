@@ -51,7 +51,7 @@ function doPOST(url, data, headers) {
 }
 
 // Performs a GET request
-function doGET(url, headers) {
+function doGET(url, headers, asBuffer) {
     return new Promise(function(resolve, reject) {
 		let urlObject = new URL(url);
 		let options = {
@@ -71,7 +71,8 @@ function doGET(url, headers) {
                 body.push(chunk);
             });
             res.on('end', function() {
-                resolve(Buffer.concat(body).toString());
+                if(asBuffer) resolve(Buffer.concat(body));
+				else resolve(Buffer.concat(body).toString());
             });
         });
         req.on('error', function(err) {

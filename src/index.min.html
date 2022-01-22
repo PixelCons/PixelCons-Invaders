@@ -24,12 +24,13 @@
 </head>
 
 <body ng-app="App" ng-cloak>
+	<div class="standardGradient"></div>
 
 	<!-- Start of main HTML -->
-	<div ng-controller="AppCtrl as ctrl" layout="column" class="appContainer textNotSelectable" ng-cloak>
+	<div ng-controller="AppCtrl as ctrl" layout="column" class="appContainer backgroundClouds textNotSelectable" ng-cloak>
 		<app-header></app-header>
-		<div id="scrollTarget" class="pageContent invisibleScroll">
-			<div id="contentBackground" class="pageContentBackground crispImage">
+		<div id="scrollTarget" class="pageContent backgroundStars invisibleScroll">
+			<div id="contentBackground" class="pageContentBackground">
 				<ng-view id="view" class="filteredImage"></ng-view>
 			</div>
 			<app-footer></app-footer>

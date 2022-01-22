@@ -8,14 +8,15 @@ const webdata = require('./webdata.js');
 // Settings
 const customizedHTMLTagsEnabled = settings.customizedHTMLTagsEnabled;
 const appWebDomain = settings.appWebDomain;
+const plainHTMLPath = settings.appWebStatic + 'index.html';
 const tagEntryPoint = '<!-- Tag Inserts -->';
 
 // Data
 var plain_html_obj = null;
 
 // Gets the main html with the correct tag data
-async function getTagDataHTML(path, plainHTMLPath) {
-	let htmlData = await getHTMLData(plainHTMLPath);
+async function getTagDataHTML(path) {
+	let htmlData = await getHTMLData();
 	if(!htmlData.taglessHTML || !customizedHTMLTagsEnabled) return htmlData.plainHTML;
 	
 	if(path.indexOf('/details/') === 0) {
@@ -37,7 +38,7 @@ async function getTagDataHTML(path, plainHTMLPath) {
 
 // Utils
 const hexCharacters = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
-async function getHTMLData(plainHTMLPath) {
+async function getHTMLData() {
 	if(plain_html_obj) return plain_html_obj;
 	
 	//fetch the plain html file
