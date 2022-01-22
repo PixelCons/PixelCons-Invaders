@@ -78,9 +78,11 @@
 	vertical-align: top;
 	width: 42%;
 	margin: 0px 10px;
-	background-size: cover;
 	background-position: center;
 	height: 175px;
+}
+.infoDialog div.infoRight.cover {
+	background-size: cover;
 }
 .infoDialog div.infoSpacer {
 	width: 100%;
