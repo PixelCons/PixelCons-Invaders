@@ -32,6 +32,20 @@ const config: HardhatUserConfig = {
       accounts: {
         mnemonic: 'test test test test test test test test test test test junk'
       }
+    },
+    optimism_l1: {
+      url: 'http://127.0.0.1:9545',
+      accounts: {
+        mnemonic: 'test test test test test test test test test test test junk'
+      },
+      gasPrice: 0
+    },
+    optimism_l2: {
+      url: 'http://127.0.0.1:8545',
+      accounts: {
+        mnemonic: 'test test test test test test test test test test test junk'
+      },
+      gasPrice: 0
     }
   },
 };

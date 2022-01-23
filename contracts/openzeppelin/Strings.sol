@@ -63,5 +63,45 @@ library Strings {
         require(value == 0, "Strings: hex length insufficient");
         return string(buffer);
     }
+	
+    /**
+	 * @dev Replaces the given key with the given value in the given string
+	 */
+	function replace(string memory str, string memory key, string memory value) internal pure returns(string memory) {
+		bytes memory bStr = bytes(str);
+		bytes memory bKey = bytes(key);
+		bytes memory bValue = bytes(value);
 
+		uint index = indexOf(bStr, bKey);
+		if (index < bStr.length) {
+			bytes memory rStr = new bytes((bStr.length + bValue.length) - bKey.length);
+
+			uint i;
+			for (i = 0; i < index; i++) rStr[i] = bStr[i];
+			for (i = 0; i < bValue.length; i++) rStr[index + i] = bValue[i];
+			for (i = 0; i < bStr.length - (index + bKey.length); i++) rStr[index + bValue.length + i] = bStr[index + bKey.length + i];
+
+			return string(rStr);
+		}
+		return string(bStr);
+	}
+
+	/**
+	 * @dev Gets the index of the key string in the given string
+	 */
+	function indexOf(bytes memory str, bytes memory key) internal pure returns(uint256) {
+		for (uint i = 0; i < str.length - (key.length - 1); i++) {
+			bool matchFound = true;
+			for (uint j = 0; j < key.length; j++) {
+				if (str[i + j] != key[j]) {
+					matchFound = false;
+					break;
+				}
+			}
+			if (matchFound) {
+				return i;
+			}
+		}
+		return str.length;
+	}
 }

@@ -1,3 +1,124 @@
+const fs = require("fs");
+const path = require('path');
+const http = require('http');
+const { config, ethers } = require('hardhat');
+
+
+// Settings
+const deploymentsFile = resolvePath('contracts/deploy/deployments.json');
+const fundAddresses = ['0xFcc7fFEFA71E54926b87DC0624394A4DaA4c860E', '0x181D54fDBBB7Cf5C3e3959967328B5fAE4402805'];
+const deployerWalletKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
+const pixelconCount = 1300;
+const gasPrice = 0.00000015; //150 Gwei
+const ethPrice = 3000;
+
+
+// Main
+async function main() {
+	let result = null;
+	
+	//set up our RPC provider connections
+	const l1RpcProvider = new ethers.providers.JsonRpcProvider(config.networks.optimism_l1.url);
+	const l2RpcProvider = new ethers.providers.JsonRpcProvider(config.networks.optimism_l2.url);
+	const l1ChainId = (await l1RpcProvider.getNetwork()).chainId;
+	const l2ChainId = (await l2RpcProvider.getNetwork()).chainId;
+
+	//set up deployer wallets
+	const l1Wallet = new ethers.Wallet(deployerWalletKey, l1RpcProvider);
+	const l2Wallet = new ethers.Wallet(deployerWalletKey, l2RpcProvider);
+	const deployerAddress = await l1Wallet.getAddress();
+	
+	//open deployment file for updating
+	let file = await readFilePromise(deploymentsFile);
+	let deployAddresses = JSON.parse(file.data) || [];
+	clearDeployAddress(deployAddresses, l1ChainId);
+	clearDeployAddress(deployAddresses, l2ChainId);
+
+	//deploy PixelCon contract
+	const PixelCons = await ethers.getContractFactory("PixelCons");
+	const pixelcons = await PixelCons.connect(l1Wallet).deploy();
+	result = await pixelcons.deployTransaction.wait();
+	let pixelconsDeployGas = result.gasUsed.toNumber();
+	updateDeployAddress(deployAddresses, l1ChainId, "PixelCons", pixelcons.address, result.transactionHash, result.blockHash, result.blockNumber);
+	console.log("PixelCons deployed to:" + pixelcons.address);
+	
+	
+	//deploy PixelCon Bridge contract
+	
+	
+	//deploy PixelCon Invaders contract
+	
+	
+	//link the contracts together
+	
+	
+	
+	
+	//sample data setup
+	
+	
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+
 // Core
 const fs = require("fs");
 const path = require('path');
@@ -102,6 +223,8 @@ async function main() {
 	console.log("mintInvaderGas: " + mintInvaderGas + " [$" + ((mintInvaderGas*gasPrice*ethPrice)/numInvaders).toFixed(2) + "]");
 	console.log("");
 }
+
+*/
 
 
 // Utils
@@ -382,7 +505,6 @@ const pixelconDataIds = ["9a9999999909909999099099999999999077770994000049994774
 	"00033030003333330037070303333336033333063344996633333000ccccc000","0800008099800809909880099009800990089009900889099008809900000000","0900000009008000090808000980008009800080099898990080008000800080","ccccccc80ccccc08077777087717177877171770799999709499949009444900","0000000000040000000400000004000000444400044444000444440000044000","cccccccccccccccc0000aaa000cca7a08aaaaaa806006060bbbbbbbbbbbbbbbb","00600eee06000eee006eeeee060007ff0060ffff06000fff008444ff00000fff","0088880008877780087e7e800087870007999900708888708099990800800800","0cccc000c77c7100c7787600c7777600088a8800cc777c707c777c0007700700","00003300000330000493999049a9a99949a9a999499999a94a9a9a9904a9a990","0000330000033000004999000409099004090990049099900409090000000000","d1111ddddd1010dddd1199dddd1177dddd1177dddd1177dddd1177dddd9dd9dd","00aaa90000a7a70000aff40000aff400007776000a77769000ccc10000c00100",
 	"11111111115115111155551100a5a50010555001110550111111010111111111","0000000000bbbb00bbbbbbbbfb07b07fbbb33bbb0bbbebb000bbbb000ffffff0","33bb330333b88000338808033880808bb808088bb88088b3bb8883b33b33b3b3","550000555650056556600665065555600705705005500550055005500055e500","0018100008888800808980800800080000888000088888808088880800888800","8000000808000080008008000008800000088000008008000800008080000008","6000000606000060006006000006600000066000006006000600006060000006","7000000707000070007007000007700000077000007007000700007070000007"
 ];
-
 
 main()
 	.then(() => process.exit(0))
