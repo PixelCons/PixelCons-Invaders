@@ -7,10 +7,19 @@ const { config, ethers } = require('hardhat');
 // Settings
 const deploymentsFile = resolvePath('contracts/deploy/deployments.json');
 const fundAddresses = ['0xFcc7fFEFA71E54926b87DC0624394A4DaA4c860E', '0x181D54fDBBB7Cf5C3e3959967328B5fAE4402805'];
+const l2Network = 'optimism_l2';
+const l1Network = 'optimism_l1';
+const l2CrossDomainMessenger = '0x4200000000000000000000000000000000000007';
+const l1CrossDomainMessenger = '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318';
 const deployerWalletKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
 const pixelconCount = 1300;
 const gasPrice = 0.00000015; //150 Gwei
-const ethPrice = 3000;
+const ethPrice = 2400;
+const defaultGasParams = {
+  gasLimit: 1000000,
+  gasPrice: 0
+}
+
 
 
 // Main
@@ -42,135 +51,36 @@ async function main() {
 	updateDeployAddress(deployAddresses, l1ChainId, "PixelCons", pixelcons.address, result.transactionHash, result.blockHash, result.blockNumber);
 	console.log("PixelCons deployed to:" + pixelcons.address);
 	
-	
 	//deploy PixelCon Bridge contract
-	
-	
-	//deploy PixelCon Invaders contract
-	
-	
-	//link the contracts together
-	
-	
-	
-	
-	//sample data setup
-	
-	
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-// Core
-const fs = require("fs");
-const path = require('path');
-const http = require('http');
-const { config, ethers } = require("hardhat");
-const { utils } = require("ethers");
-
-
-// Settings
-const deploymentsFile = resolvePath('contracts/deploy/deployments.json');
-const fundAddresses = ['0xFcc7fFEFA71E54926b87DC0624394A4DaA4c860E', '0x181D54fDBBB7Cf5C3e3959967328B5fAE4402805'];
-const pixelconCount = 1300;
-const gasPrice = 0.00000015; //150 Gwei
-const ethPrice = 3000;
-
-
-// Main
-async function main() {
-	const deployerWallet = ethers.provider.getSigner();
-	const deployerAddress = await deployerWallet.getAddress();
-	const chainId = (await ethers.provider.getNetwork()).chainId;
-	let result = null;
-	
-	//open deployment file for updating
-	let file = await readFilePromise(deploymentsFile);
-	let deployAddresses = JSON.parse(file.data) || [];
-	clearDeployAddress(deployAddresses, chainId);
-
-	//deploy PixelCon contract
-	const PixelCons = await ethers.getContractFactory("PixelCons");
-	const pixelcons = await PixelCons.deploy();
-	result = await pixelcons.deployTransaction.wait();
-	let pixelconsDeployGas = result.gasUsed.toNumber();
-	updateDeployAddress(deployAddresses, chainId, "PixelCons", pixelcons.address, result.transactionHash, result.blockHash, result.blockNumber);
-	console.log("PixelCons deployed to:" + pixelcons.address);
+	const PixelConInvadersBridge = await ethers.getContractFactory("PixelConInvadersBridge");
+	const pixelconInvadersBridge = await PixelConInvadersBridge.connect(l1Wallet).deploy(pixelcons.address, l1CrossDomainMessenger);
+	result = await pixelconInvadersBridge.deployTransaction.wait();
+	let pixelconInvadersBridgeDeployGas = result.gasUsed.toNumber();
+	updateDeployAddress(deployAddresses, l1ChainId, "PixelConInvadersBridge", pixelconInvadersBridge.address, result.transactionHash, result.blockHash, result.blockNumber);
+	console.log("PixelConInvadersBridge deployed to:" + pixelconInvadersBridge.address);
 	
 	//deploy PixelCon Invaders contract
 	const PixelConInvaders = await ethers.getContractFactory("PixelConInvaders");
-	const pixelconInvaders = await PixelConInvaders.deploy(pixelcons.address);
+	const pixelconInvaders = await PixelConInvaders.connect(l2Wallet).deploy(l2CrossDomainMessenger);
 	result = await pixelconInvaders.deployTransaction.wait();
 	let pixelconInvadersDeployGas = result.gasUsed.toNumber();
-	updateDeployAddress(deployAddresses, chainId, "PixelConInvaders", pixelconInvaders.address, result.transactionHash, result.blockHash, result.blockNumber);
+	updateDeployAddress(deployAddresses, l2ChainId, "PixelConInvaders", pixelconInvaders.address, result.transactionHash, result.blockHash, result.blockNumber);
 	console.log("PixelConInvaders deployed to:" + pixelconInvaders.address);
 
 	//update deployment file
 	await writeFilePromise(deploymentsFile, JSON.stringify(deployAddresses, null, 2));
 	
+	//link the contracts together
+	result = await (await pixelconInvadersBridge.linkInvadersContract(pixelconInvaders.address)).wait();
+	let linkPixelconInvadersBridgeGas = result.gasUsed.toNumber();
+	result = await (await pixelconInvaders.linkBridgeContract(pixelconInvadersBridge.address)).wait();
+	let linkPixelconInvadersGas = result.gasUsed.toNumber();
+	
 	//set admin data
-	let tokenURITemplate = 'https://invaders.pixelcons.io/meta/data/';
+	let tokenURITemplate = 'https://invaders.pixelcons.io/meta/data/<tokenId>?index=<tokenIndex>';
 	result = await (await pixelconInvaders.setTokenURITemplate(tokenURITemplate)).wait();
 	let setTokenURITemplateGas = result.gasUsed.toNumber();
-
+	
 	//load example pixelcons
 	console.log("Creating pixelcons...");
 	let createTokensGas = 0;
@@ -198,9 +108,9 @@ async function main() {
 	console.log("Creating invaders...");
 	let numInvaders = 0;
 	let mintInvaderGas = 0;
-	for (let i = 15; i < 100 && i < pixelconCount; i++) { //6
+	for (let i = 15; i < 100 && i < pixelconCount; i++) {
 		for (let j = 0; j < 6; j++) {
-			result = await (await pixelconInvaders.mintToken('0x' + pixelconDataIds[i], j)).wait();
+			result = await (await pixelconInvadersBridge.mintInvader('0x' + pixelconDataIds[i], j, 1900000)).wait();
 			mintInvaderGas += result.gasUsed.toNumber();
 			numInvaders++;
 		}
@@ -208,24 +118,33 @@ async function main() {
 
 	//fund addresses
 	for (let i = 0; i < fundAddresses.length; i++) {
-		await deployerWallet.sendTransaction({
+		await l1Wallet.sendTransaction({
+			to: fundAddresses[i],
+			value: ethers.utils.parseEther("1")
+		});
+		await l2Wallet.sendTransaction({
 			to: fundAddresses[i],
 			value: ethers.utils.parseEther("1")
 		});
 	}
 	
+
+
+	//report gas usage
 	console.log("");
 	console.log("Deployment finished!");
 	console.log("pixelconsDeployGas: " + pixelconsDeployGas + " [$" + (pixelconsDeployGas*gasPrice*ethPrice).toFixed(2) + "]");
-	console.log("createTokensGas: " + createTokensGas + " [$" + ((createTokensGas*gasPrice*ethPrice)/pixelconCount).toFixed(2) + "]");
+	console.log("pixelconInvadersBridgeDeployGas: " + pixelconInvadersBridgeDeployGas + " [$" + (pixelconInvadersBridgeDeployGas*gasPrice*ethPrice).toFixed(2) + "]");
 	console.log("pixelconInvadersDeployGas: " + pixelconInvadersDeployGas + " [$" + (pixelconInvadersDeployGas*gasPrice*ethPrice).toFixed(2) + "]");
+	console.log("---");
+	console.log("linkPixelconInvadersBridgeGas: " + linkPixelconInvadersBridgeGas + " [$" + (linkPixelconInvadersBridgeGas*gasPrice*ethPrice).toFixed(2) + "]");
+	console.log("linkPixelconInvadersGas: " + linkPixelconInvadersGas + " [$" + (linkPixelconInvadersGas*gasPrice*ethPrice).toFixed(2) + "]");
 	console.log("setTokenURITemplateGas: " + setTokenURITemplateGas + " [$" + (setTokenURITemplateGas*gasPrice*ethPrice).toFixed(2) + "]");
+	console.log("---");
+	console.log("createTokensGas: " + createTokensGas + " [$" + ((createTokensGas*gasPrice*ethPrice)/pixelconCount).toFixed(2) + "]");
 	console.log("mintInvaderGas: " + mintInvaderGas + " [$" + ((mintInvaderGas*gasPrice*ethPrice)/numInvaders).toFixed(2) + "]");
 	console.log("");
 }
-
-*/
-
 
 // Utils
 function resolvePath(p) {

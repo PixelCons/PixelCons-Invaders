@@ -16,7 +16,7 @@ import "./optimism/CrossDomainEnabled.sol";
  * See (https://github.com/ethereum-optimism/optimism)
  * @author PixelCons
  */
-contract PixelConInvaders is Ownable, CrossDomainEnabled {
+contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////// Structs/Constants /////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled {
      * @dev Sets the Invader contract address on L2
 	 * @param pixelconInvadersContract -Invader contract address
 	 */
-	function linkInvaderContract(address pixelconInvadersContract) public onlyOwner {
+	function linkInvadersContract(address pixelconInvadersContract) public onlyOwner {
 		require(pixelconInvadersContract != address(0), "Invalid address");
 		require(_pixelconInvadersContract == address(0), "Contract already set");
 		_pixelconInvadersContract = pixelconInvadersContract;
@@ -123,7 +123,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled {
 		uint256 invaderId = _generate(pixelconId, generationIndex);
 		
 		//create the pixelcon
-		IPixelCons(_pixelconsContract).create(minter, invaderId, bytes8(0));
+		IPixelCons(_pixelconsContract).create(address(this), invaderId, bytes8(0));
 
 		//bridge pixelcon to the invader contract on L2
 		_bridgeToL2(invaderId, minter, gasLimit);

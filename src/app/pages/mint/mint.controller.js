@@ -35,7 +35,7 @@
 				await web3Service.awaitState(true);
 				
 				_this.maxSupply = await coreContract.getMaxInvaders();
-				_this.totalSupply = await coreContract.getTotalInvaders();
+				_this.totalSupply = await coreContract.getTotalInvaders(true);
 				if(_this.totalSupply >= _this.maxSupply) {
 					_this.noMore = true;
 				

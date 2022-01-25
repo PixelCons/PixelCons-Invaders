@@ -5,15 +5,28 @@
 	web3Service.$inject = ['$interval', '$timeout', '$window', '$mdDialog', '$q', 'storage'];
 	function web3Service($interval, $timeout, $window, $mdDialog, $q, storage) {
 		const _networkConfig = [{
-			name: 'Local Testnet',
-			chainId: '1337',
+			name: 'Mainnet[test]',
+			chainId: '31337',
 			nativeCurrency: {
 				name: 'ETH',
 				symbol: 'ETH',
 				decimals: 18
 			},
 			icon: '/img/network_mainnet.png',
-			fallbackRPCs: [],
+			fallbackRPCs: ['http://192.168.1.69:8081'],
+			blockExplorer: 'https://etherscan.io/',
+			transactionLU: '/tx/<txHash>',
+			accountLU: '/address/<address>'
+		},{
+			name: 'Optimism[test]',
+			chainId: '420',
+			nativeCurrency: {
+				name: 'ETH',
+				symbol: 'ETH',
+				decimals: 18
+			},
+			icon: '/img/network_optimism.png',
+			fallbackRPCs: ['http://192.168.1.69:8082'],
 			blockExplorer: 'https://etherscan.io/',
 			transactionLU: '/tx/<txHash>',
 			accountLU: '/address/<address>'
@@ -1053,7 +1066,7 @@
 							return {
 								txHash: txHash,
 								status: receipt.status,
-								confirmations: receipt.confirmations,
+								confirmations: 0,//receipt.confirmations,
 								logs: receipt.logs
 							};
 						}

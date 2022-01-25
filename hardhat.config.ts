@@ -34,14 +34,14 @@ const config: HardhatUserConfig = {
       }
     },
     optimism_l1: {
-      url: 'http://127.0.0.1:9545',
+      url: 'http://192.168.1.69:8081',
       accounts: {
         mnemonic: 'test test test test test test test test test test test junk'
       },
       gasPrice: 0
     },
     optimism_l2: {
-      url: 'http://127.0.0.1:8545',
+      url: 'http://192.168.1.69:8082',
       accounts: {
         mnemonic: 'test test test test test test test test test test test junk'
       },

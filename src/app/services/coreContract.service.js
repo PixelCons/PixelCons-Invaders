@@ -4,10 +4,11 @@
 
 	coreContract.$inject = ['$q', 'web3Service'];
 	function coreContract($q, web3Service) {
-		const _contractPath = 'contracts/PixelConInvaders.json';
+		const _invadersContractPath = 'contracts/PixelConInvaders.json';
+		const _bridgeContractPath = 'contracts/PixelConInvadersBridge.json';
 		const _pixelconsContractPath = 'contracts/PixelCons.json';
-		const _contractNetworkIndex = 0;
-		const _pixelconsContractNetworkIndex = 0;
+		const _primaryNetworkIndex = 0;
+		const _secondaryNetworkIndex = 1;
 		const _contractParamMaxTokens = 1000;
 		const _contractParamMint1PixelconIndex = 1217;
 		const _contractParamMint2PixelconIndex = 792;
@@ -15,7 +16,7 @@
 		const _contractParamMint4PixelconIndex = 651;
 		const _contractParamMint5PixelconIndex = 100;
 		const _contractParamMint6PixelconIndex = 100;
-		const _contractParamGenerationSeed = '0x62d4af627bbd87d47cc4ca7ec461ff2bc7333a2dbee35a43aab39d0959a26b4c';
+		const _contractParamGenerationSeed = '';
 		const _maxFilterParamSize = 100;
 		const _maxQueryParamSize = 200;
 		const _cacheTotalsFetchTime = 5 * 60 * 1000;
@@ -50,7 +51,7 @@
 
 		// Transaction type/description
 		var _mintTypeDescription = ["Uncover Invader", "Uncovering Invader..."];
-		var _transferTypeDescription = ["Transfer PixelCon", "Sending PixelCon..."];
+		var _transferTypeDescription = ["Transfer Invader", "Transfering Invader..."];
 
 		// Init
 		web3Service.addTransactionDataTransformer(addInvaderDataForTransaction);
@@ -63,7 +64,7 @@
 
 
 		// Gets the number of invaders currently in existence
-		function getTotalInvaders() {
+		function getTotalInvaders(fromL1) {
 			return $q(async function (resolve, reject) {
 				let state = web3Service.getState();
 				if (state == "not_enabled") reject(_notEnabledError);
@@ -71,11 +72,21 @@
 				else if (state != "ready") reject(_unknownError);
 				else {
 					try {
-						let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
-						let contract = await web3Service.getContract(_contractPath, chainId);
-						let total = await getTotalSupply(contract);
-						resolve(total);
-						
+						if(fromL1) {
+							//fetch from L1 state
+							let chainId = web3Service.getMainNetwork(_primaryNetworkIndex).chainId;
+							let bridgeContract = await web3Service.getContractDetails(_bridgeContractPath, chainId);
+							let pixelconsContract = await web3Service.getContract(_pixelconsContractPath, chainId);
+							let total = (await pixelconsContract.errRetry.creatorTotal(bridgeContract.address)).toNumber();
+							resolve(total);
+						} else {
+							
+							//fetch from L2 state
+							let chainId = web3Service.getMainNetwork(_secondaryNetworkIndex).chainId;
+							let contract = await web3Service.getContract(_invadersContractPath, chainId);
+							let total = await getTotalSupply(contract);
+							resolve(total);
+						}
 					} catch (err) {
 						console.log(err);
 						reject(err.name == 'UserActionNeededError' ? err.actionNeeded : 'Something went wrong while getting total');
@@ -112,12 +123,11 @@
 				else if (state != "ready") reject(_unknownError);
 				else {
 					try {
-						let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
-						let contract = await web3Service.getContract(_contractPath, chainId);
+						let chainId = web3Service.getMainNetwork(_secondaryNetworkIndex).chainId;
+						let contract = await web3Service.getContract(_invadersContractPath, chainId);
 						
 						//get invaders and add owner data
 						let invaders = await getAllInvaders(contract);
-						invaders = await addOwnerData(contract, invaders);
 						resolve(angular.copy(invaders));
 						
 					} catch (err) {
@@ -139,8 +149,8 @@
 				else if (index === null) reject(_invalidIndexError);
 				else {
 					try {
-						let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
-						let contract = await web3Service.getContract(_contractPath, chainId);
+						let chainId = web3Service.getMainNetwork(_secondaryNetworkIndex).chainId;
+						let contract = await web3Service.getContract(_invadersContractPath, chainId);
 						
 						let invader = (await getAllInvaders(contract))[index];
 						invader.owner = web3Service.formatAddress(await contract.errRetry.ownerOf(invader.id));
@@ -164,7 +174,7 @@
 				else if (!web3Service.isAddress(account)) reject(_invalidAddressError);
 				else {
 					try {
-						let chainId = web3Service.getMainNetwork(_pixelconsContractNetworkIndex).chainId;
+						let chainId = web3Service.getMainNetwork(_primaryNetworkIndex).chainId;
 						let contract = await web3Service.getContract(_pixelconsContractPath, chainId);
 						
 						//get all for owner
@@ -176,7 +186,7 @@
 							pixelcons[i].invaders = [];
 							let numInvaders = getNumInvadersForPixelconIndex(pixelcons[i].index);
 							for(let j=0; j<numInvaders; j++) {
-								let invaderId = generateInvader(pixelcons[i].id, j);
+								let invaderId = await generateInvader(pixelcons[i].id, j);
 								if(invaderId) {
 									let exists = await doesPixelconExist(contract, invaderId);
 									if(!exists) {
@@ -217,7 +227,7 @@
 								marketListings[i].invaders = [];
 								let numInvaders = getNumInvadersForPixelconIndex(marketListings[i].index);
 								for(let j=0; j<numInvaders; j++) {
-									let invaderId = generateInvader(marketListings[i].id, j);
+									let invaderId = await generateInvader(marketListings[i].id, j);
 									if(invaderId) {
 										let exists = await doesPixelconExist(null, invaderId);
 										if(!exists) {
@@ -259,8 +269,8 @@
 		// Verifies the invader can be minted
 		function verifyMintInvader(pixelconId, index) {
 			pixelconId = formatInvaderId(pixelconId);
-			let invaderId = generateInvader(pixelconId, index);
 			return $q(async function (resolve, reject) {
+				let invaderId = await generateInvader(pixelconId, index);
 				let state = web3Service.getState();
 				if (state == "not_enabled") reject(_notEnabledError);
 				else if (state == "not_connected") reject(_notConnectedError);
@@ -271,7 +281,7 @@
 				else if (isDuplicateTransaction(_mintTypeDescription[0], invaderId)) reject(_duplicateTransactionError);
 				else {
 					try {
-						let chainId = web3Service.getMainNetwork(_pixelconsContractNetworkIndex).chainId;
+						let chainId = web3Service.getMainNetwork(_primaryNetworkIndex).chainId;
 						let contract = await web3Service.getContractWithSigner(_pixelconsContractPath, chainId);
 						
 						//index in bounds
@@ -316,9 +326,9 @@
 				else if (isDuplicateTransaction(_transferTypeDescription[0], invaderId)) reject(_duplicateTransactionError);
 				else {
 					try {
-						let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
+						let chainId = web3Service.getMainNetwork(_secondaryNetworkIndex).chainId;
 						let address = web3Service.getActiveAccount();
-						let contract = await web3Service.getContractWithSigner(_contractPath, chainId);
+						let contract = await web3Service.getContractWithSigner(_invadersContractPath, chainId);
 						let owner = web3Service.formatAddress(await contract.errRetry.ownerOf(invaderId));
 						if (owner == address) resolve({ owner: owner });
 						else reject('Account does not own this Invader');
@@ -338,9 +348,10 @@
 
 
 		// Mints a new invader
-		function mintInvader(invaderId, index) {
-			invaderId = formatInvaderId(invaderId);
+		function mintInvader(pixelconId, index) {
+			pixelconId = formatInvaderId(pixelconId);
 			return $q(async function (resolve, reject) {
+				let invaderId = await generateInvader(pixelconId, index);
 				let state = web3Service.getState();
 				if (state == "not_enabled") reject(_notEnabledError);
 				else if (state == "not_connected") reject(_notConnectedError);
@@ -353,12 +364,12 @@
 						let to = web3Service.getActiveAccount();
 
 						//do transaction
-						let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
-						let contractWithSigner = await web3Service.getContractWithSigner(_contractPath, chainId);
-						let tx = await contractWithSigner.mintToken(invaderId, index, _defaultGasParameters);
+						let chainId = web3Service.getMainNetwork(_primaryNetworkIndex).chainId;
+						let contractWithSigner = await web3Service.getContractWithSigner(_bridgeContractPath, chainId);
+						let tx = await contractWithSigner.mintInvader(pixelconId, index, 1900000, _defaultGasParameters);
 
 						//add the waiting transaction to web3Service list
-						let transactionParams = { invaderId:generateInvader(invaderId, index), data: {invaderId:invaderId, index:index} };
+						let transactionParams = { invaderId:invaderId, data: {pixelconId:pixelconId, index:index} };
 						resolve(web3Service.addWaitingTransaction(tx.hash, transactionParams, _mintTypeDescription[0], _mintTypeDescription[1]));
 						
 					} catch (err) {
@@ -370,8 +381,8 @@
 		}
 
 		// Transfers invader
-		function transferInvader(id, address) {
-			id = formatInvaderId(id);
+		function transferInvader(invaderId, address) {
+			invaderId = formatInvaderId(invaderId);
 			return $q(async function (resolve, reject) {
 				let state = web3Service.getState();
 				if (state == "not_enabled") reject(_notEnabledError);
@@ -380,18 +391,18 @@
 				else if (web3Service.isReadOnly()) reject(_noAccountError);
 				else if (web3Service.isPrivacyMode()) reject(_accountPrivateError);
 				else if (!web3Service.isAddress(address)) reject(_invalidAddressError);
-				else if (id == null) reject(_invalidIdError);
+				else if (invaderId == null) reject(_invalidIdError);
 				else {
 					try {
 						let owner = web3Service.getActiveAccount();
 
 						//do transaction
-						let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
-						let contractWithSigner = await web3Service.getContractWithSigner(_contractPath, chainId);
-						let tx = await contractWithSigner.transferFrom(owner, address, id, _defaultGasParameters);
+						let chainId = web3Service.getMainNetwork(_secondaryNetworkIndex).chainId;
+						let contractWithSigner = await web3Service.getContractWithSigner(_invadersContractPath, chainId);
+						let tx = await contractWithSigner.transferFrom(owner, address, invaderId, _defaultGasParameters);
 
 						//add the waiting transaction to web3Service list
-						let transactionParams = { invaderId:id, data: {id:id, address:address} };
+						let transactionParams = { invaderId:invaderId, data: {invaderId:invaderId, address:address} };
 						resolve(web3Service.addWaitingTransaction(tx.hash, transactionParams, _transferTypeDescription[0], _transferTypeDescription[1]));
 						
 					} catch (err) {
@@ -475,6 +486,20 @@
 			return false;
 		}
 		
+		// Gets the current generation seed
+		var generationSeed = null;
+		async function getGenerationSeed(contract) {
+			if(_contractParamGenerationSeed) return _contractParamGenerationSeed;
+			if(generationSeed) return generationSeed;
+			
+			if(!contract) {
+				let chainId = web3Service.getMainNetwork(_primaryNetworkIndex).chainId;
+				contract = await web3Service.getContract(_bridgeContractPath, chainId);
+			}
+			generationSeed = web3Service.to256Hex(await contract.errRetry.generationSeed());
+			return generationSeed;
+		}
+		
 		// Gets the current total pixelcons
 		var lastTotalsValue = 0;
 		var lastTotalsFetchTime = 0;
@@ -483,8 +508,8 @@
 			if(currTime - lastTotalsFetchTime < _cacheTotalsFetchTime) return lastTotalsValue;
 			
 			if(!contract) {
-				let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
-				contract = await web3Service.getContract(_contractPath, chainId);
+				let chainId = web3Service.getMainNetwork(_secondaryNetworkIndex).chainId;
+				contract = await web3Service.getContract(_invadersContractPath, chainId);
 			}
 			lastTotalsValue = (await contract.errRetry.totalSupply()).toNumber();
 			lastTotalsFetchTime = (new Date()).getTime();
@@ -501,23 +526,22 @@
 				if(!othersFetching) {
 					try {
 						if(!contract) {
-							let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
-							contract = await web3Service.getContract(_contractPath, chainId);
+							let chainId = web3Service.getMainNetwork(_secondaryNetworkIndex).chainId;
+							contract = await web3Service.getContract(_invadersContractPath, chainId);
 						}
 							
 						let total = await getTotalSupply(contract);
 						if (!_cacheInvadersFetch || invaderList.length != total) {
 							if (total > 0) {
-								let mintEvents = await contract.queryFilter(contract.filters.Mint(null, null, null));
-								for (let i=0; i<mintEvents.length; i++) {
-									if (!invaderList[mintEvents[i].args["invaderIndex"]]) {
-										let invader = {
-											id: formatInvaderId(web3Service.to256Hex(mintEvents[i].args["invaderId"])),
-											number: mintEvents[i].args["invaderIndex"]
-										}
-										invader = angular.extend(invader, invaderAnalysis(invader.id));
-										invaderList[invader.number] = invader;
+								let tokenData = await contract.errRetry.getTokenData(0, total);
+								for (let i=0; i<tokenData[0].length; i++) {
+									let invader = {
+										number: i,
+										id: formatInvaderId(web3Service.to256Hex(tokenData[0][i])),
+										owner: web3Service.formatAddress(tokenData[1][i])
 									}
+									invader = angular.extend(invader, invaderAnalysis(invader.id));
+									invaderList[invader.number] = invader;
 								}
 							}
 						}
@@ -532,30 +556,6 @@
 					}
 				}
 			});
-		}
-		
-		// Fill owner data
-		var lastOwnersFetchTime = 0;
-		async function addOwnerData(contract, invaders) {
-			if(!invaders || !invaders.length) return [];
-			let currTime = (new Date()).getTime();
-			if(currTime - lastOwnersFetchTime < _cacheOwnersFetchTime) return invaders;
-			if(!contract) {
-				let chainId = web3Service.getMainNetwork(_contractNetworkIndex).chainId;
-				contract = await web3Service.getContract(_contractPath, chainId);
-			}
-			
-			let ids = [];
-			for(let i=0; i<invaders.length; i++) ids.push(invaders[i].id);
-			let ownerDataRaw = await breakUpQuery(ids, async function(ids_subset) {
-				return await contract.errRetry.getTokenOwners(ids_subset);
-			}, _maxQueryParamSize);
-			for(let i=0; i<ownerDataRaw.length; i++) {
-				invaders[i].owner = web3Service.formatAddress(ownerDataRaw[i].toString());
-			}
-			
-			lastOwnersFetchTime = (new Date()).getTime()
-			return invaders;
 		}
 		
 		// Checks if pixelcon exists
@@ -589,7 +589,7 @@
 						let currTime = (new Date()).getTime();
 						if(currTime - lastPixelconsFetchTime >= _cachePixelconsFetchTime) {
 							if(!contract) {
-								let chainId = web3Service.getMainNetwork(_pixelconsContractNetworkIndex).chainId;
+								let chainId = web3Service.getMainNetwork(_primaryNetworkIndex).chainId;
 								contract = await web3Service.getContract(_pixelconsContractPath, chainId);
 							}
 							
@@ -617,7 +617,7 @@
 		async function getPixelconsByIndexes(contract, indexes) {
 			if(!indexes || !indexes.length) return [];
 			if(!contract) {
-				let chainId = web3Service.getMainNetwork(_pixelconsContractNetworkIndex).chainId;
+				let chainId = web3Service.getMainNetwork(_secondaryNetworkIndex).chainId;
 				contract = await web3Service.getContract(_pixelconsContractPath, chainId);
 			}
 							
@@ -790,8 +790,9 @@
 		
 		
 		// Generates an invader id from a pixelcon id and mint index
-		function generateInvader(pixelconId, index) {
-			let seed = ethers.utils.keccak256('0x' + _contractParamGenerationSeed.substr(2,64).padStart(64,'0') + pixelconId.substr(2,64).padStart(64,'0') + (index).toString(16).padStart(8,'0'));
+		async function generateInvader(pixelconId, index) {
+			let generationSeed = await getGenerationSeed();
+			let seed = ethers.utils.keccak256('0x' + generationSeed.substr(2,64).padStart(64,'0') + pixelconId.substr(2,64).padStart(64,'0') + (index).toString(16).padStart(8,'0'));
 
 			//flags
 			let horizontalExpand1 = op_ba(seed /*&*/, '0x00000001');
@@ -960,23 +961,15 @@
 		async function addInvaderDataForMint(params, data) {
 			//scan event logs for data
 			let invader = {};
-			let contractInterface = await web3Service.getContractInterface(_contractPath);
+			let contractInterface = await web3Service.getContractInterface(_bridgeContractPath);
 			for (let i = 0; i < data.logs.length; i++) {
 				let event = contractInterface.parseLog(data.logs[i]);
 				if (event.name == "Mint") {
 					invader.id = formatInvaderId(web3Service.to256Hex(event.args["invaderId"]));
-					invader.number = event.args["invaderIndex"];
+					invader.number = lastTotalsValue; //best estimate (not important)
 					invader.owner = web3Service.formatAddress(event.args["minter"]);
 					invader = angular.extend(invader, invaderAnalysis(invader.id));
 				}
-			}
-			
-			//update caches or invalidate them to be updated
-			if(lastTotalsValue == invader.number) {
-				lastTotalsValue++;
-				invaderList[invader.number] = invader;
-			} else {
-				lastTotalsFetchTime = 0;
 			}
 			
 			//set invader data
@@ -997,7 +990,7 @@
 			}
 			
 			//scan event logs for data
-			let contractInterface = await web3Service.getContractInterface(_contractPath);
+			let contractInterface = await web3Service.getContractInterface(_invadersContractPath);
 			for (let i = 0; i < data.logs.length; i++) {
 				let event = contractInterface.parseLog(data.logs[i]);
 				if (event.name == "Transfer") {

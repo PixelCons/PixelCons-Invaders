@@ -85,7 +85,8 @@ const appContractsBuildPath = resolvePath("build/contracts");
 const appContracts = [
 	resolvePath("contracts/deploy/deployments.json"),
 	resolvePath("artifacts/contracts/pixelcons/PixelCons.sol/PixelCons.json"),
-	resolvePath("artifacts/contracts/PixelConInvaders.sol/PixelConInvaders.json")
+	resolvePath("artifacts/contracts/PixelConInvaders.sol/PixelConInvaders.json"),
+	resolvePath("artifacts/contracts/PixelConInvadersBridge.sol/PixelConInvadersBridge.json")
 ];
 
 // Start/Build Sequence

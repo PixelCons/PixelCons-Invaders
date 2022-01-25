@@ -262,16 +262,16 @@ div.invadersExplorePage md-checkbox.colorCheckbox.metal div.md-icon {
 div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.metal div.md-icon {
     background-color: #FFF1E8D1;
 }
-div.invadersExplorePage md-checkbox.colorCheckbox.defense div.md-icon {
+div.invadersExplorePage md-checkbox.colorCheckbox.attack div.md-icon {
     background-color: #C2C3C3;
 }
-div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.defense div.md-icon {
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.attack div.md-icon {
     background-color: #C2C3C3D1;
 }
-div.invadersExplorePage md-checkbox.colorCheckbox.attack div.md-icon {
+div.invadersExplorePage md-checkbox.colorCheckbox.defense div.md-icon {
     background-color: #83769C;
 }
-div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.attack div.md-icon {
+div.invadersExplorePage md-checkbox.colorCheckbox.md-checked.defense div.md-icon {
     background-color: #83769CD1;
 }
 div.invadersExplorePage md-checkbox.colorCheckbox.longRange div.md-icon {
