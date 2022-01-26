@@ -381,14 +381,14 @@
 
 		// Update from transaction
 		function updateFromTransaction(transactionData) {
-			if (transactionData && transactionData.success && transactionData.invader) {
+			if (transactionData && transactionData.success && transactionData.pixelcon) {
 				let updated = false;
 				
 				//remove now minted invaders
 				if(_this.accountInvaderPixelcons) {
 					let index = -1;
 					for(let i=0; i<_this.accountInvaderPixelcons.length; i++) {
-						if(_this.accountInvaderPixelcons[i].id == transactionData.invader.id) {
+						if(_this.accountInvaderPixelcons[i].id == transactionData.pixelcon.id) {
 							index = i;
 							break;
 						}
@@ -406,7 +406,7 @@
 					let invaderIndex = -1;
 					for(let i=0; i<_this.marketData.length; i++) {
 						for(let j=0; j<_this.marketData[i].invaders.length; j++) {
-							if(_this.marketData[i].invaders[j].id == transactionData.invader.id) {
+							if(_this.marketData[i].invaders[j].id == transactionData.pixelcon.id) {
 								marketIndex = i;
 								invaderIndex = j;
 								break;

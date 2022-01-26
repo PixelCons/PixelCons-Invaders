@@ -378,7 +378,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
      */
     function _transfer(address from, address to, uint256 tokenId) private {
 		TokenData storage tokenData = _tokenData[tokenId];
-		require(tokenData.owner == from, "Incorrect from address");
+		from = tokenData.owner;
 		
         //clear approvals
 		if(_tokenApprovals[tokenId] != address(0)) {

@@ -51,6 +51,7 @@
 
 		// Transaction type/description
 		var _mintTypeDescription = ["Uncover Invader", "Uncovering Invader..."];
+		var _mintConfirmTypeDescription = ["Confirm Invader", "Confirming Invader..."];
 		var _transferTypeDescription = ["Transfer Invader", "Transfering Invader..."];
 
 		// Init
@@ -960,16 +961,48 @@
 		// Adds data to return for mint transaction
 		async function addInvaderDataForMint(params, data) {
 			//scan event logs for data
-			let invader = {};
+			let pixelcon = {};
 			let contractInterface = await web3Service.getContractInterface(_bridgeContractPath);
 			for (let i = 0; i < data.logs.length; i++) {
 				let event = contractInterface.parseLog(data.logs[i]);
 				if (event.name == "Mint") {
-					invader.id = formatInvaderId(web3Service.to256Hex(event.args["invaderId"]));
-					invader.number = lastTotalsValue; //best estimate (not important)
-					invader.owner = web3Service.formatAddress(event.args["minter"]);
-					invader = angular.extend(invader, invaderAnalysis(invader.id));
+					pixelcon.id = formatInvaderId(web3Service.to256Hex(event.args["invaderId"]));
 				}
+			}
+			
+			//add transaction event for mint on L2
+			let chainId = web3Service.getMainNetwork(_secondaryNetworkIndex).chainId;
+			let invadersContract = await web3Service.getContract(_invadersContractPath, chainId);
+			let filter = invadersContract.filters.Mint(pixelcon.id, null);
+			web3Service.addWaitingTransactionEvent(filter, 0, params, 'Mint', 'l2Explainer', _mintConfirmTypeDescription[0], _mintConfirmTypeDescription[1], chainId);
+			
+			//set pixelcon data
+			data.pixelcon = pixelcon;
+			return data;
+		}
+		
+		// Adds data to return for mint transaction event on L2
+		async function addInvaderDataForMintConfirm(params, data) {
+			//scan events for data
+			let invader = {};
+			let contractInterface = await web3Service.getContractInterface(_invadersContractPath);
+			for (let i = 0; i < data.events.length; i++) {
+				let event = contractInterface.parseLog(data.events[i]);
+				if (event.name == "Mint") {
+					invader.id = formatInvaderId(web3Service.to256Hex(event.args["invaderId"]));
+					invader.number = event.args["invaderIndex"];
+					invader.owner = web3Service.formatAddress(event.args["to"]);
+					invader = angular.extend(invader, invaderAnalysis(invader.id));
+					break;
+				}
+			}
+			
+			//update caches or invalidate them to be updated
+			if(lastTotalsValue == invader.number) {
+				lastTotalsValue++;
+				invaderList[invader.number] = invader;
+			} else {
+				lastTotalsFetchTime = 0;
 			}
 			
 			//set invader data
@@ -1011,6 +1044,7 @@
 		// Adds data to return for the given transaction
 		async function addInvaderDataForTransaction(transaction, returnData) {
 			if (transaction.type == _mintTypeDescription[0]) return await addInvaderDataForMint(transaction.params, returnData);
+			if (transaction.type == _mintConfirmTypeDescription[0]) return await addInvaderDataForMintConfirm(transaction.params, returnData);
 			if (transaction.type == _transferTypeDescription[0]) return await addInvaderDataForTransfer(transaction.params, returnData);
 			return returnData;
 		}

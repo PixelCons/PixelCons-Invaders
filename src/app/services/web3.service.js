@@ -13,7 +13,7 @@
 				decimals: 18
 			},
 			icon: '/img/network_mainnet.png',
-			fallbackRPCs: ['http://192.168.1.69:8081'],
+			fallbackRPCs: ['http://192.168.1.69:8081', 'https://192.168.1.69:8081'],
 			blockExplorer: 'https://etherscan.io/',
 			transactionLU: '/tx/<txHash>',
 			accountLU: '/address/<address>'
@@ -26,7 +26,7 @@
 				decimals: 18
 			},
 			icon: '/img/network_optimism.png',
-			fallbackRPCs: ['http://192.168.1.69:8082'],
+			fallbackRPCs: ['http://192.168.1.69:8082', 'https://192.168.1.69:8082'],
 			blockExplorer: 'https://etherscan.io/',
 			transactionLU: '/tx/<txHash>',
 			accountLU: '/address/<address>'
@@ -84,6 +84,8 @@
 		const _transactionWaitConfirmations = 1;
 		const _transactionWaitTimeout = 2 * 60 * 60 * 1000;
 		const _transactionWaitPoll = 1 * 1000;
+		const _transactionEventWaitTimeout = 4 * 60 * 60 * 1000;
+		const _transactionEventWaitPoll = 30 * 1000;
 		const _contractCallMaxRetries = 5;
 		const _noAccountError = 'No Account';
 		const _notEnabledError = 'No Network Connection';
@@ -100,6 +102,7 @@
 		var _isReadOnly = false;
 		var _isPrivacyEnabled = false;
 		var _waitingTransactions = [];
+		var _waitingTransactionEvents = [];
 		var _waitingTransactionsAccount = null;
 		var _transactionDataTransformers = [];
 		var _contractServices = {};
@@ -185,7 +188,9 @@
 		this.getActiveAccount = getActiveAccount;
 		this.onAccountDataChange = onAccountDataChange;
 		this.getWaitingTransactions = getWaitingTransactions;
+		this.getWaitingTransactionEvents = getWaitingTransactionEvents;
 		this.addWaitingTransaction = addWaitingTransaction;
+		this.addWaitingTransactionEvent = addWaitingTransactionEvent;
 		this.addTransactionDataTransformer = addTransactionDataTransformer;
 		this.onWaitingTransactionsChange = onWaitingTransactionsChange;
 		this.getContractInterface = getContractInterface;
@@ -426,12 +431,25 @@
 			}
 			return transactionsForNetwork;
 		}
-
+		
+		// Gets waiting transaction events
+		function getWaitingTransactionEvents() {
+			let transactionEventsForNetwork = [];
+			for (let i = 0; i < _waitingTransactionEvents.length; i++) {
+				//make sure transaction chainId has a provider
+				if(getWeb3Provider(_waitingTransactionEvents[i].chainId)) {
+					transactionEventsForNetwork.push(_waitingTransactionEvents[i]);
+				}
+			}
+			return transactionEventsForNetwork;
+		}
+		
 		// Adds a new transaction to the wait list
-		function addWaitingTransaction(txHash, params, type, description) {
+		function addWaitingTransaction(txHash, params, type, description, chainId) {
+			if(!chainId) chainId = _chainId;
 			let transaction = {
 				txHash: txHash,
-				chainId: _chainId,
+				chainId: chainId,
 				params: params,
 				type: type,
 				description: description,
@@ -445,6 +463,30 @@
 
 			//return promise of transaction end
 			return transactionWaitTransformRemove(transaction);
+		}
+		
+		// Adds a new transaction event to the wait list
+		function addWaitingTransactionEvent(filter, fromBlock, params, name, info, type, description, chainId) {
+			if(!chainId) chainId = _chainId;
+			let transactionEvent = {
+				filter: filter,
+				fromBlock: fromBlock,
+				chainId: chainId,
+				params: params,
+				name: name,
+				info: info,
+				type: type,
+				description: description,
+				timestamp: (new Date()).getTime()
+			}
+			_waitingTransactionEvents.push(transactionEvent);
+
+			//update store and run callbacks
+			storeWaitingTransactions();
+			executeCallbackFunctions(_onWaitingTransactionsChangeFunctions, null);
+
+			//return promise of transaction event end
+			return transactionEventWaitTransformRemove(transactionEvent);
 		}
 
 		// Adds a function to be run on a transaction result promise to transform data
@@ -1050,6 +1092,113 @@
 		}
 
 
+		///////////////////////////////
+		// Helper Functions (events) //
+		///////////////////////////////
+
+
+		// Helper function to get transaction event status
+		async function getTransactionEventStatus(filter, fromBlock, chainId) {
+			if (_state == "ready") {
+				try {
+					let provider = getWeb3Provider(chainId);
+					if(provider != null) {
+						let tempContract = new ethers.Contract(filter.address, [], provider);
+						let events = await tempContract.queryFilter(filter, fromBlock);
+						if(events && events.length) {
+							return {
+								filter: filter,
+								fromBlock: fromBlock,
+								events: events
+							}
+						}
+					}
+				} catch (err) { }
+				return {
+					filter: filter,
+					fromBlock: fromBlock
+				}
+			} else {
+				throw new Error("no web3");
+			}
+		}
+
+		// Helper function to watch for transaction event completion
+		function transactionEventWait(transactionEvent) {
+			return $q(function (resolve, reject) {
+				let start = (new Date).getTime();
+				let check_transaction_event = async function () {
+					try {
+						let result = await getTransactionEventStatus(transactionEvent.filter, transactionEvent.fromBlock, transactionEvent.chainId);
+						if (result.events && result.events.length > 0) {
+							resolve(result);
+							return;
+						} else if (_transactionEventWaitTimeout > 0 && (new Date).getTime() - start > _transactionEventWaitTimeout) {
+							reject(new Error(transactionEvent.name + " event wasn't completed within " + (_transactionEventWaitTimeout / (60 * 60 * 1000)) + " hours"));
+							return;
+						}
+						$timeout(check_transaction_event, _transactionEventWaitPoll);
+					} catch (err) {
+						reject(err);
+					}
+				};
+				setTimeout(check_transaction_event, 30*1000);//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				//check_transaction_event();
+			});
+		}
+
+		// Helper function to wait for a transaction event to finish, transform its return data and remove it from waiting list
+		async function transactionEventWaitTransformRemove(transactionEvent) {
+			let returnData = null;
+			try {
+				//wait on event to finish
+				let result = await transactionEventWait(transactionEvent);
+				returnData = {
+					filter: result.filter,
+					chainId: transactionEvent.chainId,
+					success: true,
+					name: transactionEvent.name,
+					info: transactionEvent.info,
+					type: transactionEvent.type,
+					description: transactionEvent.description,
+					fromBlock: transactionEvent.fromBlock,
+					events: result.events
+				};
+
+				//transform event data
+				for (let i = 0; i < _transactionDataTransformers.length; i++) {
+					returnData = await _transactionDataTransformers[i](transactionEvent, returnData);
+				}
+			} catch (err) {
+				console.log(err);
+
+				//event failed or timed out
+				returnData = {
+					filter: transactionEvent.filter,
+					chainId: transactionEvent.chainId,
+					success: false,
+					name: transactionEvent.name,
+					info: transactionEvent.info,
+					type: transactionEvent.type,
+					description: transactionEvent.description,
+					fromBlock: transactionEvent.fromBlock
+				};
+			}
+
+			//remove event from waiting list
+			for (let i = 0; i < _waitingTransactionEvents.length; i++) {
+				if (_waitingTransactionEvents[i].txHash === transactionEvent.txHash) {
+					_waitingTransactionEvents.splice(i, 1)[0];
+					storeWaitingTransactions();
+					executeCallbackFunctions(_onWaitingTransactionsChangeFunctions, returnData);
+					break;
+				}
+			}
+
+			return returnData;
+		}
+
+
 		/////////////////////////////////////
 		// Helper Functions (transactions) //
 		/////////////////////////////////////
@@ -1066,15 +1215,15 @@
 							return {
 								txHash: txHash,
 								status: receipt.status,
-								confirmations: 0,//receipt.confirmations,
+								confirmations: receipt.confirmations,
 								logs: receipt.logs
-							};
+							}
 						}
 					}
 				} catch (err) { }
 				return {
 					txHash: txHash
-				};
+				}
 			} else {
 				throw new Error("no web3");
 			}
@@ -1168,31 +1317,88 @@
 		async function loadWaitingTransactions() {
 			let account = getActiveAccount();
 			_waitingTransactions = [];
+			_waitingTransactionEvents = [];
 			if (account && _state == "ready") {
 				try {
 					let accountHash = ethers.utils.keccak256(account);
 					let storageLocation = ethers.utils.keccak256(accountHash);
-					let storedWaitingTransactions = storage.getItem('pixelcons_' + storageLocation, { encryptionKey: accountHash });
-					if (storedWaitingTransactions) {
-
-						//check the state of each transaction
-						let now = (new Date()).getTime();
-						for (let i = 0; i < storedWaitingTransactions.length; i++) {
-							let timeElapsed = now - storedWaitingTransactions[i].timestamp;
-							if (_transactionWaitTimeout <= 0 || timeElapsed < _transactionWaitTimeout) {
-								let result = await getTransactionStatus(storedWaitingTransactions[i].txHash, storedWaitingTransactions[i].chainId);
-								let failed = (result.status === 0);
-								let confirmed = (result.status === 1 && result.confirmations >= _transactionWaitConfirmations);
-								if (!failed && !confirmed) {
-									//transaction still waiting
-									_waitingTransactions.push(storedWaitingTransactions[i]);
+					let storedTransactionData = storage.getItem('pixelcons_' + storageLocation, { encryptionKey: accountHash });
+					if (storedTransactionData) {
+						if(storedTransactionData.waitingTransactions) {
+							
+							//check the state of each transaction
+							let now = (new Date()).getTime();
+							for (let i = 0; i < storedTransactionData.waitingTransactions.length; i++) {
+								let transaction = storedTransactionData.waitingTransactions[i];
+								let timeElapsed = now - transaction.timestamp;
+								if (_transactionWaitTimeout <= 0 || timeElapsed < _transactionWaitTimeout) {
+									let result = await getTransactionStatus(transaction.txHash, transaction.chainId);
+									let failed = (result.status === 0);
+									let confirmed = (result.status === 1 && result.confirmations >= _transactionWaitConfirmations);
+									if (!failed && !confirmed) {
+										//transaction still waiting
+										_waitingTransactions.push(transaction);
+										
+									} else if (!failed && confirmed) {
+										//run data transformers for confirmation
+										let returnData = {
+											txHash: result.txHash,
+											chainId: transaction.chainId,
+											success: true,
+											type: transaction.type,
+											description: transaction.description,
+											logs: result.logs
+										}
+										for (let i = 0; i < _transactionDataTransformers.length; i++) {
+											returnData = await _transactionDataTransformers[i](transaction, returnData);
+										}
+									}
 								}
 							}
-						}
 
-						//setup promises to wait for transaction finish
-						for (let i = 0; i < _waitingTransactions.length; i++) {
-							transactionWaitTransformRemove(_waitingTransactions[i]);
+							//setup promises to wait for transaction finish
+							for (let i = 0; i < _waitingTransactions.length; i++) {
+								transactionWaitTransformRemove(_waitingTransactions[i]);
+							}
+						}
+						if(storedTransactionData.waitingTransactionEvents) {
+							
+							//check the state of each transaction event
+							let now = (new Date()).getTime();
+							for (let i = 0; i < storedTransactionData.waitingTransactionEvents.length; i++) {
+								let transactionEvent = storedTransactionData.waitingTransactionEvents[i];
+								let timeElapsed = now - transactionEvent.timestamp;
+								if (_transactionEventWaitTimeout <= 0 || timeElapsed < _transactionEventWaitTimeout) {
+									let result = await getTransactionEventStatus(transactionEvent.filter, transactionEvent.fromBlock, transactionEvent.chainId);
+									let confirmed = (result.events && result.events.length > 0);
+									if (!confirmed) {
+										//transaction event still waiting
+										_waitingTransactionEvents.push(transactionEvent);
+										
+									} else {
+										//run data transformers for confirmation
+										let returnData = {
+											filter: result.filter,
+											chainId: transactionEvent.chainId,
+											success: true,
+											name: transactionEvent.name,
+											info: transactionEvent.info,
+											type: transactionEvent.type,
+											description: transactionEvent.description,
+											fromBlock: transactionEvent.fromBlock,
+											events: result.events
+										}
+										for (let i = 0; i < _transactionDataTransformers.length; i++) {
+											returnData = await _transactionDataTransformers[i](transactionEvent, returnData);
+										}
+									}
+								}
+							}
+
+							//setup promises to wait for transaction event finish
+							for (let i = 0; i < _waitingTransactionEvents.length; i++) {
+								transactionEventWaitTransformRemove(_waitingTransactionEvents[i]);
+							}
 						}
 
 						//save the new updated transaction list
@@ -1212,7 +1418,11 @@
 				try {
 					let accountHash = ethers.utils.keccak256(account);
 					let storageLocation = ethers.utils.keccak256(accountHash);
-					storage.setItem('pixelcons_' + storageLocation, _waitingTransactions, { encryptionKey: accountHash });
+					let storageData = {
+						waitingTransactions: _waitingTransactions,
+						waitingTransactionEvents: _waitingTransactionEvents
+					}
+					storage.setItem('pixelcons_' + storageLocation, storageData, { encryptionKey: accountHash });
 					
 				} catch (err) {
 					console.log("Something went wrong trying to store transaction history...");

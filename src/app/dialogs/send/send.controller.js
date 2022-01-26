@@ -39,9 +39,9 @@
 				}
 			} else {
 				_this.title = 'Send Invader';
+				_this.invaderImg = decoder.generateInvader(_this.invaderId, 2);
 				coreContract.verifyTransferInvader(_this.invaderId).then(function (data) {
 					_this.currView = 'sendInvader';
-					_this.invaderImg = decoder.generateInvader(_this.invaderId, 2);
 					
 				}, function (reason) {
 					_this.currView = 'error';

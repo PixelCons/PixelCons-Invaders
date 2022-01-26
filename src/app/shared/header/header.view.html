@@ -58,9 +58,8 @@
 		<div class="accountIcon colorDark clickable crispImage md-whiteframe-1dp" ng-click="ctrl.showActivityMenu($mdOpenMenu)">
 			<div class="iconFill" ng-mouseenter="ctrl.showActivityMenu($mdOpenMenu)" ng-mouseleave="ctrl.cancelActivityMenu()">
 				<accounticon class="iconFill" address="ctrl.accountAddress" border="0"></accounticon>
-				<img ng-show="ctrl.waitingTransactions.length>0" class="iconFillOverlay crispImage" src="img/loading.gif"/>
+				<img ng-show="ctrl.waitingTransactions.length>0 || ctrl.waitingTransactionEvents.length>0" class="iconFillOverlay crispImage" src="img/loading.gif"/>
 			</div>
-			<div class="tooltip" ng-class="{'hidden':ctrl.waitingTransactions.length==0}">Processing...</div>
 		</div>
 		<md-menu-content class="headerDropdown textMedium textNotSelectable" width="3" ng-mouseleave="ctrl.hideActivityMenu()">
 			<div ng-if="ctrl.accountAddress">
@@ -76,22 +75,28 @@
 				</a>
 				<md-divider></md-divider>
 				<div class="textCenter">
-					<div class="headerDropdownText textLighter" ng-show="ctrl.waitingTransactions.length==0">No Pending Transactions</div>
+					<div class="headerDropdownText textLighter" ng-show="ctrl.waitingTransactions.length==0 && ctrl.waitingTransactionEvents.length==0">No Pending Transactions</div>
 				</div>
 				<md-button style="display:none" ng-click="" aria-label="null"></md-button>
 				<div ng-repeat="transaction in ctrl.waitingTransactions track by $index" class="headerDropdownRow">
 					<div class="headerDropdownIcon">
 						<img class="crispImage" style="width:100%; height:100%;" ng-src="{{ctrl.getInvaderImage(transaction.params.invaderId)}}"/>
-					
-					
 					</div>
-					
-					
 					<div class="headerDropdownTextItem textLighter">{{transaction.description}}</div>
 					<md-button class="headerDropdownButton md-primary" ng-click="">
 						<div class="networkBadge" ng-style="ctrl.getNetworkStyle(transaction.chainId)"></div>
 						<span>View</span>
 						<a class="plain buttonLink" ng-href="{{ctrl.goDetails(transaction.txHash, transaction.chainId)}}" target="_blank"></a>
+					</md-button>
+				</div>
+				<div ng-repeat="transaction in ctrl.waitingTransactionEvents track by $index" class="headerDropdownRow">
+					<div class="headerDropdownIcon">
+						<img class="crispImage" style="width:100%; height:100%;" ng-src="{{ctrl.getInvaderImage(transaction.params.invaderId)}}"/>
+					</div>
+					<div class="headerDropdownTextItem textLighter">{{transaction.description}}</div>
+					<md-button class="headerDropdownButton md-primary" ng-click="ctrl.displayInfo(transaction.info)">
+						<div class="networkBadge" ng-style="ctrl.getNetworkStyle(transaction.chainId)"></div>
+						<span>Info</span>
 					</md-button>
 				</div>
 				<div class="textCenter">

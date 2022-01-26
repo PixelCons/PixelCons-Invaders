@@ -24,6 +24,8 @@
 				_this.title = 'Invader Attributes';
 			} else if(_this.topic == 'mintExplainer') {
 				_this.title = 'How to Uncover Invaders';
+			} else if(_this.topic == 'l2Explainer') {
+				_this.title = 'Optimistic Ethereum (Layer 2)';
 			}
 		}
 		

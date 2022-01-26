@@ -3,8 +3,8 @@
 		.directive('appHeader', appHeader)
 		.controller('HeaderCtrl', HeaderCtrl);
 
-	HeaderCtrl.$inject = ['$scope', '$mdMedia', '$mdToast', '$mdMenu', '$timeout', '$location', '$window', '$route', 'storage', 'web3Service', 'decoder', 'market'];
-	function HeaderCtrl($scope, $mdMedia, $mdToast, $mdMenu, $timeout, $location, $window, $route, storage, web3Service, decoder, market) {
+	HeaderCtrl.$inject = ['$scope', '$mdMedia', '$mdToast', '$mdMenu', '$mdDialog', '$timeout', '$location', '$window', '$route', 'storage', 'web3Service', 'decoder', 'market'];
+	function HeaderCtrl($scope, $mdMedia, $mdToast, $mdMenu, $mdDialog, $timeout, $location, $window, $route, storage, web3Service, decoder, market) {
 		var _this = this;
 		_this.noWeb3 = false;
 		_this.loggedIn = false;
@@ -13,6 +13,7 @@
 		_this.setAccount = setAccount;
 		_this.getNetworkStyle = getNetworkStyle;
 		_this.getInvaderImage = getInvaderImage;
+		_this.displayInfo = displayInfo;
 		_this.goPath = goPath;
 		_this.goDetails = goDetails;
 		_this.closeMenu = $mdMenu.hide;
@@ -68,9 +69,11 @@
 		updateTransactionIndicator();
 		function updateTransactionIndicator(transactionData) {
 			let waitingTransactions = web3Service.getWaitingTransactions();
+			let waitingTransactionEvents = web3Service.getWaitingTransactionEvents();
 			let activeAccount = web3Service.getActiveAccount();
 			if (activeAccount) {
 				_this.waitingTransactions = waitingTransactions;
+				_this.waitingTransactionEvents = waitingTransactionEvents;
 				if (transactionData) {
 					if (transactionData.success) {
 						$mdToast.show(
@@ -82,7 +85,7 @@
 								.position('top right')
 								.hideDelay(3000)
 						).then(function(response) {
-							if (response === 'ok') {
+							if (response === 'ok' && transactionData.txHash) {
 								let url = web3Service.getTransactionLookupUrl(transactionData.txHash, transactionData.chainId);
 								if(url) $window.open(url);
 							}
@@ -97,7 +100,7 @@
 								.position('top right')
 								.hideDelay(5000)
 						).then(function(response) {
-							if (response === 'ok') {
+							if (response === 'ok' && transactionData.txHash) {
 								let url = web3Service.getTransactionLookupUrl(transactionData.txHash, transactionData.chainId);
 								if(url) $window.open(url);
 							}
@@ -162,8 +165,22 @@
 		
 		// Gets an invader image
 		function getInvaderImage(id) {
-			if(!invaderImages[id]) invaderImages[id] = decoder.generateInvader(id, 2);
+			if(!invaderImages[id]) invaderImages[id] = decoder.generateInvader(id, 4);
 			return invaderImages[id];
+		}
+		
+		// Displays info message for event
+		function displayInfo(topic) {
+			$mdMenu.hide();
+			$mdDialog.show({
+				controller: 'InfoDialogCtrl',
+				controllerAs: 'ctrl',
+				templateUrl: HTMLTemplates['dialog.info'],
+				parent: angular.element(document.body),
+				locals: { topic: topic },
+				bindToController: true,
+				clickOutsideToClose: true
+			});
 		}
 
 		// Listen for account data changes and waiting transactions
