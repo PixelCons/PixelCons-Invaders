@@ -9,7 +9,7 @@
 		const _pixelconsContractPath = 'contracts/PixelCons.json';
 		const _primaryNetworkIndex = 0;
 		const _secondaryNetworkIndex = 1;
-		const _contractParamMaxTokens = 1000;
+		const _contractParamMaxTokens = 1500;
 		const _contractParamMint1PixelconIndex = 1217;
 		const _contractParamMint2PixelconIndex = 792;
 		const _contractParamMint3PixelconIndex = 704;
@@ -98,21 +98,19 @@
 		
 		// Gets the maximum number of invaders that can exist
 		function getMaxInvaders() {
-			return $q(async function (resolve, reject) {
-				let state = web3Service.getState();
-				if (state == "not_enabled") reject(_notEnabledError);
-				else if (state == "not_connected") reject(_notConnectedError);
-				else if (state != "ready") reject(_unknownError);
-				else {
-					try {
-						resolve(_contractParamMaxTokens);
-						
-					} catch (err) {
-						console.log(err);
-						reject(err.name == 'UserActionNeededError' ? err.actionNeeded : 'Something went wrong while getting supply max');
-					}
+			let state = web3Service.getState();
+			if (state == "not_enabled") reject(_notEnabledError);
+			else if (state == "not_connected") reject(_notConnectedError);
+			else if (state != "ready") reject(_unknownError);
+			else {
+				try {
+					return _contractParamMaxTokens;
+					
+				} catch (err) {
+					console.log(err);
+					return 0;
 				}
-			});
+			}
 		}
 		
 		// Gets list of all invaders

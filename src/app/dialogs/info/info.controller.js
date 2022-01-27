@@ -5,6 +5,7 @@
 	InfoDialogCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$sce', 'web3Service', 'coreContract'];
 	function InfoDialogCtrl($scope, $mdMedia, $mdDialog, $sce, web3Service, coreContract) {
 		var _this = this;
+		_this.maxInvaders = coreContract.getMaxInvaders();
 		_this.closeDialog = closeDialog;
 
 		// Watch for screen size changes
