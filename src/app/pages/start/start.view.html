@@ -10,15 +10,15 @@
 		<div class="fullCard textMedium textLight textCenter">
 			<div ng-if="!ctrl.activeAccount">
 				<div class="ethereumImage crispImage"><img src="/img/large/ethereum.png" alt="Ethereum"></div>
-				<div class="textBox textDark large textSelectable">
+				<div class="textBox textLight large textSelectable">
 					<div class="textExLarge textBold textDark textCenter">Create an Ethereum Account</div><br/>
-					This open platform was started in 2018 to allow any artist to easily make digital collectibles within a shared ecosystem. Every PixelCon is unique and it's ownership is secured on the Ethereum blockchain. If you want to create and trade PixelCons, you must first make an Ethereum account. If you are new to Ethereum we recommend the following setup steps...
+					This app is an extension of the open PixelCons platform, started in 2018, that allows any artist to easily make digital collectibles within a shared ecosystem. Every PixelCon is unique and it's ownership is secured on the Ethereum blockchain. If you want to uncover and trade PixelCon Invaders, you must first make an Ethereum account. If you are new to Ethereum we recommend the following setup steps...
 				</div>
 			</div>
 				
 			<div ng-if="ctrl.activeAccount">
 				<div class="ethereumImage account"><img class="crispImage md-whiteframe-2dp" ng-src="{{ctrl.addressIcon}}"/></div>
-				<div class="textBox textDark large textSelectable">
+				<div class="textBox textLight large textSelectable">
 					<div class="textExLarge textBold textDark textCenter">Account Ready!</div><br/>
 					Your Ethereum account is successfully connected. Check out the <b>How To...</b> section below to learn how to make and trade PixelCons!<br/><br/>
 					<md-button class="setupShowHide" ng-click="ctrl.hideSetup = !ctrl.hideSetup">{{ctrl.hideSetup?'Show':'Hide'}} Setup Steps</md-button>
@@ -64,7 +64,7 @@
 					<div class="stepContentPage"></div>
 				
 					<div class="stepContentPage over" ng-class="{'stepTabTransition': ctrl.loaded, 'hidden':ctrl.stepTab!=1}">
-						<div class="textBox medium textMedium textSelectable">
+						<div class="textBox medium textMedium textLight textSelectable">
 							<div class="textExLarge textBold textDark textCenter">1. Browser Compatibility</div><br/>
 							<div ng-if="ctrl.recommendMetaMask">First, you need to be viewing this site from a desktop web browser that is compatible with Ethereum apps. Please make sure you are using either <a class="light textDark textBold" target="_blank" href="https://www.google.com/chrome/">Chrome</a>, <a class="light textDark textBold" target="_blank" href="https://www.mozilla.org/en-US/firefox/">Firefox</a>, <a class="light textDark textBold" target="_blank" href="https://brave.com/">Brave</a> or <a class="light textDark textBold" target="_blank" href="https://www.microsoft.com/en-us/edge">Edge</a>.</div>
 							<div ng-if="!ctrl.recommendMetaMask">First, you need to be viewing this site from a web browser that is compatible with Ethereum apps. Please make sure you are using either <a class="light textDark textBold" target="_blank" href="https://www.google.com/chrome/">Chrome</a>, <a class="light textDark textBold" target="_blank" href="https://www.mozilla.org/en-US/firefox/">Firefox</a>, <a class="light textDark textBold" target="_blank" href="https://brave.com/">Brave</a>, <a class="light textDark textBold" target="_blank" href="https://www.microsoft.com/en-us/edge">Edge</a> or another compatible browser.</div>
@@ -73,7 +73,7 @@
 					</div>
 				
 					<div class="stepContentPage over" ng-class="{'stepTabTransition': ctrl.loaded, 'hidden':ctrl.stepTab!=2}">
-						<div class="textBox medium textMedium textSelectable">
+						<div class="textBox medium textMedium textLight textSelectable">
 							<div ng-if="ctrl.recommendMetaMask" class="textExLarge textBold textDark textCenter">2. Install MetaMask</div><br/>
 							<div ng-if="ctrl.recommendMetaMask">Your browser now needs to be able to connect to the Ethereum blockchain using a browser extension called <a class="light textDark textBold" target="_blank" href="https://metamask.io/download.html">MetaMask</a>. Once installed, click on its icon and proceed to set up your Ethereum account.</div>
 							<div ng-if="!ctrl.recommendMetaMask" class="textExLarge textBold textDark textCenter">2. Connect to Ethereum</div><br/>
@@ -84,7 +84,7 @@
 					</div>
 				
 					<div class="stepContentPage over" ng-class="{'stepTabTransition': ctrl.loaded, 'hidden':ctrl.stepTab!=3}">
-						<div class="textBox medium textMedium textSelectable">
+						<div class="textBox medium textMedium textLight textSelectable">
 							<div class="textExLarge textBold textDark textCenter">3. Explore/Manage Account</div><br/>
 							<div ng-if="ctrl.recommendMetaMask">Lastly, please make sure you have setup and are logged into your Ethereum account in MetaMask. You should now see your account pictured in the top right corner of the site. Please take some time to familiarize yourself with Ethereum and the PixelCons app before funding your account with Eth.</div>
 							<div ng-if="!ctrl.recommendMetaMask">Lastly, please make sure you have setup and are logged into your Ethereum account. You should now see your account pictured in the top right corner of the site. Please take some time to familiarize yourself with Ethereum and the PixelCons app before funding your account with Eth.</div>
@@ -110,7 +110,7 @@
 				<div class="giantIcon learn"></div>
 				<div class="giantText">
 					<span class="textBold textLarge textDark">Learn</span></br>
-					<span class="textMedium textDark">Learn more about how Invaders work</span>
+					<span class="textMedium textLight">Learn more about how Invaders work</span>
 				</div>
 			</div>
 		</a>
@@ -119,7 +119,7 @@
 				<div class="giantIcon explore"></div>
 				<div class="giantText">
 					<span class="textBold textLarge textDark">Explore</span></br>
-					<span class="textMedium textDark">Explore the already uncovered Invaders</span>
+					<span class="textMedium textLight">Explore the already uncovered Invaders</span>
 				</div>
 			</div>
 		</a>
@@ -128,7 +128,7 @@
 				<div class="giantIcon mint"></div>
 				<div class="giantText">
 					<span class="textBold textLarge textDark">Uncover</span></br>
-					<span class="textMedium textDark">Uncover new Invaders</span>
+					<span class="textMedium textLight">Uncover new Invaders</span>
 				</div>
 			</div>
 		</a>

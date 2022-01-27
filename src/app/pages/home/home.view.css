@@ -71,7 +71,6 @@ div.invaderHomePage div.sourceImage {
 	width: 400px;
 	height: 200px;
 	font-size: 0px;
-	background-size: contain;
 	background-position: center;
 }
 div.invaderHomePage div.sourceImage.small {
