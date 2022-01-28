@@ -29,7 +29,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	// Data storage structures
 	struct TokenData {
 		address owner;
-		uint32 index;
+		uint64 index;
 	}
 	
 	
@@ -60,9 +60,6 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 
 	// The address of the PixelCon Invaders bridge contract (L1)
 	address internal _pixelconInvadersBridgeContract;
-	
-	// Gas amount declared when depositing to L1
-	uint32 internal _l1GasLimit;
 
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +67,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Invader token events
-	event Mint(uint256 indexed invaderId, uint32 indexed invaderIndex, address to);
+	event Mint(uint256 indexed invaderId, uint64 indexed invaderIndex, address to);
 	event Bridge(uint256 indexed invaderId, address to);
 	event Unbridge(uint256 indexed invaderId, address to);
 
@@ -122,7 +119,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 		
 		//new invader?
 		if(tokenData.owner == address(0)) {
-			tokenData.index = uint32(_tokens.length);
+			tokenData.index = uint64(_tokens.length);
 			_tokens.push(tokenId);
 			
 			emit Mint(tokenId, tokenData.index, to);
@@ -169,18 +166,20 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	
     /**
      * @dev Returns the token ID from the given index
+	 * @param tokenIndex -The token index
 	 * @return Token ID
      */
-	function tokenByIndex(uint256 index) public view returns (uint256) {
-		//TODO
+	function tokenByIndex(uint64 tokenIndex) public view returns (uint256) {
+		return _tokens[tokenIndex];
 	}
 	
     /**
      * @dev Returns the token index from the given ID
-	 * @return Token ID
+	 * @param tokenId -The token ID
+	 * @return Token index
      */
-	function indexByToken(uint256 tokenId) public view returns (uint256) {
-		//TODO
+	function indexByToken(uint256 tokenId) public view returns (uint64) {
+		return _tokenData[tokenId].index;
 	}	
 	
 	////////////////// Web3 Only //////////////////
@@ -279,11 +278,13 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     }
 
     /**
-     * @dev See {IERC721-setApprovalForAll}.
+     * @dev Calldata optimized version of setApprovalForAll. See {IERC721-setApprovalForAll}.
      */
-    function setApprovalForAll_opt(uint256 operator_approved) public override {
-		//TODO
-    }
+    function setApprovalForAll_opt(uint256 operator_approved) public {
+		address operator = address(uint160(operator_approved & 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff));
+		bool approved = ((operator_approved & 0xffffffffffffffffffffffff0000000000000000000000000000000000000000) > 0x00);
+		return setApprovalForAll(operator, approved);
+	}
 
     /**
      * @dev See {IERC721-setApprovalForAll}.
@@ -304,10 +305,13 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     }
 
     /**
-     * @dev See {IERC721-transferFrom}.
+     * @dev Calldata optimized version of transferFrom. See {IERC721-transferFrom}.
      */
-    function transferFrom_opt(uint256 addressTo_tokenIndex) public override {
-		//TODO
+    function transferFrom_opt(uint256 addressTo_tokenIndex) public {
+		address from = address(0x0000000000000000000000000000000000000000);
+		address to = address(uint160((addressTo_tokenIndex & 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000) / (2 ** (8*12))));
+		uint256 tokenId = _tokens[uint64(addressTo_tokenIndex & 0x000000000000000000000000000000000000000000000000ffffffffffffffff)];
+		return transferFrom(from, to, tokenId);
     }
 
     /**
@@ -321,10 +325,13 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     }
 
     /**
-     * @dev See {IERC721-safeTransferFrom}.
+     * @dev Calldata optimized version of safeTransferFrom. See {IERC721-safeTransferFrom}.
      */
-    function safeTransferFrom_opt(uint256 addressTo_tokenIndex, bytes memory data_p) public override {
-		//TODO
+    function safeTransferFrom_opt(uint256 addressTo_tokenIndex, bytes memory data_p) public {
+		address from = address(0x0000000000000000000000000000000000000000);
+		address to = address(uint160((addressTo_tokenIndex & 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000) / (2 ** (8*12))));
+		uint256 tokenId = _tokens[uint64(addressTo_tokenIndex & 0x000000000000000000000000000000000000000000000000ffffffffffffffff)];
+		return safeTransferFrom(from, to, tokenId, data_p);
     }
 
     /**
