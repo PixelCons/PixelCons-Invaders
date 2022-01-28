@@ -353,6 +353,17 @@ div.invadersMintPage div.error {
 	padding: 15px;
 	background-color: #80808093;
 }
+div.invadersMintPage div.noInvaders {
+	position: absolute;
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	margin: -100px -100px;
+	width: 200px;
+	height: 20px;
+	padding: 15px;
+	background-color: #80808093;
+}
 div.invadersMintPage div.noMore {
 	position: absolute;
 	text-align: center;

@@ -167,6 +167,21 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
         return _tokens.length;
     }
 	
+    /**
+     * @dev Returns the token ID from the given index
+	 * @return Token ID
+     */
+	function tokenByIndex(uint256 index) public view returns (uint256) {
+		//TODO
+	}
+	
+    /**
+     * @dev Returns the token index from the given ID
+	 * @return Token ID
+     */
+	function indexByToken(uint256 tokenId) public view returns (uint256) {
+		//TODO
+	}	
 	
 	////////////////// Web3 Only //////////////////
 
@@ -266,6 +281,13 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     /**
      * @dev See {IERC721-setApprovalForAll}.
      */
+    function setApprovalForAll_opt(uint256 operator_approved) public override {
+		//TODO
+    }
+
+    /**
+     * @dev See {IERC721-setApprovalForAll}.
+     */
     function setApprovalForAll(address operator, bool approved) public override {
 		require(operator != address(0), "Invalid address");
         require(operator != _msgSender(), "Cannot approve self");
@@ -284,11 +306,25 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     /**
      * @dev See {IERC721-transferFrom}.
      */
+    function transferFrom_opt(uint256 addressTo_tokenIndex) public override {
+		//TODO
+    }
+
+    /**
+     * @dev See {IERC721-transferFrom}.
+     */
     function transferFrom(address from, address to, uint256 tokenId) public override {
 		require(to != address(0), "Invalid address");
 		require(tokenId != uint256(0), "Invalid ID");
         require(_isApprovedOrOwner(_msgSender(), tokenId), "Not owner nor approved for all");
         _transfer(from, to, tokenId);
+    }
+
+    /**
+     * @dev See {IERC721-safeTransferFrom}.
+     */
+    function safeTransferFrom_opt(uint256 addressTo_tokenIndex, bytes memory data_p) public override {
+		//TODO
     }
 
     /**

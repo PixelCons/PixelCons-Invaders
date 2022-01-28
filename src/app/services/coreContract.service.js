@@ -9,7 +9,7 @@
 		const _pixelconsContractPath = 'contracts/PixelCons.json';
 		const _primaryNetworkIndex = 0;
 		const _secondaryNetworkIndex = 1;
-		const _contractParamMaxTokens = 1500;
+		const _contractParamMaxTokens = 1000;
 		const _contractParamMint1PixelconIndex = 1217;
 		const _contractParamMint2PixelconIndex = 792;
 		const _contractParamMint3PixelconIndex = 704;

@@ -9,6 +9,9 @@
 		var validAddress;
 		_this.closeDialog = closeDialog;
 		_this.mintInvader = mintInvader;
+		_this.mintAcknowledge = mintAcknowledge;
+		_this.mintAcknowledge = mintAcknowledge;
+		_this.infoHint = infoHint;
 
 		// Watch for screen size changes
 		_this.screenSize = {};
@@ -16,7 +19,7 @@
 		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
 		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 
-		// Validate the send data
+		// Validate the mint data
 		validate();
 		function validate() {
 			_this.currView = 'loading';
@@ -31,8 +34,13 @@
 			});
 		}
 
-		// Send invader
+		// Mint invader
 		function mintInvader() {
+			_this.currView = 'mintAcknowledge';
+		}
+
+		// Mint acknowledge
+		function mintAcknowledge() {
 			let transaction = coreContract.mintInvader(_this.invaderPixelcon.pixelcon.id, _this.invaderPixelcon.mintIndex);
 			$mdDialog.hide({transaction: transaction});
 		}
@@ -40,6 +48,19 @@
 		// Closes the dialog window
 		function closeDialog() {
 			$mdDialog.cancel();
+		}
+		
+		// Gets info on the given topic
+		function infoHint(topic) {
+			$mdDialog.show({
+				controller: 'InfoDialogCtrl',
+				controllerAs: 'ctrl',
+				templateUrl: HTMLTemplates['dialog.info'],
+				parent: angular.element(document.body),
+				locals: { topic: topic },
+				bindToController: true,
+				clickOutsideToClose: true
+			});
 		}
 
 		// Listen for network data changes

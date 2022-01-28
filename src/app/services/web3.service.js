@@ -85,7 +85,7 @@
 		const _transactionWaitTimeout = 2 * 60 * 60 * 1000;
 		const _transactionWaitPoll = 1 * 1000;
 		const _transactionEventWaitTimeout = 4 * 60 * 60 * 1000;
-		const _transactionEventWaitPoll = 30 * 1000;
+		const _transactionEventWaitPoll = 15 * 1000;
 		const _contractCallMaxRetries = 5;
 		const _noAccountError = 'No Account';
 		const _notEnabledError = 'No Network Connection';

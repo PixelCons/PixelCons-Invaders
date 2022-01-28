@@ -32,7 +32,7 @@
 				<span class="textDark textSmall">{{ctrl.accountPixelcons.length + (ctrl.accountPixelcons.length == 1 ? ' PixelCon' : ' PixelCons')}}</span>
 			</div>
 		</div>
-		<md-button class="scanMoreButton filterButton textDark right" ng-click="ctrl.loadMarketData()" aria-label="Scan">
+		<md-button class="scanMoreButton filterButton textDark right" ng-click="ctrl.loadMarketData()" aria-label="Scan" ng-if="ctrl.marketSearchEnabled">
 			<div class="buttonIcon scan"></div>
 			<span>{{ctrl.screenSize.sm ? 'More' : 'Find More'}}</span>
 		</md-button>
@@ -80,6 +80,7 @@
 					ng-mouseenter="ctrl.invaderMouseEnter(invaderPixelcon, $event)" ng-mouseleave="ctrl.invaderMouseLeave(invaderPixelcon, $event)"
 					ng-click="ctrl.mintInvader(invaderPixelcon)"></div>
 			</div>
+			<div class="noInvaders textDark textMedium textSelectable" ng-if="ctrl.accountInvaderPixelcons.length==0">No Invaders</div>
 		</div>
 	</div>
 	

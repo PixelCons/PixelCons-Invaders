@@ -136,3 +136,17 @@
 	display: inline-block;
 	margin-left: 2px;
 }
+
+/* Acknowledge */
+.mintDialog div.acknowledgeText {
+	margin-top: 55px;
+	padding: 0px 12px;
+	text-align: center;
+	font-size: 14px;
+}
+.mintDialog div.acknowledgeButtons {
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	text-align: center;
+}

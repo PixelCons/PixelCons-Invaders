@@ -5,8 +5,12 @@
 	MintPageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$timeout', '$sce', 'web3Service', 'coreContract', 'decoder'];
 	function MintPageCtrl($scope, $mdMedia, $mdDialog, $timeout, $sce, web3Service, coreContract, decoder) {
 		var _this = this;
+		const marketSearchEnabled = true;
+		const uncoverInvadersEnabled = true;
 		const sortByDefault = 'rarityDesc';
 		const tooltipDelay = 300;
+		_this.marketSearchEnabled = marketSearchEnabled;
+		_this.uncoverInvadersEnabled = uncoverInvadersEnabled;
 		_this.infoHint = infoHint;
 		_this.sortBy = sortByDefault;
 		_this.marketSortBy = sortByDefault;
@@ -29,44 +33,65 @@
 		// Loads account related data for invader minting
 		loadPageData();
 		async function loadPageData() {
-			_this.accountAddressLoading = true;
-			_this.error = null;
-			try {
-				await web3Service.awaitState(true);
-				
-				_this.maxSupply = await coreContract.getMaxInvaders();
-				_this.totalSupply = await coreContract.getTotalInvaders(true);
-				if(_this.totalSupply >= _this.maxSupply) {
-					_this.noMore = true;
-				
-				} else {
-					let web3state = web3Service.getState();
-					if (web3state == "ready") {
-						_this.accountAddress = web3Service.getActiveAccount();
-						if (_this.accountAddress) {
-							_this.accountPixelcons = await coreContract.getAccountPixelcons(_this.accountAddress);
-							_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
-							filterPageData();
-							
-						} else {
-							if (web3Service.isReadOnly()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
-							else if (web3Service.isPrivacyMode()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please connect your Ethereum account');
-							else _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please log into ' + web3Service.getProviderName());
-						}
-					} else if (web3state == "not_enabled") {
-						_this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
+			if(uncoverInvadersEnabled) {
+				_this.accountAddressLoading = true;
+				_this.error = null;
+				try {
+					await web3Service.awaitState(true);
+					
+					_this.maxSupply = await coreContract.getMaxInvaders();
+					_this.totalSupply = await coreContract.getTotalInvaders(true);
+					if(_this.totalSupply >= _this.maxSupply) {
+						_this.noMore = true;
+					
 					} else {
-						_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>Unkown Network');
+						let web3state = web3Service.getState();
+						if (web3state == "ready") {
+							_this.accountAddress = web3Service.getActiveAccount();
+							if (_this.accountAddress) {
+								_this.accountPixelcons = await coreContract.getAccountPixelcons(_this.accountAddress);
+								_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
+								filterPageData();
+								
+							} else {
+								if (web3Service.isReadOnly()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
+								else if (web3Service.isPrivacyMode()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please connect your Ethereum account');
+								else _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please log into ' + web3Service.getProviderName());
+							}
+						} else if (web3state == "not_enabled") {
+							_this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
+						} else {
+							_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>Unkown Network');
+						}
 					}
+					
+					_this.accountAddressLoading = false;
+					safeApply();
+					
+				} catch(err) {
+					_this.accountAddressLoading = false;
+					_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + err);
+					safeApply();
 				}
+			} else {
 				
-				_this.accountAddressLoading = false;
-				safeApply();
-				
-			} catch(err) {
-				_this.accountAddressLoading = false;
-				_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + err);
-				safeApply();
+				//market not enabled
+				_this.accountAddressLoading = true;
+				_this.error = null;
+				try {
+					await web3Service.awaitState(true);
+					_this.maxSupply = await coreContract.getMaxInvaders();
+					_this.totalSupply = await coreContract.getTotalInvaders(true);
+					
+					_this.error = $sce.trustAsHtml('<b>Uncovering Invaders Has Not Yet Been Enabled</b>');
+					_this.accountAddressLoading = false;
+					safeApply();
+					
+				} catch(err) {
+					_this.accountAddressLoading = false;
+					_this.error = $sce.trustAsHtml('<b>Network Error:</b><br/>' + err);
+					safeApply();
+				}
 			}
 		}
 		

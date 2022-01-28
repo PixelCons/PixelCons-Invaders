@@ -51,5 +51,17 @@
 		</div>
 	</div>
 	
+	<!-- Mint Acknowledge View -->
+	<div class="view" ng-if="ctrl.currView=='mintAcknowledge'" ng-cloak>
+		<div class="acknowledgeText">
+			Invaders are minted as PixelCons on Ethereum Mainnet and then bridged to the <b>Optimism Layer 2 network</b> for cheaper and faster transactions. 
+			This process can take up to <b>15 minutes</b> to complete. You will have to bridge over <b>ETH to Optimism</b> before being able to trade or transfer Invaders.
+			<br/><a class="light link textLighter" ng-click="ctrl.infoHint('l2Explainer')" href="">More about Optimism</a>
+		</div>
+		<div class="acknowledgeButtons">
+			<md-button ng-click="ctrl.mintAcknowledge()">Acknowledge</md-button>
+		</div>
+	</div>
+	
 	<div class="dialogCloseButton" ng-click="ctrl.closeDialog()"></div>
 </md-dialog>
