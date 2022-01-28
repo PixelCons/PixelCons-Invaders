@@ -11,32 +11,6 @@
 		_this.marketName = market.getMarketName();
 		_this.marketLink = market.getMarketLink();
 		_this.marketAccountLink = market.getAccountLink();
-		_this.hideHowTo = {
-			browse: {
-				byName: true,
-				forSale: true,
-				similar: true,
-				results: true
-			},
-			details: {
-				pixelcon: true,
-				collection: true,
-				creator: true,
-				image: true
-			},
-			create: {
-				pixelcon: true,
-				collection: true,
-				editPixelcon: true,
-				editCollection: true
-			},
-			account: {
-				activity: true,
-				wallet: true,
-				sendPixelcons: true,
-				sellPixelcons: true
-			},
-		}
 
 		// Watch for screen size changes
 		_this.screenSize = {};

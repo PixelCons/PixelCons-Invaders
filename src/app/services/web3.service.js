@@ -1322,7 +1322,7 @@
 				try {
 					let accountHash = ethers.utils.keccak256(account);
 					let storageLocation = ethers.utils.keccak256(accountHash);
-					let storedTransactionData = storage.getItem('pixelcons_' + storageLocation, { encryptionKey: accountHash });
+					let storedTransactionData = storage.getItem('invaders_' + storageLocation, { encryptionKey: accountHash });
 					if (storedTransactionData) {
 						if(storedTransactionData.waitingTransactions) {
 							
@@ -1422,7 +1422,7 @@
 						waitingTransactions: _waitingTransactions,
 						waitingTransactionEvents: _waitingTransactionEvents
 					}
-					storage.setItem('pixelcons_' + storageLocation, storageData, { encryptionKey: accountHash });
+					storage.setItem('invaders_' + storageLocation, storageData, { encryptionKey: accountHash });
 					
 				} catch (err) {
 					console.log("Something went wrong trying to store transaction history...");
