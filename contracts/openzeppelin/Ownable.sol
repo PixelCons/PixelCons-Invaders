@@ -15,10 +15,6 @@ import "./Context.sol";
  * This module is used through inheritance. It will make available the modifier
  * `onlyOwner`, which can be applied to your functions to restrict their use to
  * the owner.
- *
- * Error codes:
- *   0x80 [Caller is not the owner]
- *   0x81 [New owner is the zero address]
  */
 abstract contract Ownable is Context {
     address private _owner;
@@ -45,7 +41,7 @@ abstract contract Ownable is Context {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(owner() == _msgSender(), "x80"); //error code 0x80 [Caller is not the owner]
+        require(owner() == _msgSender(), "Caller is not the owner");
         _;
     }
 
@@ -66,7 +62,7 @@ abstract contract Ownable is Context {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "x81"); //error code 0x81 [New owner is the zero address]
+        require(newOwner != address(0), "New owner is the zero address");
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }

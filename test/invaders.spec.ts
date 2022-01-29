@@ -1,352 +1,779 @@
 /***********************************************************************
- * deploy.js
- * Deploys all contracts on both L1 ('l1Network') and L2 ('l2Network') networks defined in hardhat.config.ts
- * and creates 'pixelconCount' number of pixelcons giving ownerwhip to the following accounts:
- *    0-9 to the deployer
- *    10-79 to address 2 through 8
- *    80-89 to the fundAddresses 0
- *    90-99 to the fundAddresses 1
- * It also generates invaders for pixelcons 0-9 and pixelcons 100-209
+ * invaders.spec
+ * Unit tests for the PixelCon Invaders smart contracts
+ * (assumes PixelCon contract has already been deployed and dataloaded)
  ***********************************************************************/
-const fs = require("fs");
-const path = require('path');
-const { config, ethers } = require('hardhat');
+import * as fs from 'fs'
+import * as path from 'path'
+import { ethers } from 'hardhat'
+import { Contract, Signer, Wallet, BigNumber } from 'ethers'
+import chai, { expect } from 'chai'
+import { solidity } from 'ethereum-waffle'
+chai.use(solidity);
 
 // Settings
 const l1Network = 'optimism_l1';
 const l2Network = 'optimism_l2';
-const deploymentsFile = resolvePath('contracts/deploy/deployments.json');
-const fundAddresses = ['0xFcc7fFEFA71E54926b87DC0624394A4DaA4c860E', '0x181D54fDBBB7Cf5C3e3959967328B5fAE4402805'];
 const l1CrossDomainMessenger = '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318';
 const l2CrossDomainMessenger = '0x4200000000000000000000000000000000000007';
-const pixelconCount = 1300;
-const skipInvaderMinting = false;
-const gasPrice = 0.00000015; //150 Gwei
-const ethPrice = 2400;
+const deploymentsFile = resolvePath('contracts/deploy/deployments.json');
 const defaultGasParams = {
   gasLimit: 10000000
 }
 
-// Main
-async function main() {
-	let result = null;
-	
-	//set up our RPC provider connections
-	const l1RpcProvider = new ethers.providers.JsonRpcProvider(config.networks[l1Network].url);
-	const l2RpcProvider = new ethers.providers.JsonRpcProvider(config.networks[l2Network].url);
-	const l1ChainId = (await l1RpcProvider.getNetwork()).chainId;
-	const l2ChainId = (await l2RpcProvider.getNetwork()).chainId;
-
-	//set up deployer wallets
-	const l1Wallet = ethers.Wallet.fromMnemonic(config.networks[l1Network].accounts.mnemonic, "m/44'/60'/0'/0/0").connect(l1RpcProvider);
-	const l2Wallet = ethers.Wallet.fromMnemonic(config.networks[l2Network].accounts.mnemonic, "m/44'/60'/0'/0/0").connect(l2RpcProvider);
-	let l1Addresses = [l1Wallet.address];
-	let l2Addresses = [l2Wallet.address];
-	for(let i=1; i<10; i++) l1Addresses.push(ethers.Wallet.fromMnemonic(config.networks[l1Network].accounts.mnemonic, "m/44'/60'/0'/0/" + i).address);
-	for(let i=1; i<10; i++) l2Addresses.push(ethers.Wallet.fromMnemonic(config.networks[l2Network].accounts.mnemonic, "m/44'/60'/0'/0/" + i).address);
-	
-	//open deployment file for updating
-	let file = await readFilePromise(deploymentsFile);
-	let deployAddresses = JSON.parse(file.data) || [];
-	clearDeployAddress(deployAddresses, l1ChainId);
-	clearDeployAddress(deployAddresses, l2ChainId);
-
-	//deploy PixelCon contract
-	const PixelCons = await ethers.getContractFactory("PixelCons");
-	const pixelcons = await PixelCons.connect(l1Wallet).deploy(defaultGasParams);
-	result = await pixelcons.deployTransaction.wait();
-	let pixelconsDeployGas = result.gasUsed.toNumber();
-	updateDeployAddress(deployAddresses, l1ChainId, "PixelCons", pixelcons.address, result.transactionHash, result.blockHash, result.blockNumber);
-	console.log("PixelCons deployed to:" + pixelcons.address);
-	
-	//deploy PixelCon Bridge contract
-	const PixelConInvadersBridge = await ethers.getContractFactory("PixelConInvadersBridge");
-	const pixelconInvadersBridge = await PixelConInvadersBridge.connect(l1Wallet).deploy(pixelcons.address, l1CrossDomainMessenger, defaultGasParams);
-	result = await pixelconInvadersBridge.deployTransaction.wait();
-	let pixelconInvadersBridgeDeployGas = result.gasUsed.toNumber();
-	updateDeployAddress(deployAddresses, l1ChainId, "PixelConInvadersBridge", pixelconInvadersBridge.address, result.transactionHash, result.blockHash, result.blockNumber);
-	console.log("PixelConInvadersBridge deployed to:" + pixelconInvadersBridge.address);
-	
-	//deploy PixelCon Invaders contract
-	const PixelConInvaders = await ethers.getContractFactory("PixelConInvaders");
-	const pixelconInvaders = await PixelConInvaders.connect(l2Wallet).deploy(l2CrossDomainMessenger);
-	result = await pixelconInvaders.deployTransaction.wait();
-	let pixelconInvadersDeployGas = result.gasUsed.toNumber();
-	updateDeployAddress(deployAddresses, l2ChainId, "PixelConInvaders", pixelconInvaders.address, result.transactionHash, result.blockHash, result.blockNumber);
-	console.log("PixelConInvaders deployed to:" + pixelconInvaders.address);
-
-	//update deployment file
-	await writeFilePromise(deploymentsFile, JSON.stringify(deployAddresses, null, 2));
-	
-	//link the contracts together
-	result = await (await pixelconInvadersBridge.linkInvadersContract(pixelconInvaders.address, defaultGasParams)).wait();
-	let linkPixelconInvadersBridgeGas = result.gasUsed.toNumber();
-	result = await (await pixelconInvaders.linkBridgeContract(pixelconInvadersBridge.address, defaultGasParams)).wait();
-	let linkPixelconInvadersGas = result.gasUsed.toNumber();
-	
-	//set admin data
-	let tokenURITemplate = 'https://invaders.pixelcons.io/meta/data/<tokenId>?index=<tokenIndex>';
-	result = await (await pixelconInvaders.setTokenURITemplate(tokenURITemplate, defaultGasParams)).wait();
-	let setTokenURITemplateGas = result.gasUsed.toNumber();
-	
-	//load example pixelcons
-	console.log("Creating pixelcons...");
-	let createTokensGas = 0;
-	for (let i = 0; i < pixelconDataLoad.length && i < pixelconCount; i++) { //pixelconDataLoad
-		let toOwn = l1Addresses[0];
-		if(i < 80) toOwn = l1Addresses[Math.floor(i/10)];
-		else if(i < 90 && fundAddresses.length > 0) toOwn = fundAddresses[0];
-		else if(i < 100 && fundAddresses.length > 1) toOwn = fundAddresses[1];
-		result = await (await pixelcons.create(toOwn, pixelconDataLoad[i].id, toBytes8(pixelconDataLoad[i].name), defaultGasParams)).wait();
-		createTokensGas += result.gasUsed.toNumber();
-	}
-	for (let i = pixelconDataLoad.length; i < pixelconDataIds.length && i < pixelconCount; i++) { //pixelconDataIds
-		let toOwn = l1Addresses[0];
-		result = await (await pixelcons.create(toOwn, '0x' + pixelconDataIds[i], toBytes8(""), defaultGasParams)).wait();
-		createTokensGas += result.gasUsed.toNumber();
-	}
-	for (let i = pixelconDataIds.length; i < pixelconCount; i++) { //generated
-		let toOwn = l1Addresses[0];
-		let id = '0x' + ethers.BigNumber.from(i).toHexString().substr(2,64).padStart(64,'0');
-		result = await (await pixelcons.create(toOwn, id, toBytes8(""), defaultGasParams)).wait();
-		createTokensGas += result.gasUsed.toNumber();
-	}
-	
-	//mint an invader
-	let numInvaders = 0;
-	let mintInvaderGas = 0;
-	if(!skipInvaderMinting) {
-		console.log("Creating invaders...");
-		for (let i = 0; i < 10 && i < pixelconCount; i++) {
-			for (let j = 0; j < 6; j++) {
-				result = await (await pixelconInvadersBridge.mintInvader('0x' + pixelconDataIds[i], j, 1900000, defaultGasParams)).wait();
-				mintInvaderGas += result.gasUsed.toNumber();
-				numInvaders++;
-			}
+// Tests
+describe('PixelCon Invaders', () => {
+	let createdTokens = [];
+	let emptyID: string = "0x0000000000000000000000000000000000000000000000000000000000000000";
+	let emptyAddress: string = "0x0000000000000000000000000000000000000000";
+	let pixelconsContract: Contract = null;
+	let pixelconInvadersBridgeContract: Contract = null;
+	let pixelconInvadersContract: Contract = null;
+	let notReceiverContract: Contract = null;
+	let l1RpcProvider = null;
+	let l2RpcProvider = null;
+	let l1Accounts: Signer[] = [];
+	let l2Accounts: Signer[] = [];
+	let l1Addresses: string[] = [];
+	let l2Addresses: string[] = [];
+	let invaders = [];
+	let errorText: string = null;
+	before(async () => {
+		//set up our RPC provider connections and signers
+		let { config } = require('hardhat');
+		l1RpcProvider = new ethers.providers.JsonRpcProvider(config.networks[l1Network].url);
+		l2RpcProvider = new ethers.providers.JsonRpcProvider(config.networks[l2Network].url);
+		for(let i=0; i<10; i++) {
+			let l1acct = ethers.Wallet.fromMnemonic(config.networks[l1Network].accounts.mnemonic, "m/44'/60'/0'/0/" + i).connect(l1RpcProvider);
+			let l2acct = ethers.Wallet.fromMnemonic(config.networks[l2Network].accounts.mnemonic, "m/44'/60'/0'/0/" + i).connect(l2RpcProvider);
+			l1Accounts.push(l1acct);
+			l2Accounts.push(l2acct);
+			l1Addresses.push(l1acct.address);
+			l2Addresses.push(l2acct.address);
 		}
-		for (let i = 100; i < 220 && i < pixelconCount; i++) {
-			for (let j = 0; j < 4; j++) {
-				result = await (await pixelconInvadersBridge.mintInvader('0x' + pixelconDataIds[i], j, 1900000, defaultGasParams)).wait();
-				mintInvaderGas += result.gasUsed.toNumber();
-				numInvaders++;
+
+		//find pixelcons contract
+		errorText = "Could not find deployed addresses";
+		let l1ChainId = (await l1RpcProvider.getNetwork()).chainId;
+		let pixelconsContractAddress = await fetchContractAddress(l1ChainId, 'PixelCons');
+		await expect(pixelconsContractAddress, str(errorText)).to.not.be.null;
+		pixelconsContract = await (await ethers.getContractFactory('PixelCons')).attach(pixelconsContractAddress);
+		
+		//deploy bridge contract (l1)
+		pixelconInvadersBridgeContract = await (await ethers.getContractFactory('PixelConInvadersBridge')).connect(l1Accounts[0]).deploy(pixelconsContractAddress, l1CrossDomainMessenger, defaultGasParams);
+		
+		//deploy invaders and notreceiver contract (l2)
+		pixelconInvadersContract = await (await ethers.getContractFactory('PixelConInvaders')).connect(l2Accounts[0]).deploy(l2CrossDomainMessenger, defaultGasParams);
+		notReceiverContract = await (await ethers.getContractFactory('NotReceiver')).connect(l2Accounts[0]).deploy();
+		
+		//link l1 and l2 contracts
+		errorText = "Failed to link contracts";
+		await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).linkInvadersContract(pixelconInvadersContract.address, defaultGasParams), str(errorText)).to.not.be.reverted;
+		await expect(pixelconInvadersContract.connect(l2Accounts[0]).linkBridgeContract(pixelconInvadersBridgeContract.address, defaultGasParams), str(errorText)).to.not.be.reverted;
+	});
+
+	//Check Mint Invaders
+	describe('minting invaders', () => {
+		it('should allow minting invaders', async () => {
+			for(let i=0; i<5; i++) {
+				errorText = "Failed to mint invader";
+				await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[i], 0, 1900000), str(errorText)).to.not.be.reverted;
+				await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[i], 1, 1900000), str(errorText)).to.not.be.reverted;
+				await expect(pixelconInvadersBridgeContract.connect(l1Accounts[1]).mintInvader('0x'+pixelconDataIds[10+i], 0, 1900000), str(errorText)).to.not.be.reverted;
 			}
-		}
-	}
+			
+			//check on mint event from l1
+			errorText = "Invalid invader mint events";
+			let mintEvents = await pixelconInvadersBridgeContract.connect(l1Accounts[0]).queryFilter(pixelconInvadersBridgeContract.filters.Mint(null));
+			expect(mintEvents.length, str(errorText)).to.equal(15);
+			for(let i=0; i<mintEvents.length; i++) {
+				invaders.push({ id:to256Hex(mintEvents[i].args.invaderId), owner:mintEvents[i].args.minter });
+			}
+			
+			//check on mint event from l2
+			errorText = "Invader mint failed to bridge to L2";
+			for(let i=0; i<invaders.length; i++) {
+				let events = await transactionEventWait(pixelconInvadersContract.filters.Mint(invaders[i].id, null), l2RpcProvider);
+				expect(events, str(errorText)).to.not.be.null;
+				invaders[i].index = parseInt(events[0].topics[2]);
+			}
+		});
+		it('should not allow minting from invalid pixelcons', async () => {
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader(emptyID, 0, 1900000), str(errorText)).to.be.revertedWith('Invalid ID');
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x0000000000000000000000000000000000000000000000000000000000000123', 0, 1900000), str(errorText)).to.be.revertedWith('PixelCon does not exist');
+		});
+		it('should not allow minting from bad index', async () => {
+			errorText = "Was able to mint invader from unowned pixelcon";
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[9], 100, 1900000), str(errorText)).to.be.revertedWith('Invalid index');
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[655], 4, 1900000), str(errorText)).to.be.revertedWith('Index out of bounds');
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[1000], 2, 1900000), str(errorText)).to.be.revertedWith('Index out of bounds');
+		});
+		it('should not allow minting from unowned pixelcon', async () => {
+			errorText = "Was able to mint invader from unowned pixelcon";
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[20], 0, 1900000), str(errorText)).to.be.revertedWith('Not PixelCon owner');
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[21], 0, 1900000), str(errorText)).to.be.revertedWith('Not PixelCon owner');
+		});
+		it('should not allow minting duplicate invader', async () => {
+			errorText = "Was able to mint a duplicate invader";
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[0], 0, 1900000), str(errorText)).to.be.revertedWith('PixelCon already exists');
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[1], 1, 1900000), str(errorText)).to.be.revertedWith('PixelCon already exists');
+		});
+	});
 
-	//fund addresses
-	for (let i = 0; i < fundAddresses.length; i++) {
-		await l1Wallet.sendTransaction({
-			to: fundAddresses[i],
-			value: ethers.utils.parseEther("1")
-		}, defaultGasParams);
-		await l2Wallet.sendTransaction({
-			to: fundAddresses[i],
-			value: ethers.utils.parseEther("1")
-		}, defaultGasParams);
-	}
+/*
+	//Check Create Tokens
+	describe('creating tokens', () => {
+		it('should allow creating tokens', async () => {
+			let dataloadCount = 10;
+			for(let i=0; i<dataloadCount; i++) {
+				let creator = (i==2) ? accounts[1] : deployer;
+				let creatorAddress = (i==2) ? accountAddresses[1] : deployerAddress;
+				let ownerAddress = (i==0) ? accountAddresses[0] : deployerAddress;
+				let name = toBytes8((i==0) ? '' : randomNames[Math.floor(Math.random()*randomNames.length)].substr(0,8));
+				let id = randomID();
+				createdTokens.push({
+					id: id,
+					name: name,
+					owner: ownerAddress,
+					creator: creatorAddress
+				});
+				
+				errorText = "Failed to create token";
+				expect(pixelconsContract.connect(creator).create(ownerAddress, id, name), str(errorText)).to.not.be.reverted;
+			}
+		});
+		
+		it('should not allow creating bad tokens', async () => {
+			let name = toBytes8(randomNames[Math.floor(Math.random()*randomNames.length)].substr(0,8));
+			
+			errorText = "Was able to create with invalid owner address of 0";
+			await expect(pixelconsContract.connect(deployer).create(emptyAddress, randomID(), name), str(errorText)).to.be.revertedWith('Invalid address');
+			
+			errorText = "Was able to create with invalid id of 0";
+			await expect(pixelconsContract.connect(deployer).create(accountAddresses[1], emptyID, name), str(errorText)).to.be.revertedWith('Invalid ID');
+			
+			errorText = "Was able to create id already in existence";
+			await expect(pixelconsContract.connect(deployer).create(accountAddresses[1], createdTokens[0].id, name), str(errorText)).to.be.revertedWith('PixelCon already exists');
+		});
+	});
+
+	// Check Create Collections
+	describe('creating collections', () => {
+		it('should allow creating collections', async () => {
+			var indexes = [8,9];
+			for(var i=0; i<20 && i+10<createdTokens.length; i++) indexes.push(i+10);
+			var name = toBytes8(randomNames[Math.floor(Math.random()*randomNames.length)].substr(0,8));
+			createdCollections.push({});
+			createdCollections.push({ indexes:[6,4,3], name:toBytes8('') });
+			createdCollections.push({ indexes:indexes, name:name });
+			
+			errorText = "Failed to create collection";
+			await expect(pixelconsContract.connect(deployer).createCollection(createdCollections[1].indexes, createdCollections[1].name), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(deployer).createCollection(createdCollections[2].indexes, createdCollections[2].name), str(errorText)).to.not.be.reverted;
+		});
+		
+		it('should not allow creating bad collections', async () => {
+			errorText = "Was able to create collection of less than 2";
+			await expect(pixelconsContract.connect(deployer).createCollection([1], toBytes8('')), str(errorText)).to.be.revertedWith('Collection must contain more than one PixelCon');
+			
+			errorText = "Was able to create collection of nothing";
+			await expect(pixelconsContract.connect(deployer).createCollection([], toBytes8('')), str(errorText)).to.be.revertedWith('Collection must contain more than one PixelCon');
+			
+			errorText = "Was able to create collection with duplicate index";
+			await expect(pixelconsContract.connect(deployer).createCollection([1,5,1], toBytes8('')), str(errorText)).to.be.revertedWith('PixelCon is already in a collection');
+			
+			errorText = "Was able to create collection containing token token thats already in a collection";
+			await expect(pixelconsContract.connect(deployer).createCollection([7,1,5,4], toBytes8('')), str(errorText)).to.be.revertedWith('PixelCon is already in a collection');
+			
+			errorText = "Was able to create collection containing token that wasn't owned by creator"
+			await expect(pixelconsContract.connect(deployer).createCollection([5,7,0], toBytes8('')), str(errorText)).to.be.revertedWith('Sender is not the creator and owner of the PixelCons');
+			
+			errorText = "Was able to create collection containing token that wasn't created by creator";
+			await expect(pixelconsContract.connect(deployer).createCollection([5,7,2], toBytes8('')), str(errorText)).to.be.revertedWith('Sender is not the creator and owner of the PixelCons');
+			
+			errorText = "Was able to create collection with invalid index";
+			await expect(pixelconsContract.connect(deployer).createCollection([5,7,createdTokens.length], toBytes8('')), str(errorText)).to.be.revertedWith('PixelCon index is out of bounds');
+		});
+	});
 	
+	// Check Edit Token/Collections
+	describe('edit token/collections', () => {
+		it('should allow clearing a collection', async () => {
+			errorText = "Failed to clear collection";
+			await expect(pixelconsContract.connect(deployer).clearCollection(1), str(errorText)).to.not.be.reverted;
+		});
+		
+		it('should allow creating a collection', async () => {
+			createdCollections.push({
+				indexes: [1,6,4,3],
+				name: toBytes8(randomNames[Math.floor(Math.random()*randomNames.length)].substr(0,8))
+			});
+			
+			errorText = "Failed to create collection";
+			await expect(pixelconsContract.connect(deployer).createCollection(createdCollections[3].indexes, createdCollections[3].name), str(errorText)).to.not.be.reverted;
+		});
+		
+		it('should allow renaming a token', async () => {
+			createdTokens[1].name = toBytes8(randomNames[Math.floor(Math.random()*randomNames.length)].substr(0,8));
+			createdTokens[6].name = toBytes8('');
+			
+			errorText = "Failed to rename token";
+			await expect(pixelconsContract.connect(deployer).rename(createdTokens[1].id, createdTokens[1].name), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(deployer).rename(createdTokens[6].id, createdTokens[6].name), str(errorText)).to.not.be.reverted;
+			
+			errorText = "Token name was not as expected";
+			expect((await pixelconsContract.getTokenData(createdTokens[1].id))[5], str(errorText)).to.equal(createdTokens[1].name);
+			expect((await pixelconsContract.getTokenData(createdTokens[6].id))[5], str(errorText)).to.equal(createdTokens[6].name);		
+		});
+		
+		it('should allow renaming a collection', async () => {
+			createdCollections[3].name = toBytes8(randomNames[Math.floor(Math.random()*randomNames.length)].substr(0,8));
+			
+			errorText = "Failed to rename collection";
+			await expect(pixelconsContract.connect(deployer).renameCollection(3, createdCollections[3].name), str(errorText)).to.not.be.reverted;
+			
+			errorText = "Collection name was not as expected";
+			expect(await pixelconsContract.getCollectionName(3), str(errorText)).to.equal(createdCollections[3].name);
+		});
+		
+		it('should allow token transfer', async () => {
+			errorText = "Failed to transfer token";
+			await expect(pixelconsContract.connect(deployer).transferFrom(deployerAddress, accountAddresses[1], createdTokens[6].id), str(errorText)).to.not.be.reverted;
+		});		
+		
+		it('should not allow bad clearing a collection', async () => {
+			errorText = "Was able to clear collection with invalid index";
+			await expect(pixelconsContract.connect(deployer).clearCollection(0), str(errorText)).to.be.revertedWith('Invalid index');
+			
+			errorText = "Was able to clear collection with invalid index (out of bounds)";
+			await expect(pixelconsContract.connect(deployer).clearCollection(createdCollections.length), str(errorText)).to.be.revertedWith('Collection does not exist');
+			
+			errorText = "Was able to clear collection thats already been cleared";
+			await expect(pixelconsContract.connect(deployer).clearCollection(1), str(errorText)).to.be.revertedWith('Collection is already cleared');
+			
+			errorText = "Was able to clear collection without being creator of all tokens in it";
+			await expect(pixelconsContract.connect(accounts[1]).clearCollection(createdCollections.length-1), str(errorText)).to.be.revertedWith('Sender is not the creator and owner of the PixelCons');
+			
+			errorText = "Was able to clear collection without being owner of all tokens in it";
+			await expect(pixelconsContract.connect(deployer).clearCollection(createdCollections.length-1), str(errorText)).to.be.revertedWith('Sender is not the creator and owner of the PixelCons');
+		});
+		
+		it('should not allow bad renaming a token', async () => {
+			errorText = "Was able to rename token with invalid id";
+			await expect(pixelconsContract.connect(deployer).rename(emptyID, toBytes8('')), str(errorText)).to.be.revertedWith('Invalid ID');
+			
+			errorText = "Was able to rename token with id that doesnt exist";
+			await expect(pixelconsContract.connect(deployer).rename(randomID(), toBytes8('')), str(errorText)).to.be.revertedWith('Sender is not the creator and owner');
+			
+			errorText = "Was able to rename token with id without being creator";
+			await expect(pixelconsContract.connect(deployer).rename(createdTokens[2].id, toBytes8('')), str(errorText)).to.be.revertedWith('Sender is not the creator and owner');
+			
+			errorText = "Was able to rename token with id without being owner";
+			await expect(pixelconsContract.connect(deployer).rename(createdTokens[0].id, toBytes8('')), str(errorText)).to.be.revertedWith('Sender is not the creator and owner');			
+		});
+		
+		it('should not allow bad renaming a collection', async () => {
+			errorText = "Was able to rename collection with invalid index";
+			await expect(pixelconsContract.connect(deployer).renameCollection(0, toBytes8('')), str(errorText)).to.be.revertedWith('Invalid index');
+			
+			errorText = "Was able to rename collection with invalid index (out of bounds)";
+			await expect(pixelconsContract.connect(deployer).renameCollection(createdCollections.length, toBytes8('')), str(errorText)).to.be.revertedWith('Collection does not exist');
+			
+			errorText = "Was able to rename collection thats been cleared";
+			await expect(pixelconsContract.connect(deployer).renameCollection(1, toBytes8('')), str(errorText)).to.be.revertedWith('Collection has been cleared');
+			
+			errorText = "Was able to rename collection without being creator of all tokens in it";
+			await expect(pixelconsContract.connect(accounts[1]).renameCollection(createdCollections.length-1, toBytes8('')), str(errorText)).to.be.revertedWith('Sender is not the creator and owner of the PixelCons');
+			
+			errorText = "Was able to rename collection without being owner of all tokens in it";
+			await expect(pixelconsContract.connect(deployer).renameCollection(createdCollections.length-1, toBytes8('')), str(errorText)).to.be.revertedWith('Sender is not the creator and owner of the PixelCons');
+		});
+	});
 
-
-	//report gas usage
-	console.log("");
-	console.log("Deployment finished!");
-	console.log("pixelconsDeployGas: " + pixelconsDeployGas + " [$" + (pixelconsDeployGas*gasPrice*ethPrice).toFixed(2) + "]");
-	console.log("pixelconInvadersBridgeDeployGas: " + pixelconInvadersBridgeDeployGas + " [$" + (pixelconInvadersBridgeDeployGas*gasPrice*ethPrice).toFixed(2) + "]");
-	console.log("pixelconInvadersDeployGas: " + pixelconInvadersDeployGas + " [$" + (pixelconInvadersDeployGas*gasPrice*ethPrice).toFixed(2) + "]");
-	console.log("---");
-	console.log("linkPixelconInvadersBridgeGas: " + linkPixelconInvadersBridgeGas + " [$" + (linkPixelconInvadersBridgeGas*gasPrice*ethPrice).toFixed(2) + "]");
-	console.log("linkPixelconInvadersGas: " + linkPixelconInvadersGas + " [$" + (linkPixelconInvadersGas*gasPrice*ethPrice).toFixed(2) + "]");
-	console.log("setTokenURITemplateGas: " + setTokenURITemplateGas + " [$" + (setTokenURITemplateGas*gasPrice*ethPrice).toFixed(2) + "]");
-	console.log("---");
-	console.log("createTokensGas: " + createTokensGas + " [$" + ((createTokensGas*gasPrice*ethPrice)/pixelconCount).toFixed(2) + "]");
-	if(mintInvaderGas) console.log("mintInvaderGas: " + mintInvaderGas + " [$" + ((mintInvaderGas*gasPrice*ethPrice)/numInvaders).toFixed(2) + "]");
-	console.log("");
-}
+	// Check Token Enumeration
+	describe('token enumeration', () => {
+		it('should report total supply', async () => {
+			errorText = "Total supply was not as expected";
+			expect(await pixelconsContract.totalSupply(), str(errorText)).to.equal(createdTokens.length);
+		});
+		
+		it('should report token by index', async () => {
+			errorText = "Token ID by index was not as expected";
+			expect(await pixelconsContract.tokenByIndex(0), str(errorText)).to.equal(createdTokens[0].id);
+			expect(await pixelconsContract.tokenByIndex(createdTokens.length/2), str(errorText)).to.equal(createdTokens[createdTokens.length/2].id);
+			expect(await pixelconsContract.tokenByIndex(createdTokens.length-1), str(errorText)).to.equal(createdTokens[createdTokens.length-1].id);
+		});
+		
+		it('should report token exists', async () => {
+			errorText = "Token exists was not as expected";
+			expect(await pixelconsContract.exists(createdTokens[1].id), str(errorText)).to.equal(true);
+			expect(await pixelconsContract.exists(randomID()), str(errorText)).to.equal(false);
+		});
+		
+		it('should report token data', async () => {
+			errorText = "Token data was not as expected";
+			expect((await pixelconsContract.getTokenData(createdTokens[1].id))[0], str(errorText)).to.equal(createdTokens[1].id);
+			expect((await pixelconsContract.getTokenData(createdTokens[1].id))[1], str(errorText)).to.equal(1);
+			expect((await pixelconsContract.getTokenData(createdTokens[1].id))[3], str(errorText)).to.equal(createdTokens[1].owner);
+			expect((await pixelconsContract.getTokenData(createdTokens[1].id))[4], str(errorText)).to.equal(createdTokens[1].creator);
+			expect((await pixelconsContract.getTokenData(createdTokens[1].id))[5], str(errorText)).to.equal(createdTokens[1].name);
+		});
+		
+		it('should report token data by index', async () => {
+			errorText = "Token data by index was not as expected";
+			expect((await pixelconsContract.getTokenDataByIndex(1))[0], str(errorText)).to.equal(createdTokens[1].id);
+			expect((await pixelconsContract.getTokenDataByIndex(1))[1], str(errorText)).to.equal(1);
+			expect((await pixelconsContract.getTokenDataByIndex(1))[3], str(errorText)).to.equal(createdTokens[1].owner);
+			expect((await pixelconsContract.getTokenDataByIndex(1))[4], str(errorText)).to.equal(createdTokens[1].creator);
+			expect((await pixelconsContract.getTokenDataByIndex(1))[5], str(errorText)).to.equal(createdTokens[1].name);
+		});
+		
+		it('should report token index', async () => {
+			errorText = "Token index was not as expected";
+			expect(await pixelconsContract.getTokenIndex(createdTokens[0].id), str(errorText)).to.equal(0);
+			expect(await pixelconsContract.getTokenIndex(createdTokens[createdTokens.length-1].id), str(errorText)).to.equal(createdTokens.length-1);
+		});
+		
+		it('should not report bad token by index', async () => {
+			errorText = "Was able to get token id from invalid index";
+			await expect(pixelconsContract.tokenByIndex(createdTokens.length), str(errorText)).to.be.revertedWith('PixelCon index is out of bounds');
+		});
+		
+		it('should not report bad exists', async () => {
+			errorText = "Was able to check existence of invalid id";
+			await expect(pixelconsContract.exists(emptyID), str(errorText)).to.be.revertedWith('Invalid ID');
+		});
+		
+		it('should not report bad token data', async () => {
+			errorText = "Was able to get token data with id of 0";
+			await expect(pixelconsContract.getTokenData(emptyID), str(errorText)).to.be.revertedWith('Invalid ID');
+			
+			errorText = "Was able to get token data with id that doesnt exist";
+			await expect(pixelconsContract.getTokenData(randomID()), str(errorText)).to.be.revertedWith('PixelCon does not exist');
+		});
+		
+		it('should not report bad token data by index', async () => {
+			errorText = "Was able to get token data with invalid index";
+			await expect(pixelconsContract.getTokenDataByIndex(createdTokens.length), str(errorText)).to.be.revertedWith('PixelCon index is out of bounds');
+		});
+		
+		it('should not report bad token index', async () => {
+			errorText = "Was able to get token index with invalid id";
+			await expect(pixelconsContract.getTokenIndex(emptyID), str(errorText)).to.be.revertedWith('Invalid ID');
+			
+			errorText = "Was able to get token index with id that doesnt exist";
+			await expect(pixelconsContract.getTokenIndex(randomID()), str(errorText)).to.be.revertedWith('PixelCon does not exist');
+		});
+	});
+	
+	// Check Owner Enumeration
+	describe('owner enumeration', () => {
+		it('should report owner of', async () => {
+			errorText = "Owner of was not as expected";
+			expect(await pixelconsContract.ownerOf(createdTokens[0].id), str(errorText)).to.equal(createdTokens[0].owner);
+			expect(await pixelconsContract.ownerOf(createdTokens[createdTokens.length/2].id), str(errorText)).to.equal(createdTokens[createdTokens.length/2].owner);
+			expect(await pixelconsContract.ownerOf(createdTokens[createdTokens.length-1].id), str(errorText)).to.equal(createdTokens[createdTokens.length-1].owner);
+		});
+		
+		it('should report balance of', async () => {
+			errorText = "Balance of was not as expected";
+			expect(await pixelconsContract.balanceOf(deployerAddress), str(errorText)).to.equal(createdTokens.length-2);
+			expect(await pixelconsContract.balanceOf(accountAddresses[0]), str(errorText)).to.equal(1);
+			expect(await pixelconsContract.balanceOf(accountAddresses[2]), str(errorText)).to.equal(0);
+		});
+		
+		it('should report token of owner by index', async () => {
+			errorText = "Token of owner by index was not as expected";
+			expect(await pixelconsContract.tokenOfOwnerByIndex(deployerAddress, 0), str(errorText)).to.equal(createdTokens[1].id);
+			expect(await pixelconsContract.tokenOfOwnerByIndex(deployerAddress, 3), str(errorText)).to.equal(createdTokens[4].id);
+			expect(await pixelconsContract.tokenOfOwnerByIndex(accountAddresses[0], 0), str(errorText)).to.equal(createdTokens[0].id);
+		});
+		
+		it('should not report bad owner of', async () => {
+			errorText = "Was able to get owner of token with invalid id";
+			await expect(pixelconsContract.ownerOf(emptyID), str(errorText)).to.be.revertedWith('Invalid ID');
+			
+			errorText = "Was able to get owner of token with id that doesnt exist";
+			await expect(pixelconsContract.ownerOf(randomID()), str(errorText)).to.be.revertedWith('PixelCon does not exist');
+		});
+		
+		it('should not report bad balance of', async () => {
+			errorText = "Was able to check balance of an invalid address";
+			await expect(pixelconsContract.balanceOf(emptyAddress), str(errorText)).to.be.revertedWith('Invalid address');
+		});
+		
+		it('should not report bad token of owner by index', async () => {
+			errorText = "Was able to get token id by index for owner with invalid address";
+			await expect(pixelconsContract.tokenOfOwnerByIndex(emptyAddress, 0), str(errorText)).to.be.revertedWith('Invalid address');
+			
+			errorText = "Was able to get token id by index for owner with invalid index";
+			await expect(pixelconsContract.tokenOfOwnerByIndex(deployerAddress, createdTokens.length), str(errorText)).to.be.revertedWith('Index is out of bounds');
+		});
+	});
+	
+	// Check Creator Enumeration
+	describe('creator enumeration', () => {
+		it('should report creator of', async () => {
+			errorText = "Creator of was not as expected";
+			expect(await pixelconsContract.creatorOf(createdTokens[2].id), str(errorText)).to.equal(createdTokens[2].creator);
+			expect(await pixelconsContract.creatorOf(createdTokens[createdTokens.length/2].id), str(errorText)).to.equal(createdTokens[createdTokens.length/2].creator);
+			expect(await pixelconsContract.creatorOf(createdTokens[createdTokens.length-1].id), str(errorText)).to.equal(createdTokens[createdTokens.length-1].creator);
+		});
+		
+		it('should report creator total', async () => {
+			errorText = "Creator total was not as expected";
+			expect(await pixelconsContract.creatorTotal(deployerAddress), str(errorText)).to.equal(createdTokens.length-1);
+			expect(await pixelconsContract.creatorTotal(accountAddresses[0]), str(errorText)).to.equal(0);
+			expect(await pixelconsContract.creatorTotal(accountAddresses[1]), str(errorText)).to.equal(1);
+		});
+		
+		it('should report token of creator by index', async () => {
+			errorText = "Token of creator by index was not as expected";
+			expect(await pixelconsContract.tokenOfCreatorByIndex(deployerAddress, 0), str(errorText)).to.equal(createdTokens[0].id);
+			expect(await pixelconsContract.tokenOfCreatorByIndex(deployerAddress, 3), str(errorText)).to.equal(createdTokens[4].id);
+			expect(await pixelconsContract.tokenOfCreatorByIndex(accountAddresses[1], 0), str(errorText)).to.equal(createdTokens[2].id);
+		});
+		
+		it('should not report bad creator of', async () => {
+			errorText = "Was able to get creator of token with invalid id";
+			await expect(pixelconsContract.creatorOf(emptyID), str(errorText)).to.be.revertedWith('Invalid ID');
+			
+			errorText = "Was able to get creator of token with id that doesnt exist";
+			await expect(pixelconsContract.creatorOf(randomID()), str(errorText)).to.be.revertedWith('PixelCon does not exist');
+		});
+		
+		it('should not report bad creator total', async () => {
+			errorText = "Was able to check creator total of an invalid address";
+			await expect(pixelconsContract.creatorTotal(emptyAddress), str(errorText)).to.be.revertedWith('Invalid address');
+		});
+		
+		it('should not report bad token of creator by index', async () => {
+			errorText = "Was able to get token id by index for creator with invalid address";
+			await expect(pixelconsContract.tokenOfCreatorByIndex(emptyAddress, 0), str(errorText)).to.be.revertedWith('Invalid address');
+			
+			errorText = "Was able to get token id by index for creator with invalid index";
+			await expect(pixelconsContract.tokenOfCreatorByIndex(deployerAddress, createdTokens.length), str(errorText)).to.be.revertedWith('Index is out of bounds');
+		});
+	});
+	
+	// Check Collection Enumeration
+	describe('collection enumeration', () => {
+		it('should report total collections', async () => {
+			errorText = "Total collections was not as expected";
+			expect(await pixelconsContract.totalCollections(), str(errorText)).to.equal(createdCollections.length);
+		});
+		
+		it('should report collection total', async () => {
+			errorText = "Collection total was not as expected";
+			expect(await pixelconsContract.collectionTotal(3), str(errorText)).to.equal(createdCollections[3].indexes.length);
+			expect(await pixelconsContract.collectionTotal(2), str(errorText)).to.equal(createdCollections[2].indexes.length);
+		});
+		
+		it('should report collection of', async () => {
+			errorText = "Collection of was not as expected";
+			expect(await pixelconsContract.collectionOf(createdTokens[0].id), str(errorText)).to.equal(0);
+			expect(await pixelconsContract.collectionOf(createdTokens[6].id), str(errorText)).to.equal(3);
+		});
+		
+		it('should report token of collection by index', async () => {
+			errorText = "Token of collection by index was not as expected";
+			expect(await pixelconsContract.tokenOfCollectionByIndex(3, 0), str(errorText)).to.equal(createdTokens[createdCollections[3].indexes[0]].id);
+			expect(await pixelconsContract.tokenOfCollectionByIndex(2, 1), str(errorText)).to.equal(createdTokens[createdCollections[2].indexes[1]].id);
+		});
+		
+		it('should report collection exists', async () => {
+			errorText = "Collection exists was not as expected";
+			expect(await pixelconsContract.collectionExists(3), str(errorText)).to.equal(true);
+			expect(await pixelconsContract.collectionExists(createdCollections.length), str(errorText)).to.equal(false);
+		});
+		
+		it('should report collection cleared', async () => {
+			errorText = "Collection cleared was not as expected";
+			expect(await pixelconsContract.collectionCleared(1), str(errorText)).to.equal(true);
+			expect(await pixelconsContract.collectionCleared(3), str(errorText)).to.equal(false);
+		});
+		
+		it('should report collection name', async () => {
+			errorText = "Collection total was not as name";
+			expect(await pixelconsContract.getCollectionName(2), str(errorText)).to.equal(createdCollections[2].name);
+		});
+		
+		it('should not report bad collection of', async () => {
+			errorText = "Was able to get collection of token with invalid id";
+			await expect(pixelconsContract.collectionOf(emptyID), str(errorText)).to.be.revertedWith('Invalid ID');
+			
+			errorText = "Was able to get collection of token with id that doesnt exist";
+			await expect(pixelconsContract.collectionOf(randomID()), str(errorText)).to.be.revertedWith('PixelCon does not exist');
+		});
+		
+		it('should not report bad collection total', async () => {
+			errorText = "Was able to check collection total of an invalid index";
+			await expect(pixelconsContract.collectionTotal(0), str(errorText)).to.be.revertedWith('Invalid index');
+			
+			errorText = "Was able to check collection total of an invalid index (out of bounds)";
+			await expect(pixelconsContract.collectionTotal(createdCollections.length), str(errorText)).to.be.revertedWith('Collection does not exist');
+		});
+		
+		it('should not report bad token of collection by index', async () => {
+			errorText = "Was able to token id by index for collection with invalid index";
+			await expect(pixelconsContract.tokenOfCollectionByIndex(0, 1), str(errorText)).to.be.revertedWith('Invalid index');
+			
+			errorText = "Was able to token id by index for collection with invalid index (out of bounds)";
+			await expect(pixelconsContract.tokenOfCollectionByIndex(createdCollections.length, 1), str(errorText)).to.be.revertedWith('Collection does not exist');
+			
+			errorText = "Was able to token id by invalid index (out of bounds) for collection";
+			await expect(pixelconsContract.tokenOfCollectionByIndex(3, createdCollections[3].indexes.length), str(errorText)).to.be.revertedWith('Index is out of bounds');
+		});
+		
+		it('should not report bad collection exists', async () => {
+			errorText = "Was able to check collection existence of an invalid index";
+			await expect(pixelconsContract.collectionExists(0), str(errorText)).to.be.revertedWith('Invalid index');
+		});
+		
+		it('should not report bad collection cleared', async () => {
+			errorText = "Was able to check collection cleared state of an invalid index";
+			await expect(pixelconsContract.collectionCleared(0), str(errorText)).to.be.revertedWith('Invalid index');
+			
+			errorText = "Was able to check collection cleared state of an invalid index (out of bounds)";
+			await expect(pixelconsContract.collectionCleared(createdCollections.length), str(errorText)).to.be.revertedWith('Collection does not exist');
+		});
+		
+		it('should not report bad collection name', async () => {
+			errorText = "Was able to check collection name of an invalid index";
+			await expect(pixelconsContract.getCollectionName(0), str(errorText)).to.be.revertedWith('Invalid index');
+			
+			errorText = "Was able to check collection name of an invalid index (out of bounds)";
+			await expect(pixelconsContract.getCollectionName(createdCollections.length), str(errorText)).to.be.revertedWith('Collection does not exist');
+		});
+	});
+	
+	// Check Token Transfers
+	describe('token transfers', () => {
+		it('should allow transfer tokens', async () => {
+			errorText = "Failed to transfer token";
+			await expect(pixelconsContract.connect(deployer).transferFrom(deployerAddress, accountAddresses[0], createdTokens[2].id), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(deployer)['safeTransferFrom(address,address,uint256)'](deployerAddress, accountAddresses[0], createdTokens[3].id), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(accounts[1]).transferFrom(accountAddresses[1], accountAddresses[2], createdTokens[6].id), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(deployer)['safeTransferFrom(address,address,uint256)'](deployerAddress, accountAddresses[0], createdTokens[8].id), str(errorText)).to.not.be.reverted;
+			
+			errorText = "Failed check transfer";
+			expect(await pixelconsContract.ownerOf(createdTokens[0].id), str(errorText)).to.equal(accountAddresses[0]);
+			expect(await pixelconsContract.ownerOf(createdTokens[2].id), str(errorText)).to.equal(accountAddresses[0]);
+			expect(await pixelconsContract.ownerOf(createdTokens[3].id), str(errorText)).to.equal(accountAddresses[0]);
+			expect(await pixelconsContract.ownerOf(createdTokens[6].id), str(errorText)).to.equal(accountAddresses[2]);
+			expect(await pixelconsContract.ownerOf(createdTokens[8].id), str(errorText)).to.equal(accountAddresses[0]);
+			expect(await pixelconsContract.balanceOf(accountAddresses[0]), str(errorText)).to.equal(4);
+		});
+		
+		it('should not allow bad transfer tokens', async () => {
+			errorText = "Was able to transfer token 3 as deployer";
+			await expect(pixelconsContract.connect(deployer).transferFrom(accountAddresses[0], deployerAddress, createdTokens[2].id), str(errorText)).to.be.revertedWith("Sender does not have permission to transfer PixelCon");
+			
+			errorText = "Was able to transfer token 5 with incorrect from address";
+			await expect(pixelconsContract.connect(deployer).transferFrom(accountAddresses[0], accountAddresses[1], createdTokens[4].id), str(errorText)).to.be.revertedWith("Incorrect PixelCon owner");
+			
+			errorText = "Was able to transfer with invalid token id";
+			await expect(pixelconsContract.connect(deployer).transferFrom(deployerAddress, accountAddresses[1], emptyID), str(errorText)).to.be.revertedWith("Invalid ID");
+			
+			errorText = "Was able to transfer token with id that doesnt exist";
+			await expect(pixelconsContract.connect(deployer).transferFrom(deployerAddress, accountAddresses[1], randomID()), str(errorText)).to.be.revertedWith('PixelCon does not exist');
+			
+			errorText = "Was able to transfer token 5 to an invalid address";
+			await expect(pixelconsContract.connect(deployer).transferFrom(deployerAddress, emptyAddress, createdTokens[4].id), str(errorText)).to.be.revertedWith('Invalid address');
+			
+			errorText = "Was able to transfer token 5 from an invalid address";
+			await expect(pixelconsContract.connect(deployer).transferFrom(emptyAddress, accountAddresses[1], createdTokens[4].id), str(errorText)).to.be.revertedWith('Invalid address');
+		});
+		
+		it('should allow approvals', async () => {
+			errorText = "Failed to set approval";
+			await expect(pixelconsContract.connect(deployer).setApprovalForAll(accountAddresses[1], true), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(accounts[0]).approve(accountAddresses[1], createdTokens[2].id), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(accounts[0]).approve(accountAddresses[2], createdTokens[8].id), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(accounts[1]).approve(accountAddresses[2], createdTokens[4].id), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(accounts[2]).setApprovalForAll(accountAddresses[0], true), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(accounts[2]).setApprovalForAll(deployerAddress, true), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(deployer).setApprovalForAll(accountAddresses[1], true), str(errorText)).to.not.be.reverted;
+			
+			errorText = "Failed check approvals";
+			expect(await pixelconsContract.isApprovedForAll(accountAddresses[2], accountAddresses[0]), str(errorText)).to.equal(true);
+			expect(await pixelconsContract.getApproved(createdTokens[4].id), str(errorText)).to.equal(accountAddresses[2]);
+		});
+		
+		it('should allow transfer approved tokens', async () => {
+			errorText = "Failed to transfer token";
+			await expect(pixelconsContract.connect(accounts[1]).transferFrom(deployerAddress, accountAddresses[0], createdTokens[1].id), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(accounts[1]).transferFrom(accountAddresses[0], accountAddresses[2], createdTokens[2].id), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(deployer).transferFrom(accountAddresses[2], deployerAddress, createdTokens[6].id), str(errorText)).to.not.be.reverted;
+			await expect(pixelconsContract.connect(accounts[0]).transferFrom(accountAddresses[0], accountAddresses[1], createdTokens[8].id), str(errorText)).to.not.be.reverted;
+			
+			errorText = "Failed check transfer";
+			expect(await pixelconsContract.ownerOf(createdTokens[0].id), str(errorText)).to.equal(accountAddresses[0]);
+			expect(await pixelconsContract.ownerOf(createdTokens[1].id), str(errorText)).to.equal(accountAddresses[0]);
+			expect(await pixelconsContract.ownerOf(createdTokens[2].id), str(errorText)).to.equal(accountAddresses[2]);
+			expect(await pixelconsContract.ownerOf(createdTokens[6].id), str(errorText)).to.equal(deployerAddress);
+			expect(await pixelconsContract.ownerOf(createdTokens[8].id), str(errorText)).to.equal(accountAddresses[1]);
+			expect(await pixelconsContract.balanceOf(accountAddresses[0]), str(errorText)).to.equal(3);
+			expect(await pixelconsContract.balanceOf(accountAddresses[2]), str(errorText)).to.equal(1);
+		});
+		
+		it('should allow remove approvals', async () => {
+			errorText = "Failed to remove approval";
+			await expect(pixelconsContract.connect(deployer).setApprovalForAll(accountAddresses[1], false), str(errorText)).to.not.be.reverted;
+			
+			errorText = "Failed check approvals";
+			expect(await pixelconsContract.isApprovedForAll(accountAddresses[2], accountAddresses[1]), str(errorText)).to.equal(false);
+		});
+		
+		it('should not allow bad transfer/approve tokens', async () => {
+			errorText = "Account2 was able to transfer on behalf of deployer";
+			await expect(pixelconsContract.connect(accounts[1]).transferFrom(deployerAddress, accountAddresses[1], createdTokens[5].id), str(errorText)).to.be.revertedWith("Sender does not have permission to transfer PixelCon");
+			
+			errorText = "Account3 was able to transfer token 9";
+			await expect(pixelconsContract.connect(accounts[2]).transferFrom(accountAddresses[1], accountAddresses[2], createdTokens[8].id), str(errorText)).to.be.revertedWith("Sender does not have permission to transfer PixelCon");
+			
+			errorText = "Deployer was able to transfer token 1";
+			await expect(pixelconsContract.connect(deployer).transferFrom(accountAddresses[0], deployerAddress, createdTokens[8].id), str(errorText)).to.be.revertedWith("Sender does not have permission to transfer PixelCon");
+			
+			errorText = "Was able to approve for token 3 that account2 doesnt own";
+			await expect(pixelconsContract.connect(accounts[1]).approve(accountAddresses[1], createdTokens[2].id), str(errorText)).to.be.revertedWith('Sender does not have permission to approve address');
+			
+			errorText = "Was able to approve with invalid token id";
+			await expect(pixelconsContract.connect(deployer).approve(accountAddresses[1], emptyID), str(errorText)).to.be.revertedWith('Invalid ID');
+			
+			errorText = "Was able to approve with token id that doesnt exist";
+			await expect(pixelconsContract.connect(deployer).approve(accountAddresses[1], randomID()), str(errorText)).to.be.revertedWith('Sender does not have permission to approve address');
+			
+			errorText = "Was able to get approved with invalid token id";
+			await expect(pixelconsContract.connect(deployer).getApproved(emptyID), str(errorText)).to.be.revertedWith('Invalid ID');
+			
+			errorText = "Was able to get approved with token id that doesnt exist";
+			await expect(pixelconsContract.connect(deployer).getApproved(randomID()), str(errorText)).to.be.revertedWith('PixelCon does not exist');
+			
+			errorText = "Was able to approve for all for invalid address";
+			await expect(pixelconsContract.connect(deployer).setApprovalForAll(emptyAddress, true), str(errorText)).to.be.revertedWith('Invalid address');
+			
+			errorText = "Was able to get approved for all for invalid owner address";
+			await expect(pixelconsContract.connect(deployer).isApprovedForAll(emptyAddress, deployerAddress), str(errorText)).to.be.revertedWith('Invalid address');
+			
+			errorText = "Was able to get approved for all for invalid operator address";
+			await expect(pixelconsContract.connect(deployer).isApprovedForAll(accountAddresses[0], emptyAddress), str(errorText)).to.be.revertedWith('Invalid address');
+		});
+		
+		it('should not allow unsafe transfer', async () => {
+			errorText = "Was able to safe transfer to a not safe address";
+			await expect(pixelconsContract.connect(deployer)['safeTransferFrom(address,address,uint256)'](deployerAddress, notReceiverContract.address, createdTokens[7].id), str(errorText)).to.be.reverted;
+		});
+	});
+	*/
+	
+	// Check Admin Functions
+	describe('admin functions', () => {
+		let tokenURITemplate: string = '<tokenId>: <tokenIndex>';
+		
+		it('should allow update of tokenURI', async () => {
+			//errorText = "Was able to update token URI template not as admin";
+			//await expect(pixelconInvadersContract.connect(l2Accounts[2]).setTokenURITemplate(tokenURITemplate, defaultGasParams), str(errorText)).to.be.revertedWith('Caller is not the owner');
+			
+			errorText = "Failed to set token URI template";
+			await expect(pixelconInvadersContract.connect(l2Accounts[0]).setTokenURITemplate(tokenURITemplate, defaultGasParams), str(errorText)).to.not.be.reverted;
+		});
+		
+		it('should allow admin change', async () => {
+			errorText = "Was able to change admin not as admin";
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[2]).transferOwnership(l1Addresses[2], defaultGasParams), str(errorText)).to.be.revertedWith('Caller is not the owner');
+			//await expect(pixelconInvadersContract.connect(l2Accounts[2]).transferOwnership(l2Addresses[2], defaultGasParams), str(errorText)).to.be.revertedWith('Caller is not the owner');
+			
+			errorText = "Failed to change admin as admin";
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).transferOwnership(l1Addresses[1], defaultGasParams), str(errorText)).to.not.be.reverted;
+			await expect(pixelconInvadersContract.connect(l2Accounts[0]).transferOwnership(l2Addresses[1], defaultGasParams), str(errorText)).to.not.be.reverted;
+		});
+		
+		it('should report correct data', async () => {
+			let expectedURI = tokenURITemplate.replace('<tokenId>', invaders[1].id).replace('<tokenIndex>', '0x' + (invaders[1].index).toString(16).padStart(16, '0'));
+			
+			errorText = "The reported token URI is not what was expected";
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).tokenURI(invaders[1].id), str(errorText)).to.equal(expectedURI);
+			
+			errorText = "The reported admin is not what was expected";
+			expect(await pixelconInvadersBridgeContract.connect(l1Accounts[0]).owner(), str(errorText)).to.equal(l1Addresses[1]);
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).owner(), str(errorText)).to.equal(l2Addresses[1]);
+		});
+	});
+});
 
 // Utils
+function to256Hex(number) {
+	try {
+		let hex = ethers.utils.hexlify(number);
+		while (hex.length < 66) hex = hex.slice(0, 2) + '0' + hex.slice(2);
+		return hex;
+	} catch (err) { }
+	return "0x".padEnd(66, "0");
+}
+function toBytes8(text) {
+	let bytes8 = new Uint8Array(8);
+	let textBytes = ethers.utils.toUtf8Bytes(text);
+	for(let i=0; i<8 && i<textBytes.length; i++) {
+		bytes8[i] = textBytes[i];
+	}
+	return ethers.utils.hexlify(bytes8);
+}
+function randomID() {
+	return ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Random Token ' + Math.random()*100));
+}
+function str(text) {
+	return (' ' + text).slice(1);
+}
 function resolvePath(p) {
 	let paths = [path.join(__dirname, '..')];
 	paths = paths.concat(p.split('/'));
 	return path.join.apply(null, paths);
 }
-function toBytes8(text) {
-	let bytes8 = new Uint8Array(8);
-	let textBytes = ethers.utils.toUtf8Bytes(text);
-	for (let i = 0; i < 8 && i < textBytes.length; i++) {
-		bytes8[i] = textBytes[i];
+async function fetchContractAddress(chainId, contractName) {
+	let deployAddresses = require(deploymentsFile);
+	for(let i=0; i<deployAddresses.length; i++) {
+		if(deployAddresses[i].id == chainId) {
+			for(let j=0; j<deployAddresses[i].contracts.length; j++) {
+				if(deployAddresses[i].contracts[j].name == contractName) {
+					return deployAddresses[i].contracts[j].address;
+				}
+			}
+		}
 	}
-	return bytes8;
+	return null;
 }
-function readFilePromise(file) {
-	return new Promise(function (resolve, reject) {
-		fs.readFile(file, "utf8", function (err, data) {
-			if (err) reject(err);
-			else resolve({ file: file, data: data });
-		});
+async function getTransactionEventStatus(filter, provider) {
+	try {
+		let tempContract = new ethers.Contract(filter.address, [], provider);
+		let events = await tempContract.queryFilter(filter);
+		if(events && events.length) return events;
+	} catch (err) { }
+	return null;
+}
+function transactionEventWait(filter, provider) {
+	const eventPollMillis = 500;
+	const eventWaitMillis = 3000;
+	return new Promise((resolve, reject) => {
+		let start = (new Date).getTime();
+		let check_transaction_event = async function () {
+			try {
+				let events = await getTransactionEventStatus(filter, provider);
+				if (events && events.length > 0) resolve(events);
+				else if (eventWaitMillis > 0 && (new Date).getTime() - start > eventWaitMillis) resolve(null);
+				else setTimeout(check_transaction_event, eventPollMillis);
+			} catch (err) {
+				resolve(null);
+			}
+		};
+		check_transaction_event();
 	});
 }
-function writeFilePromise(file, data) {
-	return new Promise(function (resolve, reject) {
-		fs.writeFile(file, data, function (err) {
-			if (err) reject(err);
-			else resolve({ file: file });
-		});
-	});
-}
-function clearDeployAddress(deployAddresses, chainId) {
-	for (let i = 0; i < deployAddresses.length; i++) {
-		if (deployAddresses[i].id == chainId) {
-			deployAddresses[i].contracts = [];
-			break;
-		}
-	}
-}
-function updateDeployAddress(deployAddresses, chainId, contractName, contractAddress, transactionHash, blockHash, blockNumber) {
-	let deployNetwork = null;
-	let deploymentContract = null;
+		
+		
+		
 
-	//look for network with same chainId
-	for (let i = 0; i < deployAddresses.length; i++) {
-		if (deployAddresses[i].id == chainId) {
-			deployNetwork = deployAddresses[i];
-			break;
-		}
-	}
-	if (!deployNetwork) {
-		//create the 'unknown' network
-		deployNetwork = {
-			name: 'unknown_' + chainId,
-			id: '' + chainId
-		}
-		deployAddresses.push(deployNetwork);
-	}
-
-	//look for contract with same name
-	deployNetwork.contracts = deployNetwork.contracts || [];
-	for (let i = 0; i < deployNetwork.contracts.length; i++) {
-		if (deployNetwork.contracts[i].name == contractName) {
-			deploymentContract = deployNetwork.contracts[i];
-			break;
-		}
-	}
-	if (!deploymentContract) {
-		//create contract entry
-		deploymentContract = {
-			name: contractName
-		}
-		deployNetwork.contracts.push(deploymentContract);
-	}
-
-	//set address
-	deploymentContract.address = contractAddress;
-	deploymentContract.transactionHash = transactionHash;
-	deploymentContract.blockHash = blockHash;
-	deploymentContract.blockNumber = '' + blockNumber;
-}
-
-//dataset
-const pixelconDataLoad = [
-	{ id: '0x9a999999990990999909909999999999907777099400004999477499999aa999', name: 'Smile' },
-	{ id: '0x9a9999999949949994944949ee9999eee499994e99400499999aa99999999999', name: 'Blush' },
-	{ id: '0x9a9999999999909990049099999999999499994999400499999aa99999999999', name: 'Wink' },
-	{ id: '0x9a99999999499499949449499999999991777719901dd10994777749999aa999', name: 'Laugh' },
-	{ id: '0x9a9999999949949c9494494c99999999907777099022220999088099999aa999', name: 'Grin' },
-	{ id: '0x9a99944999994999944490999909909999999999999900999999aa9999999999', name: 'Sceptic' },
-	{ id: '0x9a99999999099099990990999999999999477499947447499449944999999999', name: 'Scared' },
-	{ id: '0x9a9999999999999997099709977997799999999999422499999aa99999999999', name: 'EyeRoll' },
-	{ id: '0x9a9999999999999999099099990990999999999999422499949aa94999999999', name: 'Frown' },
-	{ id: '0x9a99999999999099900490999999999994999949994224999998899999988999', name: 'Joke' },
-	{ id: '0x9a99999994099049990990999999999992eeee29992882999997e99999999999', name: 'LSmile' },
-	{ id: '0x9a9999999949949994944949c999999c927777299428824999477499999aa999', name: 'Laugh' },
-	{ id: '0x9a99999999499499949449499999999994999949994224999998899999988999', name: 'Joke' },
-	{ id: '0x9a9999999909909999099099999999999999a499999909999999a49999999999', name: 'Kiss' },
-	{ id: '0x9a9999999949949994944949ee9999eeee99a4ee999909999999a49999999999', name: 'Kiss' },
-	{ id: '0x9a99999999099099990990999c9999999c944999994aa4999999999999999999', name: 'Sad' },
-	{ id: '0x9a499499949999499909909999099099999999999990099999900999999aa999', name: 'Shocked' },
-	{ id: '0x9a9999999449944999999999900990099999999999900999999009999999c999', name: 'Drool' },
-	{ id: '0x9a9999999449944999044099990990999999999999422499949aa94999999999', name: 'Upset' },
-	{ id: '0x8e8888888228822888022088880880888888888888e77e8882777728888ee888', name: 'Angry' },
-	{ id: '0x9a4994999499994999999999920990299cc99cc99cc77cc99cc00cc99cc9acc9', name: 'Cry' },
-	{ id: '0xcc1cc1ccc1cccc1cc77cc77c97099079977997799990099999900999999aa999', name: 'Fear' },
-	{ id: '0xcc1cc1ccc1cccc1ccc0cc0cc990990999c9999999c99999999900999999aa999', name: 'Anxious' },
-	{ id: '0x3b1331333133331333033033330330333331333333b303333333133333333333', name: 'Nausea' },
-	{ id: '0x9a99999999999999944994499999999994000049903bb30994bbbb4999bbbb99', name: 'Vomit' },
-	{ id: '0x9a99999999999999977997099079977999999999990099099099009999999999', name: 'Crazy' },
-	{ id: '0x0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1', name: 'Cat' },
-	{ id: '0x00999900099999909949090499499f229909ffff0044ffff049940e0499ff400', name: 'Dog' },
-	{ id: '0x00028000028880000027770004970700004977700002877000028777000d7777', name: 'Chicken' },
-	{ id: '0x11111110111fffe000010010fdf00e00ffffff200effeee00e2fffe00ee22000', name: 'CoolDude' },
-	{ id: '0x03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000', name: 'Alien' },
-	{ id: '0x0dccccd0dc7ccccdcdccccdcc70cc70ccd0cc0dc0cccccc000cddc00000cc000', name: 'Alien' },
-	{ id: '0x00088270008822000777666006eeeed0f72fe26ef7f76e6e067e26d000676d00', name: 'Santa' },
-	{ id: '0xff4444fff467764f46b33b64673703766730037647b33b7efe7777efffffffff', name: 'Eye' },
-	{ id: '0xff4444fff467764f46dccd6467c70c7667c00c7647dccd7efe7777efffffffff', name: 'Eye' },
-	{ id: '0x00b3b300000b300000ee28000e8e88800ee88280028288200028820000022000', name: 'Raspbry' },
-	{ id: '0x00000000070000700cd66dc006d77d600d622dd001688d1000d6d10000000000', name: 'SpsceShp' },
-	{ id: '0x001282100128a811128a988228aaaaa88aaaaa822889a821118a821001282100', name: 'Lightng' },
-	{ id: '0x11112121212112921191112129a9211111911212112129212111121111121112', name: 'Stars' },
-	{ id: '0x00110000019a100019a100001aa100101aa911a119aaaa91019aa91000111100', name: 'Moon' },
-	{ id: '0x2119111219299291129aa92119aaaa9999aaaa91129aa9211929929121119112', name: 'Sun' },
-	{ id: '0x000008880008899900899aaa089aabbb089abccc89abccdd89abcd0089abcd00', name: 'Rainbow' },
-	{ id: '0x0008800000878800000880000071160007100160070000600070060000066000', name: 'Ring' },
-	{ id: '0x000cc00000c7cc00000cc0000071160007100160070000600070060000066000', name: 'Ring' },
-	{ id: '0x00000000000000000a0aa0900cabba80099999400aaaaa900000000000000000', name: 'Crown' },
-	{ id: '0x0000000000e777e00ee777ee088eee88008eee800008e8000000e00000000000', name: 'Jewel' },
-	{ id: '0x0000000000c777c00cc777cc066ccc66006ccc600006c6000000c00000000000', name: 'Jewel' },
-	{ id: '0x0000000000a777a00aa777aa099aaa99009aaa900009a9000000a00000000000', name: 'Jewel' },
-	{ id: '0x0000000000b777b00bb777bb033bbb33003bbb300003b3000000b00000000000', name: 'Jewel' },
-	{ id: '0x00000000077777a00a100a900a400a900a747a900aa40a900aa77a9000000000', name: 'Locked' },
-	{ id: '0x0128218101298221122898101828982112899921289aa98229aaaa9212888821', name: 'Fire' },
-	{ id: '0x0d777d00677777607767767d767007076d6007070677707d000d776000006770', name: 'Skull' },
-	{ id: '0x0000000000770000066700000776d990000d6999000444990002444400002442', name: 'Meat' },
-	{ id: '0x000000000e808e00e7e8e8e08e8888e008888e000088e000000e000000000000', name: 'Heart' },
-	{ id: '0x000000000e807600e7e767608e87776008877600008760000006000000000000', name: 'HfHeart' },
-	{ id: '0x0000000006707600666767607677776007777600007760000006000000000000', name: 'EmHeart' },
-	{ id: '0x7600000067600000067600400067d090000d7d900000d9200049928200000028', name: 'RSword' },
-	{ id: '0x7600000067600000067600400067d090000d7d900000d9d000499dcd000000dc', name: 'BSword' },
-	{ id: '0x7600000067600000067600400067d090000d7d900000d940004994a40000004a', name: 'YSword' },
-	{ id: '0x7600000067600000067600400067d090000d7d900000d930004993b30000003b', name: 'GSword' },
-	{ id: '0x0188881018e77e818e7887e887877878878778788e7887e818e77e8101888810', name: 'Target' },
-	{ id: '0x0000000000aaa900aa99949aa0aaa90a90aaa909099aa49000094000009aa400', name: 'Trophy' },
-	{ id: '0x0000000000822200082002800800008002800820002aa200000aa00000000000', name: 'Medal' },
-	{ id: '0x0000000000c111000c1001c00c0000c001c00c10001aa100000aa00000000000', name: 'Medal' },
-	{ id: '0x000001dd0992010d42a90d000079000000a49a790074444000a94a90004aa940', name: 'Sax' },
-	{ id: '0x9444444094444440a9999990412121206161616070707070767676706dddddd0', name: 'Piano' },
-	{ id: '0x0000000000ddd6000d100d700d100d60811108e8810108822111022200000000', name: 'Headphns' },
-	{ id: '0x0000000000ddd6000d100d700d100d60b1110b7bb1010bb33111033300000000', name: 'Headphns' },
-	{ id: '0x00000000000000000866a66d01d76d10047dd642046dc6420446644200000000', name: 'Camera' },
-	{ id: '0x00d000d0000d0d00dddddd99d7600844d6000c44d0006d44d0067d44dddddd44', name: 'TV' },
-	{ id: '0x0777776007bbb7d0073337d007bbb7d0077777d0078787d0077777d0067776d0', name: 'GameBoy' },
-	{ id: '0x1ac128829cc967761ca128829cc1677628822882677667762882288267766776', name: 'Flag' },
-	{ id: '0x00001000000001000000110000066600d6722270d0d777601ddd6660001d6610', name: 'Coffee' },
-	{ id: '0x000000000777600007776dd0099940600aaa90d00aaa9d1009aa400000000000', name: 'Beer' },
-	{ id: '0x00000000004994000097a900009aa9000099990009a7aa900009400000000000', name: 'Alarm' },
-	{ id: '0x000000000cc7c7c00cc677c00cccccc00c7777c00c7777c00d6666d000000000', name: 'Floppy' },
-	{ id: '0x0000000008878780088677800888888008777780087777800266662000000000', name: 'Floppy' },
-	{ id: '0x00f6aa000fec9970feec977777e0077777700e777779ceef0799cef000aa6f00', name: 'CD' },
-	{ id: '0x6000000dd70000dd06700dd00067dd0000067000022d68802020080822100288', name: 'Scissors' },
-	{ id: '0x6000000dd70000dd06700dd00067dd0000067000011d6cc010100c0c111006cc', name: 'Scissors' },
-	{ id: '0x00ee00000efa9000eea7ee0089988ee0142888ef112288f701122fff00114442', name: 'RPencil' },
-	{ id: '0x00ee00000efa9000eea7dd00299ccdd014dcccdf11ddccf7011ddfff00114442', name: 'BPencil' },
-	{ id: '0x00ee00000efa4000eea79900244aa990149aaa9f1199aaf701199fff00114442', name: 'YPencil' },
-	{ id: '0x00ee00000efa9000eea73300299bb330143bbb3f1133bbf701133fff00114442', name: 'GPencil' },
-	{ id: '0x776ccccc77888ecc788888ecc8777826c8888827cc8882ccbbbd1bbb3336d333', name: 'Sign' },
-	{ id: '0xccccccc6ccbbb3676b8bb31773bb3816763311ccccc42cccb8b9413b33333333', name: 'AplTree' },
-	{ id: '0xc7cccccccccb3ccccb3b3ccccb3b1b3cc3bb1b3ccc3bb3ccaaab324999999999', name: 'Cactus' },
-	{ id: '0xccc7cccccc8822ccc888222c88882222cd7d616cc777666cb7d76663bbbbbbbb', name: 'House' },
-	{ id: '0xccccccccccc33cccca913ccccc33ccccc447cc6cc47776cccc67777c11111111', name: 'Duck' },
-	{ id: '0xcc1110ccc111110ccc070dccc9976dcccc8822cc46778644c71786dc677766d6', name: 'SnowMan' },
-	{ id: '0xeeeeeeee9aaaaaaed9d9d9cec0c0c0ce8aaaa9aa9009900a10011001dddddddd', name: 'Bus' },
-	{ id: '0xeeeeeeeeee3333eee36636eee3cc3cee8333333a3003300310011001dddddddd', name: 'Car' },
-	{ id: '0x9aa9e888e99eeeeeeeee88888887688eee7766eee333111e33333111bbbbb333', name: 'Mountain' },
-	{ id: '0x88888888899944488cc7112889994448ecc7112ef999444fd9c94141dddddddd', name: 'Building' },
-	{ id: '0xccc77cccccc66cccc76a976cc769476cccc773ccccc66c3ccccccc3c44444434', name: 'Flower' },
-	{ id: '0xcccccccccc8722ccc7e8826cc888722cccc94ccccccf9ccc3bbb333313bbbb31', name: 'Mushroom' },
-	{ id: '0xccccccccc44cc99ccffc9ff9ddddeeeefdd99eeffd9ff9efb1f88feb31188223', name: 'Family' },
-	{ id: '0xccccccccc44cc99ccffc9ff9ddddeeeefdd44eeffddffeefb1fccfeb311cc223', name: 'Family' },
-	{ id: '0x3333bbb3333bb89b33101a8b316101bb301000b3310001334410144444444444', name: 'Bomb' },
-	{ id: '0x7e7d644447e7644444707e44447777441dd11000400000044110000421d10002', name: 'Rabbit' },
-];
+// Data
 const pixelconDataIds = ["9a999999990990999909909999999999907777099400004999477499999aa999","9a9999999949949994944949ee9999eee499994e99400499999aa99999999999","9a9999999999909990049099999999999499994999400499999aa99999999999","9a99999999499499949449499999999991777719901dd10994777749999aa999","9a9999999949949c9494494c99999999907777099022220999088099999aa999","9a99944999994999944490999909909999999999999900999999aa9999999999","9a99999999099099990990999999999999477499947447499449944999999999","9a9999999999999997099709977997799999999999422499999aa99999999999","9a9999999999999999099099990990999999999999422499949aa94999999999","9a99999999999099900490999999999994999949994224999998899999988999","9a99999994099049990990999999999992eeee29992882999997e99999999999","9a9999999949949994944949c999999c927777299428824999477499999aa999","9a99999999499499949449499999999994999949994224999998899999988999",
 	"9a9999999909909999099099999999999999a499999909999999a49999999999","9a9999999949949994944949ee9999eeee99a4ee999909999999a49999999999","9a99999999099099990990999c9999999c944999994aa4999999999999999999","9a499499949999499909909999099099999999999990099999900999999aa999","9a9999999449944999999999900990099999999999900999999009999999c999","9a9999999449944999044099990990999999999999422499949aa94999999999","8e8888888228822888022088880880888888888888e77e8882777728888ee888","9a4994999499994999999999920990299cc99cc99cc77cc99cc00cc99cc9acc9","cc1cc1ccc1cccc1cc77cc77c97099079977997799990099999900999999aa999","cc1cc1ccc1cccc1ccc0cc0cc990990999c9999999c99999999900999999aa999","3b1331333133331333033033330330333331333333b303333333133333333333","9a99999999999999944994499999999994000049903bb30994bbbb4999bbbb99","9a99999999999999977997099079977999999999990099099099009999999999",
 	"0d0000d00dd00de00dddddd00d0d0dd0117e71100d777dd0001edd1001ddddd1","00999900099999909949090499499f229909ffff0044ffff049940e0499ff400","11111110111fffe000010010fdf00e00ffffff200effeee00e2fffe00ee22000","03bbbb303b7bbbb3b3bbbb3bb70bb70bb30bb03b0bbbbbb000b33b00000bb000","0dccccd0dc7ccccdcdccccdcc70cc70ccd0cc0dc0cccccc000cddc00000cc000","00088270008822000777666006eeeed0f72fe26ef7f76e6e067e26d000676d00","ff4444fff467764f46dccd6467c70c7667c00c7647dccd7efe7777efffffffff","ff4444fff467764f46b33b64673703766730037647b33b7efe7777efffffffff","00b3b300000b300000ee28000e8e88800ee88280028288200028820000022000","00000000070000700cd66dc006d77d600d622dd001688d1000d6d10000000000","001282100128a811128a988228aaaaa88aaaaa822889a821118a821001282100","11112121212112921191112129a9211111911212112129212111121111121112","00110000019a100019a100001aa100101aa911a119aaaa91019aa91000111100",
@@ -442,10 +869,3 @@ const pixelconDataIds = ["9a9999999909909999099099999999999077770994000049994774
 	"00033030003333330037070303333336033333063344996633333000ccccc000","0800008099800809909880099009800990089009900889099008809900000000","0900000009008000090808000980008009800080099898990080008000800080","ccccccc80ccccc08077777087717177877171770799999709499949009444900","0000000000040000000400000004000000444400044444000444440000044000","cccccccccccccccc0000aaa000cca7a08aaaaaa806006060bbbbbbbbbbbbbbbb","00600eee06000eee006eeeee060007ff0060ffff06000fff008444ff00000fff","0088880008877780087e7e800087870007999900708888708099990800800800","0cccc000c77c7100c7787600c7777600088a8800cc777c707c777c0007700700","00003300000330000493999049a9a99949a9a999499999a94a9a9a9904a9a990","0000330000033000004999000409099004090990049099900409090000000000","d1111ddddd1010dddd1199dddd1177dddd1177dddd1177dddd1177dddd9dd9dd","00aaa90000a7a70000aff40000aff400007776000a77769000ccc10000c00100",
 	"11111111115115111155551100a5a50010555001110550111111010111111111","0000000000bbbb00bbbbbbbbfb07b07fbbb33bbb0bbbebb000bbbb000ffffff0","33bb330333b88000338808033880808bb808088bb88088b3bb8883b33b33b3b3","550000555650056556600665065555600705705005500550055005500055e500","0018100008888800808980800800080000888000088888808088880800888800","8000000808000080008008000008800000088000008008000800008080000008","6000000606000060006006000006600000066000006006000600006060000006","7000000707000070007007000007700000077000007007000700007070000007"
 ];
-
-main()
-	.then(() => process.exit(0))
-	.catch(error => {
-		console.error(error);
-		process.exit(1);
-	});
