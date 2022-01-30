@@ -13,7 +13,7 @@ import "./optimism/CrossDomainEnabled.sol";
 
 /**
  * @title PixelConInvaders Core
- * @notice The purpose of this contract is to generate Invader PixelCons. All users are treated equally with the exception 
+ * @notice The purpose of this contract is to manage Invader PixelCons. All users are treated equally with the exception 
  * of an admin user who only controls the ERC721 metadata function which points to the app website. No fees are required to 
  * interact with this contract beyond base gas fees. For more information about PixelConInvaders, please visit (https://invaders.pixelcons.io)
  * @dev This contract follows the ERC721 token standard with additional functions for minting
@@ -77,10 +77,10 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * @notice Contract constructor
+	 * @dev Contract constructor
 	 */
 	constructor(address l2CrossDomainMessenger) CrossDomainEnabled(l2CrossDomainMessenger) Ownable() {
-		require(l2CrossDomainMessenger != address(0), "Invalid address");
+		//require(l2CrossDomainMessenger != address(0), "Invalid address"); //unlikely
 		_pixelconInvadersBridgeContract = address(0);
 	}
 
@@ -89,8 +89,8 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	 * @param pixelconInvadersBridgeContract -Invader bridge contract address
 	 */
 	function linkBridgeContract(address pixelconInvadersBridgeContract) public onlyOwner {
-		require(pixelconInvadersBridgeContract != address(0), "Invalid address");
-		require(_pixelconInvadersBridgeContract == address(0), "Contract already set");
+		//require(pixelconInvadersBridgeContract != address(0), "Invalid address"); //unlikely
+		require(_pixelconInvadersBridgeContract == address(0), "Already set");
 		_pixelconInvadersBridgeContract = pixelconInvadersBridgeContract;
 	}
 
@@ -138,8 +138,8 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	
 	/**
 	 * @dev Unbridge an Invader PixelCon to L1
-	 * @param tokenId -ID of the invader to unbridge
-	 * @param to -Address of desired invader pixelcon owner
+	 * @param tokenId -ID of the Invader to unbridge
+	 * @param to -Address of desired Invader pixelcon owner
 	 * @param gasLimit -Amount of gas for messenger
 	 */
 	function unbridgeToL1(uint256 tokenId, address to, uint32 gasLimit) public {
@@ -157,7 +157,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 		//transfer invader to this contract
 		_transfer(from, address(this), tokenId);
 	
-		//unbridge invader to the bridge contract on L1
+		//unbridge invader from the bridge contract on L1
 		_unbridgeToL1(tokenId, to, gasLimit);
 	}
 	
@@ -317,7 +317,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
      */
     function transferFrom_opt(uint256 addressTo_tokenIndex) public {
 		address from = address(0x0000000000000000000000000000000000000000);
-		address to = address(uint160((addressTo_tokenIndex & 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000) / (2 ** (8*12))));
+		address to = address(uint160((addressTo_tokenIndex & 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000) >> (8*12)));
 		uint256 tokenId = tokenByIndex(uint64(addressTo_tokenIndex & 0x000000000000000000000000000000000000000000000000ffffffffffffffff));
 		return transferFrom(from, to, tokenId);
     }
@@ -337,7 +337,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
      */
     function safeTransferFrom_opt(uint256 addressTo_tokenIndex, bytes memory data_p) public {
 		address from = address(0x0000000000000000000000000000000000000000);
-		address to = address(uint160((addressTo_tokenIndex & 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000) / (2 ** (8*12))));
+		address to = address(uint160((addressTo_tokenIndex & 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000) >> (8*12)));
 		uint256 tokenId = tokenByIndex(uint64(addressTo_tokenIndex & 0x000000000000000000000000000000000000000000000000ffffffffffffffff));
 		return safeTransferFrom(from, to, tokenId, data_p);
     }
@@ -448,7 +448,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     }
 	
     /**
-     * @dev Returns true if account is a contract.
+     * @dev Returns true if account is a contract
      * @param account -Account address
      * @return True if account is a contract
      */
@@ -493,8 +493,8 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     }
 	
 	/**
-     * @dev Unbridges the Invader to L1
-	 * @param tokenId -ID of the invader
+     * @dev Unbridges the Invader from L1
+	 * @param tokenId -ID of the Invader
 	 * @param to -The address to receive the Invader PixelCon
 	 * @param gasLimit -Amount of gas for messenger
 	 */

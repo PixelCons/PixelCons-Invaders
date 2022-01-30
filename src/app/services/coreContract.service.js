@@ -12,9 +12,9 @@
 		const _contractParamMaxTokens = 1000;
 		const _contractParamMint1PixelconIndex = 1217;
 		const _contractParamMint2PixelconIndex = 792;
-		const _contractParamMint3PixelconIndex = 704;
+		const _contractParamMint3PixelconIndex = 714;
 		const _contractParamMint4PixelconIndex = 651;
-		const _contractParamMint5PixelconIndex = 100;
+		const _contractParamMint5PixelconIndex = 651;
 		const _contractParamMint6PixelconIndex = 100;
 		const _contractParamGenerationSeed = '';
 		const _maxFilterParamSize = 100;

@@ -24,12 +24,12 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	
 	// Constants
 	uint64 constant MAX_TOKENS = 1000;
-	uint64 constant MINT1_PIXELCON_INDEX = 1217;
-	uint64 constant MINT2_PIXELCON_INDEX = 792;
-	uint64 constant MINT3_PIXELCON_INDEX = 704;
+	uint64 constant MINT1_PIXELCON_INDEX = 1217;//before 2022
+	uint64 constant MINT2_PIXELCON_INDEX = 792; //before 2021
+	uint64 constant MINT3_PIXELCON_INDEX = 714; //before 2020
 	uint64 constant MINT4_PIXELCON_INDEX = 651;
-	uint64 constant MINT5_PIXELCON_INDEX = 100;
-	uint64 constant MINT6_PIXELCON_INDEX = 100;
+	uint64 constant MINT5_PIXELCON_INDEX = 651; //genesis
+	uint64 constant MINT6_PIXELCON_INDEX = 100; //first 100
 	
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,8 +64,8 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	 * @dev Contract constructor
 	 */
 	constructor(address pixelconsContract, address l1CrossDomainMessenger) CrossDomainEnabled(l1CrossDomainMessenger) Ownable() {
-		require(pixelconsContract != address(0), "Invalid address");
-		require(l1CrossDomainMessenger != address(0), "Invalid address");
+		//require(pixelconsContract != address(0), "Invalid address"); //unlikely
+		//require(l1CrossDomainMessenger != address(0), "Invalid address"); //unlikely
 		_pixelconsContract = pixelconsContract;
 		_pixelconInvadersContract = address(0);
 		_generationSeed = uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), block.difficulty)));
@@ -76,8 +76,8 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	 * @param pixelconInvadersContract -Invader contract address
 	 */
 	function linkInvadersContract(address pixelconInvadersContract) public onlyOwner {
-		require(pixelconInvadersContract != address(0), "Invalid address");
-		require(_pixelconInvadersContract == address(0), "Contract already set");
+		//require(pixelconInvadersContract != address(0), "Invalid address"); //unlikely
+		require(_pixelconInvadersContract == address(0), "Already set");
 		_pixelconInvadersContract = pixelconInvadersContract;
 	}
 
@@ -92,14 +92,14 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	
 	/**
 	 * @dev Mint an Invader
-	 * @param pixelconId -ID of the pixelcon to generate from
+	 * @param pixelconId -ID of the PixelCon to generate from
 	 * @param generationIndex -Index number to generate from
 	 * @param gasLimit -Amount of gas for messenger (advise to keep <=1900000)
 	 * @return ID of the new invader
 	 */
 	function mintInvader(uint256 pixelconId, uint32 generationIndex, uint32 gasLimit) public returns (uint256) {
-		require(generationIndex == 0 || generationIndex == 1 || generationIndex == 2 || generationIndex == 3 || generationIndex == 4 || generationIndex == 5, "Invalid index");
-		require(pixelconId != uint256(0), "Invalid ID");
+		//require(pixelconId != uint256(0), "Invalid ID"); //duplicate require in 'ownerOf' function
+		require(generationIndex < 6, "Invalid index");
 		address minter = _msgSender();
 		
 		//check that minter owns the pixelcon
@@ -135,23 +135,23 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	
 	/**
 	 * @dev Bridge an Invader to L2
-	 * @param tokenId -ID of the invader to bridge
-	 * @param from -Address of current invader pixelcon owner
-	 * @param to -Address of desired invader owner
+	 * @param tokenId -ID of the Invader to bridge
+	 * @param from -Address of current Invader PixelCon owner
+	 * @param to -Address of desired Invader owner
 	 * @param gasLimit -Amount of gas for messenger (advise to keep <=1900000)
 	 */
 	function bridgeToL2(uint256 tokenId, address from, address to, uint32 gasLimit) public {
-		require(tokenId != uint256(0), "Invalid ID");
-		require(from != address(0), "Invalid address");
+		//require(tokenId != uint256(0), "Invalid ID"); //duplicate require in 'ownerOf' function
+		//require(from != address(0), "Invalid address"); //duplicate require in 'transferFrom' function
 		require(to != address(0), "Invalid address");
 		
 		//check that caller owns the pixelcon
 		address pixelconOwner = IPixelCons(_pixelconsContract).ownerOf(tokenId);
-		require(pixelconOwner == _msgSender(), "Not PixelCon owner");
+		require(pixelconOwner == _msgSender(), "Not owner");
 		
-		//check that the invader was created by this contract
+		//check that the pixelcon was created by this contract
 		address pixelconCreator = IPixelCons(_pixelconsContract).creatorOf(tokenId);
-		require(pixelconCreator == address(this), "Not an Invader");
+		require(pixelconCreator == address(this), "Not Invader");
 		
 		//transfer pixelcon to this contract
 		IPixelCons(_pixelconsContract).transferFrom(from, address(this), tokenId);
@@ -166,8 +166,8 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	 * @param to -New owner address
 	 */
 	function unbridgeFromL2(uint256 tokenId, address to) external onlyFromCrossDomainAccount(_pixelconInvadersContract) {
-		require(tokenId != uint256(0), "Invalid ID");
-		require(to != address(0), "Invalid address");
+		//require(tokenId != uint256(0), "Invalid ID"); //duplicate require in 'transferFrom' function
+		//require(to != address(0), "Invalid address"); //duplicate require in 'transferFrom' function
 		
 		//transfer
 		IPixelCons(_pixelconsContract).transferFrom(address(this), to, tokenId);
@@ -189,7 +189,7 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	
 	/**
      * @dev Bridges the Invader to L2
-	 * @param tokenId -ID of the invader
+	 * @param tokenId -ID of the Invader
 	 * @param to -The address to receive the Invader
 	 * @param gasLimit -Amount of gas for messenger
 	 */
@@ -208,8 +208,8 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	/**
-	 * @notice Generates an Invader from a pixelconId and generation index
-	 * @param pixelconId -The pixelcon id to use in generation
+	 * @dev Generates an Invader from a PixelCon ID and generation index
+	 * @param pixelconId -The PixelCon ID to use in generation
 	 * @param generationIndex -The index to use in generation
 	 * @return Invader ID
 	 */
@@ -244,7 +244,7 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	}
 	
 	/**
-	 * @notice Generates an 8x8 mask
+	 * @dev Generates an 8x8 mask
 	 * @param seed -Randomness for generation
 	 * @return 256bit mask
 	 */
@@ -261,7 +261,7 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	}
 	
 	/**
-	 * @notice Generates a single line for 8x8 mask
+	 * @dev Generates a single line for 8x8 mask
 	 * @param seed -Randomness for generation
 	 * @return 256bit mask line
 	 */
@@ -275,7 +275,7 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	}
 	
 	/**
-	 * @notice Generates an 5x5 mask
+	 * @dev Generates an 5x5 mask
 	 * @param seed -Randomness for generation
 	 * @param verticalExpand -Flag for vertical expand mode
 	 * @param horizontalExpand -Flag for horizontal expand mode
@@ -297,7 +297,7 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	}
 	
 	/**
-	 * @notice Generates a single line for 5x5 mask
+	 * @dev Generates a single line for 5x5 mask
 	 * @param seed -Randomness for generation
 	 * @param horizontalExpand -Flag for horizontal expand mode
 	 * @return 256bit mask line
@@ -316,7 +316,7 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	}
 
 	/**
-	 * @notice Gets colors for generation
+	 * @dev Gets colors for generation
 	 * @param seed -Randomness for generation
 	 * @return 256bit color templates
 	 */
