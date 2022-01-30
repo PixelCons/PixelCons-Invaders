@@ -117,12 +117,15 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 		address from = tokenData.owner;
 		require(from == address(0) || from == address(this), "Invalid state");
 		
-		//new invader?
-		if(tokenData.owner == address(0)) {
+		if(from == address(0)) {
+			//new invader
 			tokenData.index = uint64(_tokens.length);
 			_tokens.push(tokenId);
-			
 			emit Mint(tokenId, tokenData.index, to);
+			
+		} else {
+			//existing invader
+			_ownerBalance[from] -= 1;
 		}
 		
 		//transfer invader ownership
@@ -136,18 +139,20 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	/**
 	 * @dev Unbridge an Invader PixelCon to L1
 	 * @param tokenId -ID of the invader to unbridge
-	 * @param from -Address of current invader owner
 	 * @param to -Address of desired invader pixelcon owner
 	 * @param gasLimit -Amount of gas for messenger
 	 */
-	function unbridgeToL1(uint256 tokenId, address from, address to, uint32 gasLimit) public {
+	function unbridgeToL1(uint256 tokenId, address to, uint32 gasLimit) public {
 		require(tokenId != uint256(0), "Invalid ID");
-		require(from != address(0), "Invalid address");
 		require(to != address(0), "Invalid address");
-		TokenData storage tokenData = _tokenData[tokenId];
 		
-		//check that caller owns the pixelcon
-		require(tokenData.owner == _msgSender(), "Not Invader owner");
+		//check valid invader
+		TokenData storage tokenData = _tokenData[tokenId];
+		address from = tokenData.owner;
+		require(from != address(0), "Does not exist");
+		
+		//check that caller owns the invader
+		require(from == _msgSender(), "Not owner");
 		
 		//transfer invader to this contract
 		_transfer(from, address(this), tokenId);
@@ -170,6 +175,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	 * @return Token ID
      */
 	function tokenByIndex(uint64 tokenIndex) public view returns (uint256) {
+		require(tokenIndex < _tokens.length, "Does not exist");
 		return _tokens[tokenIndex];
 	}
 	
@@ -179,7 +185,9 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	 * @return Token index
      */
 	function indexByToken(uint256 tokenId) public view returns (uint64) {
-		return _tokenData[tokenId].index;
+		TokenData storage tokenData = _tokenData[tokenId];
+		require(tokenData.owner != address(0), "Does not exist");
+		return tokenData.index;
 	}	
 	
 	////////////////// Web3 Only //////////////////
@@ -253,7 +261,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
      */
     function ownerOf(uint256 tokenId) public view override returns (address) {
 		address owner = _tokenData[tokenId].owner;
-        require(owner != address(0), "Token does not exist");
+        require(owner != address(0), "Does not exist");
         return owner;
     }
 	
@@ -273,7 +281,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
      */
     function getApproved(uint256 tokenId) public view override returns (address) {
 		address owner = _tokenData[tokenId].owner;
-        require(owner != address(0), "Token does not exist");
+        require(owner != address(0), "Does not exist");
         return _tokenApprovals[tokenId];
     }
 
@@ -310,7 +318,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     function transferFrom_opt(uint256 addressTo_tokenIndex) public {
 		address from = address(0x0000000000000000000000000000000000000000);
 		address to = address(uint160((addressTo_tokenIndex & 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000) / (2 ** (8*12))));
-		uint256 tokenId = _tokens[uint64(addressTo_tokenIndex & 0x000000000000000000000000000000000000000000000000ffffffffffffffff)];
+		uint256 tokenId = tokenByIndex(uint64(addressTo_tokenIndex & 0x000000000000000000000000000000000000000000000000ffffffffffffffff));
 		return transferFrom(from, to, tokenId);
     }
 
@@ -330,7 +338,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     function safeTransferFrom_opt(uint256 addressTo_tokenIndex, bytes memory data_p) public {
 		address from = address(0x0000000000000000000000000000000000000000);
 		address to = address(uint160((addressTo_tokenIndex & 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000) / (2 ** (8*12))));
-		uint256 tokenId = _tokens[uint64(addressTo_tokenIndex & 0x000000000000000000000000000000000000000000000000ffffffffffffffff)];
+		uint256 tokenId = tokenByIndex(uint64(addressTo_tokenIndex & 0x000000000000000000000000000000000000000000000000ffffffffffffffff));
 		return safeTransferFrom(from, to, tokenId, data_p);
     }
 
@@ -374,7 +382,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
 		TokenData storage tokenData = _tokenData[tokenId];
-		require(tokenData.owner != address(0), "Invader does not exist");		
+		require(tokenData.owner != address(0), "Token does not exist");		
 
 		//Available values: <tokenId>, <tokenIndex>, <owner>
 
@@ -421,6 +429,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
      */
     function _transfer(address from, address to, uint256 tokenId) private {
 		TokenData storage tokenData = _tokenData[tokenId];
+		require(from == address(0) || from == tokenData.owner, "Invalid from address");
 		from = tokenData.owner;
 		
         //clear approvals
@@ -439,6 +448,24 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     }
 	
     /**
+     * @dev Returns true if account is a contract.
+     * @param account -Account address
+     * @return True if account is a contract
+     */
+    function _isContract(address account) private view returns (bool) {
+        // This method relies on extcodesize, which returns 0 for contracts in
+        // construction, since the code is only stored at the end of the
+        // constructor execution.
+
+        uint256 size;
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            size := extcodesize(account)
+        }
+        return size > 0;
+    }
+	
+    /**
      * @dev Function to invoke {IERC721Receiver-onERC721Received} on a target address
      * @param from -Address representing the previous owner of the given token ID
      * @param to -Target address that will receive the tokens
@@ -447,18 +474,22 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
      * @return True if the call correctly returned the expected magic value
      */
     function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data) private returns (bool) {
-		try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (bytes4 retval) {
-			return retval == IERC721Receiver(to).onERC721Received.selector;
-		} catch (bytes memory reason) {
-			if (reason.length == 0) {
-				revert("Cannot transfer to non ERC721Receiver implementer");
-			} else {
-				// solhint-disable-next-line no-inline-assembly
-				assembly {
-					revert(add(32, reason), mload(reason))
-				}
-			}
-		}
+        if (_isContract(to)) {
+            try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (bytes4 retval) {
+                return retval == IERC721Receiver(to).onERC721Received.selector;
+            } catch (bytes memory reason) {
+                if (reason.length == 0) {
+					revert("Cannot transfer to non ERC721Receiver implementer");
+                } else {
+                    // solhint-disable-next-line no-inline-assembly
+                    assembly {
+                        revert(add(32, reason), mload(reason))
+                    }
+                }
+            }
+        } else {
+            return true;
+        }
     }
 	
 	/**
