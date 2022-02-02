@@ -27,7 +27,7 @@ async function getMetadata(invaderId, params) {
 		"image": appWebDomain + "meta/image/" + id,
 		"image_url": appWebDomain + "meta/image/" + id,
 		"external_url": appWebDomain + "details/" + index,
-		"home_url": appWebDomain + "details/" + index,
+		"home_url": appWebDomain + "details/" + index + '?id=' + id,
 		"background_color": '000000',
 		"color": '000000',
 		"attributes": [{

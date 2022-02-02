@@ -21,7 +21,7 @@ const appWebStatic = 'https://invaders.pixelcons.io/';
 const contractAddress = '0x5536b6aadd29eaf0db112bb28046a5fad3761bd4';
 
 /* Redirect link for opensea */
-const openseaLink = '';
+const openseaLink = 'https://invaders.pixelcons.io/';
 
 /* Opensea API key */
 const openseaApiKey = '';

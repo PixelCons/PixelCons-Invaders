@@ -495,7 +495,7 @@
 				let chainId = web3Service.getMainNetwork(_primaryNetworkIndex).chainId;
 				contract = await web3Service.getContract(_bridgeContractPath, chainId);
 			}
-			generationSeed = web3Service.to256Hex(await contract.errRetry.generationSeed());
+			generationSeed = web3Service.to256Hex(await contract.errRetry.getGenerationSeed());
 			return generationSeed;
 		}
 		

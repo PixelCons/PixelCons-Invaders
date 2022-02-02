@@ -354,11 +354,7 @@ div.invadersMintPage div.error {
 	background-color: #80808093;
 }
 div.invadersMintPage div.noInvaders {
-	position: absolute;
-	text-align: center;
-	left: 50%;
-	top: 50%;
-	margin: -100px -100px;
+	margin: 50px auto;
 	width: 200px;
 	height: 20px;
 	padding: 15px;

@@ -5,11 +5,9 @@
 const settings = require('./settings.js');
 const webdata = require('./webdata.js');
 const png = require('fast-png');
-const qrcode = require('qrcode');
 
 // Settings
 const appWebStatic = settings.appWebStatic;
-const qrCodeImageLink = settings.appWebDomain + 'details/';
 const standardImageScaleMultiplier = 2;
 
 // Data
@@ -17,7 +15,7 @@ var backgroundImages = {};
 
 // Gets the standard PNG for the given invader id
 async function getStandardImage(invaderId, index) {
-	const invaderBorder = 4 * standardImageScaleMultiplier;
+	const invaderBorder = 3 * standardImageScaleMultiplier;
 	const invaderScale = 14 * standardImageScaleMultiplier;
 	
 	let id = formatId(invaderId);
@@ -106,24 +104,6 @@ function drawSquare(dataArray, arrayW, arrayH, x, y, w, h, color) {
 			dataArray[index+2] = color[2];
 		}
 	}
-}
-function drawQrCode(dataArray, arrayW, arrayH, x, y, s, str, color) {
-	if(!color) color = [0, 0, 0];
-	let qr = qrcode.create(str, {
-		errorCorrectionLevel: 'low'
-	});
-	let size = qr.modules.size;
-	let data = qr.modules.data;
-	for(let x2=0; x2<size; x2++) {
-		for(let y2=0; y2<size; y2++) {
-			if(data[y2*size + x2]) {
-				drawSquare(dataArray, arrayW, arrayH, x + x2*s, y + y2*s, s, s, color);
-			}
-		}
-	}
-}
-function drawQrCode_b(dataArray, arrayW, arrayH, x, y, s, str, color) {
-	drawQrCode(dataArray, arrayW, arrayH, x, arrayH - (y + 25*s), s, str, color);
 }
 function drawInvaderShadow(dataArray, arrayW, arrayH, x, y, s, w, id) {
 	for(let i=0; i<id.length; i++) {
