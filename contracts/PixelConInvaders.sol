@@ -2,11 +2,12 @@
 
 pragma solidity ^0.8.9;
 
-import "./openzeppelin/Ownable.sol";
-import "./openzeppelin/ERC165.sol";
+import "./openzeppelin/IERC165.sol";
 import "./openzeppelin/IERC721.sol";
 import "./openzeppelin/IERC721Receiver.sol";
+import "./openzeppelin/IERC721Enumerable.sol";
 import "./openzeppelin/IERC721Metadata.sol";
+import "./openzeppelin/Ownable.sol";
 import "./openzeppelin/Strings.sol";
 import "./optimism/CrossDomainEnabled.sol";
 
@@ -20,7 +21,7 @@ import "./optimism/CrossDomainEnabled.sol";
  * See (https://github.com/OpenZeppelin/openzeppelin-solidity)
  * @author PixelCons
  */
-contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC721Metadata {
+contract PixelConInvaders is Ownable, CrossDomainEnabled, IERC165, IERC721, IERC721Enumerable, IERC721Metadata {
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////// Structs/Constants /////////////////////////////////////////////////////////////////
@@ -29,7 +30,8 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	// Data storage structures
 	struct TokenData {
 		address owner;
-		uint64 index;
+		uint32 ownerIndex;
+		uint32 index;
 	}
 	
 	
@@ -45,6 +47,9 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 
 	// Mapping from owner address to balance
 	mapping(address => uint256) internal _ownerBalance;
+	
+    // Mapping from owner to list of owned token IDs
+    mapping(address => mapping(uint256 => uint256)) private _ownerTokens;
 
 	// Mapping from token ID to approved address
 	mapping(uint256 => address) internal _tokenApprovals;
@@ -67,7 +72,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Invader token events
-	event Mint(uint256 indexed invaderId, uint64 indexed invaderIndex, address to);
+	event Mint(uint256 indexed invaderId, uint32 indexed invaderIndex, address to);
 	event Bridge(uint256 indexed invaderId, address to);
 	event Unbridge(uint256 indexed invaderId, address to);
 
@@ -117,20 +122,32 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 		address from = tokenData.owner;
 		require(from == address(0) || from == address(this), "Invalid state");
 		
+		//new invader
 		if(from == address(0)) {
-			//new invader
-			tokenData.index = uint64(_tokens.length);
+			tokenData.index = uint32(_tokens.length);
+			tokenData.owner = to;
 			_tokens.push(tokenId);
+			
+			//update enumeration
+			_addTokenToOwnerEnumeration(to, tokenId);
+			
+			//update user balance
+			_ownerBalance[to] += 1;
+			
 			emit Mint(tokenId, tokenData.index, to);
 			
+		//existing invader
 		} else {
-			//existing invader
-			_ownerBalance[from] -= 1;
-		}
+			tokenData.owner = to;
 		
-		//transfer invader ownership
-		_ownerBalance[to] += 1;
-		tokenData.owner = to;
+			//update enumeration
+			_removeTokenFromOwnerEnumeration(from, tokenId);
+			_addTokenToOwnerEnumeration(to, tokenId);
+			
+			//update user balances
+			_ownerBalance[from] -= 1;
+			_ownerBalance[to] += 1;
+		}
 		
         emit Transfer(from, to, tokenId);
 		emit Bridge(tokenId, to);
@@ -162,33 +179,12 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 	}
 	
     /**
-     * @dev Returns the total amount of tokens
-	 * @return Total amount of tokens
+     * @dev Returns linked PixelconInvadersBridge contract
+	 * @return PixelconInvadersBridge contract
      */
-    function totalSupply() public view returns (uint256) {
-        return _tokens.length;
+    function getPixelconInvadersBridgeContract() public view returns (address) {
+        return _pixelconInvadersBridgeContract;
     }
-	
-    /**
-     * @dev Returns the token ID from the given index
-	 * @param tokenIndex -The token index
-	 * @return Token ID
-     */
-	function tokenByIndex(uint64 tokenIndex) public view returns (uint256) {
-		require(tokenIndex < _tokens.length, "Does not exist");
-		return _tokens[tokenIndex];
-	}
-	
-    /**
-     * @dev Returns the token index from the given ID
-	 * @param tokenId -The token ID
-	 * @return Token index
-     */
-	function indexByToken(uint256 tokenId) public view returns (uint64) {
-		TokenData storage tokenData = _tokenData[tokenId];
-		require(tokenData.owner != address(0), "Does not exist");
-		return tokenData.index;
-	}	
 	
 	////////////////// Web3 Only //////////////////
 
@@ -242,10 +238,11 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view override(ERC165, IERC165) returns (bool) {
-        return interfaceId == type(IERC721).interfaceId
+    function supportsInterface(bytes4 interfaceId) public pure override returns (bool) {
+        return interfaceId == type(IERC165).interfaceId
+			|| interfaceId == type(IERC721).interfaceId
             || interfaceId == type(IERC721Metadata).interfaceId
-            || super.supportsInterface(interfaceId);
+            || interfaceId == type(IERC721Enumerable).interfaceId;
     }
 
     /**
@@ -318,7 +315,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     function transferFrom_opt(uint256 addressTo_tokenIndex) public {
 		address from = address(0x0000000000000000000000000000000000000000);
 		address to = address(uint160((addressTo_tokenIndex & 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000) >> (8*12)));
-		uint256 tokenId = tokenByIndex(uint64(addressTo_tokenIndex & 0x000000000000000000000000000000000000000000000000ffffffffffffffff));
+		uint256 tokenId = tokenByIndex(uint32(addressTo_tokenIndex & 0x00000000000000000000000000000000000000000000000000000000ffffffff));
 		return transferFrom(from, to, tokenId);
     }
 
@@ -338,7 +335,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     function safeTransferFrom_opt(uint256 addressTo_tokenIndex, bytes memory data_p) public {
 		address from = address(0x0000000000000000000000000000000000000000);
 		address to = address(uint160((addressTo_tokenIndex & 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000) >> (8*12)));
-		uint256 tokenId = tokenByIndex(uint64(addressTo_tokenIndex & 0x000000000000000000000000000000000000000000000000ffffffffffffffff));
+		uint256 tokenId = tokenByIndex(uint32(addressTo_tokenIndex & 0x00000000000000000000000000000000000000000000000000000000ffffffff));
 		return safeTransferFrom(from, to, tokenId, data_p);
     }
 
@@ -382,7 +379,7 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
 		TokenData storage tokenData = _tokenData[tokenId];
-		require(tokenData.owner != address(0), "Token does not exist");		
+		require(tokenData.owner != address(0), "Does not exist");		
 
 		//Available values: <tokenId>, <tokenIndex>, <owner>
 
@@ -395,6 +392,46 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
     }
 	
 
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////// ERC-721 Enumerable Implementation //////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+    /**
+     * @dev See {IERC721Enumerable-totalSupply}.
+     */
+    function totalSupply() public view override returns (uint256) {
+        return _tokens.length;
+    }
+	
+    /**
+     * @dev See {IERC721Enumerable-tokenByIndex}.
+     */
+	function tokenByIndex(uint256 tokenIndex) public view override returns (uint256) {
+		require(tokenIndex < _tokens.length, "Does not exist");
+		return _tokens[tokenIndex];
+	}
+	
+    /**
+     * @dev Returns the token index from the given ID
+	 * @param tokenId -The token ID
+	 * @return Token index
+     */
+	function indexByToken(uint256 tokenId) public view returns (uint256) {
+		TokenData storage tokenData = _tokenData[tokenId];
+		require(tokenData.owner != address(0), "Does not exist");
+		return uint256(tokenData.index);
+	}
+	
+    /**
+     * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
+     */
+    function tokenOfOwnerByIndex(address owner, uint256 index) public view override returns (uint256) {
+        require(owner != address(0), "Invalid address");
+        require(index < _ownerBalance[owner], "Invalid index");
+        return _ownerTokens[owner][index];
+    }
+	
+	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////// Utils ////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -436,6 +473,10 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 		if(_tokenApprovals[tokenId] != address(0)) {
 			_approve(tokenData.owner, address(0), tokenId);
 		}
+		
+		//update enumeration
+        _removeTokenFromOwnerEnumeration(from, tokenId);
+        _addTokenToOwnerEnumeration(to, tokenId);
 		
 		//update user balances
 		_ownerBalance[from] -= 1;
@@ -506,4 +547,39 @@ contract PixelConInvaders is Ownable, CrossDomainEnabled, ERC165, IERC721, IERC7
 		sendCrossDomainMessage(_pixelconInvadersBridgeContract, gasLimit, message);
 		emit Unbridge(tokenId, to);
 	}
+	
+    /**
+     * @dev Private function to add a token to the ownership tracking data structures
+     * @param to -Address representing the new owner of the given Invader ID
+     * @param tokenId -ID of the Invader to be added to the tokens list of the given address
+     */
+    function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
+        uint256 newIndex = _ownerBalance[to];
+        _ownerTokens[to][newIndex] = tokenId;
+		_tokenData[tokenId].ownerIndex = uint32(newIndex);
+    }
+
+    /**
+     * @dev Private function to remove a token from this extension's ownership-tracking data structures
+     * @param from -Address representing the previous owner of the given Invader ID
+     * @param tokenId -ID of the Invader to be removed from the tokens list of the given address
+     */
+    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
+        // To prevent a gap in from's tokens array, we store the last token in the index of the token to delete, and
+        // then delete the last slot (swap and pop)
+        uint256 lastTokenIndex = _ownerBalance[from] - 1;
+        uint256 tokenIndex = uint256(_tokenData[tokenId].ownerIndex);
+
+        // When the token to delete is the last token, the swap operation is unnecessary
+        if (tokenIndex != lastTokenIndex) {
+            uint256 lastTokenId = _ownerTokens[from][lastTokenIndex];
+
+            _ownerTokens[from][tokenIndex] = lastTokenId; // Move the last token to the slot of the to-delete token
+            _tokenData[lastTokenId].ownerIndex = uint32(tokenIndex); // Update the moved token's index
+        }
+
+        // This also deletes the contents at the last position of the array
+		//_tokenData[tokenId].ownerIndex = uint32(0); //set in subsequent _addTokenToOwnerEnumeration
+        delete _ownerTokens[from][lastTokenIndex];
+    }
 }

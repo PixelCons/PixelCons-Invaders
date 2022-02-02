@@ -161,8 +161,8 @@ describe('PixelCon Invaders', () => {
 			errorText = "Failed to transfer token";
 			await expectToNotBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).transferFrom(l2Addresses[0], l2Addresses[1], invaders[2].id, defaultGasParams), str(errorText));
 			await expectToNotBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0])['safeTransferFrom(address,address,uint256)'](l2Addresses[0], l2Addresses[1], invaders[9].id, defaultGasParams), str(errorText));
-			await expectToNotBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[1]).transferFrom(emptyAddress/*l2Addresses[1]*/, l2Addresses[4], invaders[2].id, defaultGasParams), str(errorText));
-			await expectToNotBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[1])['safeTransferFrom(address,address,uint256)'](emptyAddress/*l2Addresses[1]*/, l2Addresses[4], invaders[11].id, defaultGasParams), str(errorText));
+			await expectToNotBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[1]).transferFrom(emptyAddress, l2Addresses[4], invaders[2].id, defaultGasParams), str(errorText));
+			await expectToNotBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[1])['safeTransferFrom(address,address,uint256)'](emptyAddress, l2Addresses[4], invaders[11].id, defaultGasParams), str(errorText));
 			
 			errorText = "Failed check transfer";
 			expect(await pixelconInvadersContract.ownerOf(invaders[0].id), str(errorText)).to.equal(l2Addresses[0]);
@@ -300,9 +300,52 @@ describe('PixelCon Invaders', () => {
 		});
 	});
 	
-	
-	
-	
+	// Check Owner Enumeration
+	describe('owner enumeration', () => {
+		it('should report owner of', async () => {
+			errorText = "Owner of was not as expected";
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).ownerOf(invaders[0].id), str(errorText)).to.equal(l2Addresses[0]);
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).ownerOf(invaders[1].id), str(errorText)).to.equal(l2Addresses[4]);
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).ownerOf(invaders[8].id), str(errorText)).to.equal(l2Addresses[4]);
+		});
+		
+		it('should report balance of', async () => {
+			errorText = "Balance of was not as expected";
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).balanceOf(l2Addresses[0]), str(errorText)).to.equal(6);
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).balanceOf(l2Addresses[4]), str(errorText)).to.equal(4);
+		});
+		
+		it('should report token of owner by index', async () => {
+			errorText = "Token of owner by index was not as expected";
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).tokenOfOwnerByIndex(l2Addresses[0], 0), str(errorText)).to.equal(invaders[7].id);
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).tokenOfOwnerByIndex(l2Addresses[0], 1), str(errorText)).to.equal(invaders[5].id);
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).tokenOfOwnerByIndex(l2Addresses[0], 2), str(errorText)).to.equal(invaders[6].id);
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).tokenOfOwnerByIndex(l2Addresses[0], 3), str(errorText)).to.equal(invaders[3].id);
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).tokenOfOwnerByIndex(l2Addresses[0], 4), str(errorText)).to.equal(invaders[4].id);
+			expect(await pixelconInvadersContract.connect(l2Accounts[0]).tokenOfOwnerByIndex(l2Addresses[0], 5), str(errorText)).to.equal(invaders[0].id);
+		});
+		
+		it('should not report bad owner of', async () => {
+			errorText = "Was able to get owner of token with invalid id";
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).ownerOf(emptyID), str(errorText));
+			
+			errorText = "Was able to get owner of token with id that doesnt exist";
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).ownerOf(falseID), str(errorText));
+		});
+		
+		it('should not report bad balance of', async () => {
+			errorText = "Was able to check balance of an invalid address";
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).balanceOf(emptyAddress), str(errorText));
+		});
+		
+		it('should not report bad token of owner by index', async () => {
+			errorText = "Was able to get token id by index for owner with invalid address";
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).tokenOfOwnerByIndex(emptyAddress, 0), str(errorText));
+			
+			errorText = "Was able to get token id by index for owner with invalid index";
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).tokenOfOwnerByIndex(l2Addresses[0], invaders.length), str(errorText));
+		});
+	});
 	
 	// Check Admin Functions
 	describe('admin functions', () => {

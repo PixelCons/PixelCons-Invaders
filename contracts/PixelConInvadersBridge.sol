@@ -178,8 +178,24 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
      * @dev Returns the current seed used in generation
 	 * @return Current generation seed
      */
-    function generationSeed() public view returns (uint256) {
+    function getGenerationSeed() public view returns (uint256) {
         return _generationSeed;
+    }
+	
+    /**
+     * @dev Returns linked Pixelcons contract
+	 * @return Pixelcons contract
+     */
+    function getPixelconsContract() public view returns (address) {
+        return _pixelconsContract;
+    }
+	
+    /**
+     * @dev Returns linked PixelconInvaders contract
+	 * @return PixelconInvaders contract
+     */
+    function getPixelconInvadersContract() public view returns (address) {
+        return _pixelconInvadersContract;
     }
 	
 

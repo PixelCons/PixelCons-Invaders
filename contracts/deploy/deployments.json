@@ -31,17 +31,17 @@
     "contracts": [
       {
         "name": "PixelCons",
-        "address": "0x4B7A67F97Dc9afdC0B5132A37c80919656E684D3",
-        "transactionHash": "0xbd29de964e2c303f8ddc0c0da452cc844e1776b521143cab853d06b02ebbb342",
-        "blockHash": "0x0b7c2e081d45d976caf14a5f8b7ef82a59b3eb12352af48528a6f1f79bb5052a",
-        "blockNumber": "8493"
+        "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
+        "transactionHash": "0x73e783b9dc0e3751ddadde454cf8a252f22db5c9a20cfdcf54a7062a976c5d8d",
+        "blockHash": "0xdcd6e5c8832bbe0aba951f70b1246586312c9feb1ddbe34ce70955eb5af4c14a",
+        "blockNumber": "41"
       },
       {
         "name": "PixelConInvadersBridge",
-        "address": "0xfD4bBe12BAAa080A42c059039E99798e31789849",
-        "transactionHash": "0x8a9a8c1fcd9833d4e296cdaa0d0d4a9a7d98391d366f7a022b4ea9fbd9067b97",
-        "blockHash": "0x581962c3f266cd2d3a75efbc033fc3a51d55afdf95688f04fd720a7d9a92abea",
-        "blockNumber": "8494"
+        "address": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+        "transactionHash": "0xd0784ddf7bb0e414a264777b3681ed2a6829b54d95bc1a9ccb29eda6780bc4ef",
+        "blockHash": "0xe7a74192ead8f27126302ec9cb8139b11f1754440fd17ab8ec6ec3e68213d94d",
+        "blockNumber": "42"
       }
     ]
   },
@@ -51,10 +51,10 @@
     "contracts": [
       {
         "name": "PixelConInvaders",
-        "address": "0xE8addD62feD354203d079926a8e563BC1A7FE81e",
-        "transactionHash": "0xac96013244b3eea76d5ed69e90bc084b73272abf51d9eb786db4ad2410b5d2ce",
-        "blockHash": "0xafe84c7c847ac3f732768295faa90ef321698e42a886c8d66891dc9a677d5522",
-        "blockNumber": "3545"
+        "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+        "transactionHash": "0xaeadd6fb2c29f1f1cd995d29adf84fb41746e957cf7c2399c6b72b546a100d1f",
+        "blockHash": "0xb616372a48154f5055858f3013844749d402bc74a56d74138075185e035286f8",
+        "blockNumber": "21"
       }
     ]
   }
