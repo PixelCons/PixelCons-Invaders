@@ -33,6 +33,7 @@
 				await web3Service.awaitState(true);
 				let invader = await coreContract.fetchInvader($routeParams.index);
 				_this.invader = addInvaderImageData(invader);
+				_this.marketLink = market.getItemLink(_this.invader.id);
 				$location.search('id', _this.invader.id).replace();
 				
 				//set planet image

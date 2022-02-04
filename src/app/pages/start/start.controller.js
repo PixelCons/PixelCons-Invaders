@@ -8,9 +8,6 @@
 		_this.setStepTab = setStepTab;
 		_this.checkHowToSectionExpanded = checkHowToSectionExpanded;
 		_this.toggleHowToSection = toggleHowToSection;
-		_this.marketName = market.getMarketName();
-		_this.marketLink = market.getMarketLink();
-		_this.marketAccountLink = market.getAccountLink();
 
 		// Watch for screen size changes
 		_this.screenSize = {};
@@ -31,7 +28,6 @@
 					scale: 6
 				}).toDataURL();
 			}
-			_this.marketAccountLink = market.getAccountLink(activeAccount);
 
 			let hasWeb3 = state != "not_enabled" && !web3Service.isReadOnly();
 			let isMobileOrTablet = checkMobileOrTablet();
