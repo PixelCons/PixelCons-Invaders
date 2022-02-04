@@ -98,11 +98,12 @@ describe('PixelCon Invaders', () => {
 			}
 		});
 		it('should not allow minting from invalid pixelcons', async () => {
+			errorText = "Was able to mint invader from invalid pixelcon";
 			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader(emptyID, 0, 1900000, defaultGasParams), str(errorText)).to.be.revertedWith('Invalid ID');
 			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader(falseID, 0, 1900000, defaultGasParams), str(errorText)).to.be.revertedWith('PixelCon does not exist');
 		});
 		it('should not allow minting from bad index', async () => {
-			errorText = "Was able to mint invader from unowned pixelcon";
+			errorText = "Was able to mint invader with bad index";
 			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[9], 100, 1900000, defaultGasParams), str(errorText)).to.be.revertedWith('Invalid index');
 			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[655], 4, 1900000, defaultGasParams), str(errorText)).to.be.revertedWith('Index out of bounds');
 			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).mintInvader('0x'+pixelconDataIds[1000], 2, 1900000, defaultGasParams), str(errorText)).to.be.revertedWith('Index out of bounds');
@@ -296,7 +297,7 @@ describe('PixelCon Invaders', () => {
 		
 		it('should not allow unsafe transfer', async () => {
 			errorText = "Was able to safe transfer to a not safe address";
-			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0])['safeTransferFrom(address,address,uint256)'](l2Addresses[0], notReceiverContract.address, invaders[0].id), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0])['safeTransferFrom(address,address,uint256)'](l2Addresses[0], notReceiverContract.address, invaders[0].id, defaultGasParams), str(errorText));
 		});
 	});
 	
@@ -344,6 +345,54 @@ describe('PixelCon Invaders', () => {
 			
 			errorText = "Was able to get token id by index for owner with invalid index";
 			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).tokenOfOwnerByIndex(l2Addresses[0], invaders.length), str(errorText));
+		});
+	});
+	
+	// Check Bridge functiond
+	describe('token bridging', () => {
+		it('should not allow incorrect L1 bridge access', async () => {
+			errorText = "Was able to access L1 bridge function";
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).bridgeToL2('0x'+pixelconDataIds[6], l1Addresses[0], emptyAddress, 1900000, defaultGasParams), str(errorText)).to.be.revertedWith('Invalid address');
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).bridgeToL2('0x'+pixelconDataIds[6], emptyAddress, l1Addresses[0], 1900000, defaultGasParams), str(errorText)).to.be.revertedWith('Not Invader');
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).bridgeToL2(invaders[0].id, emptyAddress, l1Addresses[0], 1900000, defaultGasParams), str(errorText)).to.be.revertedWith('Not owner');
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).bridgeToL2(emptyID, l1Addresses[0], l1Addresses[0], 1900000, defaultGasParams), str(errorText)).to.be.reverted;
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).bridgeToL2(invaders[0].id, l1Addresses[0], l1Addresses[0], 1900000, defaultGasParams), str(errorText)).to.be.revertedWith('Not owner');
+			
+			errorText = "Was able to access L1 unbridge function";
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).unbridgeFromL2(invaders[0].id, l1Addresses[0], defaultGasParams), str(errorText)).to.be.reverted;
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).unbridgeFromL2(invaders[1].id, emptyAddress, defaultGasParams), str(errorText)).to.be.reverted;
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[0]).unbridgeFromL2(emptyID, l1Addresses[0], defaultGasParams), str(errorText)).to.be.reverted;
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[1]).unbridgeFromL2(invaders[1].id, l1Addresses[1], defaultGasParams), str(errorText)).to.be.reverted;
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[2]).unbridgeFromL2(invaders[2].id, l1Addresses[2], defaultGasParams), str(errorText)).to.be.reverted;
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[3]).unbridgeFromL2(invaders[3].id, l1Addresses[3], defaultGasParams), str(errorText)).to.be.reverted;
+			await expect(pixelconInvadersBridgeContract.connect(l1Accounts[4]).unbridgeFromL2(invaders[4].id, l1Addresses[4], defaultGasParams), str(errorText)).to.be.reverted;
+		});
+		
+		it('should not allow incorrect L2 bridge access', async () => {
+			errorText = "Was able to access L2 bridge functions";
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[1]).unbridgeToL1(invaders[0].id, l2Addresses[0], 2000000, defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[3]).unbridgeToL1(invaders[1].id, l2Addresses[0], 2000000, defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[2]).unbridgeToL1(invaders[8].id, l2Addresses[0], 2000000, defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).unbridgeToL1(emptyID, l2Addresses[0], 2000000, defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).unbridgeToL1(invaders[0].id, emptyAddress, 2000000, defaultGasParams), str(errorText));
+			
+			errorText = "Was able to access L1 bridge functions";
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).bridgeFromL1(invaders[0].id, l2Addresses[0], defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).bridgeFromL1(invaders[1].id, l2Addresses[0], defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).bridgeFromL1(falseID, l2Addresses[0], defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).bridgeFromL1(emptyID, l2Addresses[0], defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).bridgeFromL1(invaders[0].id, emptyAddress, defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[1]).bridgeFromL1(emptyID, l2Addresses[0], defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[2]).bridgeFromL1(emptyID, l2Addresses[0], defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[3]).bridgeFromL1(emptyID, l2Addresses[0], defaultGasParams), str(errorText));
+			await expectToBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[4]).bridgeFromL1(emptyID, l2Addresses[0], defaultGasParams), str(errorText));
+		});
+		
+		it('should allow correct L2 bridge access', async () => {
+			errorText = "Was not able to unbridge";
+			await expectToNotBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[0]).unbridgeToL1(invaders[0].id, l2Addresses[0], 2000000, defaultGasParams), str(errorText));
+			await expectToNotBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[4]).unbridgeToL1(invaders[1].id, l2Addresses[0], 2000000, defaultGasParams), str(errorText));
+			await expectToNotBeRevertedL2(pixelconInvadersContract.connect(l2Accounts[4]).unbridgeToL1(invaders[8].id, l2Addresses[0], 2000000, defaultGasParams), str(errorText));
 		});
 	});
 	
