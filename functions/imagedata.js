@@ -68,13 +68,13 @@ function invaderAnalysis(invaderId) {
 	}
 	level = level/2;
 	
-	let type = 'Unknown Type (Ancient)';
-	if(typeColor == '7') type = 'Metal Type (Metallum Alloy)';
-	else if(typeColor == '8') type = 'Fire Type (Ignis Magma)';
-	else if(typeColor == '9') type = 'Desert Type (Sicco Solar)';
-	else if(typeColor == 'a') type = 'Electric Type (Lectricus Zap)';
-	else if(typeColor == 'b') type = 'Forest Type (Silva Brush)';
-	else if(typeColor == 'c') type = 'Water Type (Imber Drench)';
+	let type = 'Unknown (Ancient)';
+	if(typeColor == '7') type = 'Metal (Metallum Alloy)';
+	else if(typeColor == '8') type = 'Fire (Ignis Magma)';
+	else if(typeColor == '9') type = 'Desert (Sicco Solar)';
+	else if(typeColor == 'a') type = 'Electric (Lectricus Zap)';
+	else if(typeColor == 'b') type = 'Forest (Silva Brush)';
+	else if(typeColor == 'c') type = 'Water (Imber Drench)';
 	
 	let skill = 'Versatile';
 	if(skillColor == '6') skill = 'Attack';
@@ -126,15 +126,15 @@ function drawInvader(dataArray, arrayW, arrayH, x, y, s, id) {
 async function getBackgroundImage(invaderId) {
 	let analysis = invaderAnalysis(invaderId);
 	let background = 'background_black';
-	if(analysis.type == 'Metal Type (Metallum Alloy)') background = 'background_white';
-	else if(analysis.type == 'Fire Type (Ignis Magma)') background = 'background_red';
-	else if(analysis.type == 'Desert Type (Sicco Solar)') background = 'background_orange';
-	else if(analysis.type == 'Electric Type (Lectricus Zap)') background = 'background_yellow';
-	else if(analysis.type == 'Forest Type (Silva Brush)') background = 'background_green';
-	else if(analysis.type == 'Water Type (Imber Drench)') background = 'background_blue';
+	if(analysis.type == 'Metal (Metallum Alloy)') background = 'background_white';
+	else if(analysis.type == 'Fire (Ignis Magma)') background = 'background_red';
+	else if(analysis.type == 'Desert (Sicco Solar)') background = 'background_orange';
+	else if(analysis.type == 'Electric (Lectricus Zap)') background = 'background_yellow';
+	else if(analysis.type == 'Forest (Silva Brush)') background = 'background_green';
+	else if(analysis.type == 'Water (Imber Drench)') background = 'background_blue';
 
-	if(backgroundImages[background]) return backgroundImages[background];
-	else {
+	let backgroundImg = backgroundImages[background];
+	if(!backgroundImg) {
 		let data = await webdata.doGET(appWebStatic + 'img/gen/' + background + '.png', null, true);
 		data = png.decode(data);
 		let width = data.width * standardImageScaleMultiplier;
@@ -154,12 +154,18 @@ async function getBackgroundImage(invaderId) {
 				}
 			}
 		}
-		backgroundImages[background] = {
+		backgroundImg = {
 			width: width,
 			height: height,
 			dataArray: dataArray
 		}
-		return backgroundImages[background];
+		backgroundImages[background] = backgroundImg;
+	}
+	
+	return {
+		width: backgroundImg.width,
+		height: backgroundImg.height,
+		dataArray: Array.from(backgroundImg.dataArray)
 	}
 }
 

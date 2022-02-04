@@ -129,12 +129,12 @@ function invaderAnalysis(invaderId) {
 	level = level/2;
 	
 	let type = 'Unknown Type (Ancient)';
-	if(typeColor == '7') type = 'Metal Type (Metallum Alloy)';
-	else if(typeColor == '8') type = 'Fire Type (Ignis Magma)';
-	else if(typeColor == '9') type = 'Desert Type (Sicco Solar)';
-	else if(typeColor == 'a') type = 'Electric Type (Lectricus Zap)';
-	else if(typeColor == 'b') type = 'Forest Type (Silva Brush)';
-	else if(typeColor == 'c') type = 'Water Type (Imber Drench)';
+	if(typeColor == '7') type = 'Metal (Metallum Alloy)';
+	else if(typeColor == '8') type = 'Fire (Ignis Magma)';
+	else if(typeColor == '9') type = 'Desert (Sicco Solar)';
+	else if(typeColor == 'a') type = 'Electric (Lectricus Zap)';
+	else if(typeColor == 'b') type = 'Forest (Silva Brush)';
+	else if(typeColor == 'c') type = 'Water (Imber Drench)';
 	
 	let skill = 'Versatile';
 	if(skillColor == '6') skill = 'Attack';
