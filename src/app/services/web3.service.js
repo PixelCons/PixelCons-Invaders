@@ -5,29 +5,29 @@
 	web3Service.$inject = ['$interval', '$timeout', '$window', '$mdDialog', '$q', 'storage'];
 	function web3Service($interval, $timeout, $window, $mdDialog, $q, storage) {
 		const _networkConfig = [{
-			name: 'Mainnet[test]',
-			chainId: '31337',
+			name: 'Kovan',
+			chainId: '42',
 			nativeCurrency: {
 				name: 'ETH',
 				symbol: 'ETH',
 				decimals: 18
 			},
 			icon: '/img/network_mainnet.png',
-			fallbackRPCs: ['http://192.168.1.69:8081', 'https://192.168.1.69:8081'],
-			blockExplorer: 'https://etherscan.io/',
+			fallbackRPCs: ['https://kovan.infura.io/v3/05a3d97e27434acc998cdfdd6d418bfc'],
+			blockExplorer: 'https://kovan.etherscan.io/',
 			transactionLU: '/tx/<txHash>',
 			accountLU: '/address/<address>'
 		},{
-			name: 'Optimism[test]',
-			chainId: '420',
+			name: 'Optimistic Kovan',
+			chainId: '69',
 			nativeCurrency: {
 				name: 'ETH',
 				symbol: 'ETH',
 				decimals: 18
 			},
 			icon: '/img/network_optimism.png',
-			fallbackRPCs: ['http://192.168.1.69:8082', 'https://192.168.1.69:8082'],
-			blockExplorer: 'https://etherscan.io/',
+			fallbackRPCs: ['https://kovan.optimism.io'],
+			blockExplorer: 'https://kovan-optimistic.etherscan.io/',
 			transactionLU: '/tx/<txHash>',
 			accountLU: '/address/<address>'
 		},{
@@ -44,33 +44,20 @@
 			transactionLU: '/tx/<txHash>',
 			accountLU: '/address/<address>'
 		},{
-			name: 'Rinkeby',
-			chainId: '4',
-			nativeCurrency: {
-				name: 'ETH',
-				symbol: 'ETH',
-				decimals: 18
-			},
-			icon: '/img/network_rinkeby.png',
-			fallbackRPCs: [],
-			blockExplorer: 'https://rinkeby.etherscan.io/',
-			transactionLU: '/tx/<txHash>',
-			accountLU: '/address/<address>'
-		},{
 			name: 'Mainnet',
 			chainId: '1'
 		},{
 			name: 'Rinkeby',
 			chainId: '4'
 		},{
+			name: 'Kovan',
+			chainId: '42'
+		},{
 			name: 'Ropsten',
 			chainId: '3'
 		},{
 			name: 'Goerli',
 			chainId: '5'
-		},{
-			name: 'Kovan',
-			chainId: '42'
 		},{
 			name: 'Polygon',
 			chainId: '137'

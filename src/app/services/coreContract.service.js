@@ -695,39 +695,39 @@
 			if(rangeColor == '5') range = 'Long Range';
 			else if(rangeColor == '1') range = 'Short Range';
 			
-			let typeRarity = 16.15;
-			if(!typeColor) typeRarity = 3.1;
+			let typeRarity = 16.4;
+			if(typeColor == 'b' || typeColor == '8') typeRarity = 16.0;
+			else if(!typeColor) typeRarity = 2.32;
 			
-			let levelRarity = null;
-			if(level == 1) levelRarity = 9.21;
-			else if(level == 2) levelRarity = 15.08;
-			else if(level == 3) levelRarity = 18.00;
-			else if(level == 4) levelRarity = 17.17;
-			else if(level == 5) levelRarity = 13.93;
-			else if(level == 6) levelRarity = 9.93;
-			else if(level == 7) levelRarity = 6.33;
-			else if(level == 8) levelRarity = 3.65;
-			else if(level == 9) levelRarity = 1.93;
-			else if(level == 10) levelRarity = 0.93;
-			else if(level == 11) levelRarity = 0.44;
-			else if(level == 12) levelRarity = 0.19;
-			else if(level == 13) levelRarity = 0.07;
-			else if(level == 14) levelRarity = 0.03;
-			else if(level == 15) levelRarity = 0.01;
-			else if(level > 15) levelRarity = 0.001;
+			let levelRarity = null; //level 0 - 2.32
+			if(level == 1) levelRarity = 8.01;
+			else if(level == 2) levelRarity = 14.69;
+			else if(level == 3) levelRarity = 18.80;
+			else if(level == 4) levelRarity = 18.65;
+			else if(level == 5) levelRarity = 14.15;
+			else if(level == 6) levelRarity = 10.43;
+			else if(level == 7) levelRarity = 6.20;
+			else if(level == 8) levelRarity = 3.25;
+			else if(level == 9) levelRarity = 1.51;
+			else if(level == 10) levelRarity = 0.63;
+			else if(level == 11) levelRarity = 0.23;
+			else if(level == 12) levelRarity = 0.08;
+			else if(level == 13) levelRarity = 0.03;
+			else if(level == 14) levelRarity = 0.01;
+			else if(level >= 15) levelRarity = 0.001;
 			
 			let skillRangeRarity = 24.3;
-			if(!skillColor && rangeColor) skillRangeRarity = 1.41;
-			else if(skillColor && !rangeColor) skillRangeRarity = 1.41;
+			if(!skillColor && rangeColor) skillRangeRarity = 1.39;
+			else if(skillColor && !rangeColor) skillRangeRarity = 1.39;
 			else if(!skillColor && !rangeColor) skillRangeRarity = 0.01;
 			
 			let rarityScore = level;
-			if(level >= 15) rarityScore += 700; //crazy high level < 0.014
-			else if(!skillColor && !rangeColor) rarityScore += 600; //all range versatile 0.014
-			else if(level >= 13 && level <= 14) rarityScore += 500; //levels 13to14 0.03-0.07
-			else if(level == 0 && (!skillColor || !rangeColor)) rarityScore += 400; //all range or versatile ancient 0.17
-			else if(level >= 9 && level <= 12) rarityScore += 300; //levels 9to12 0.19-1.93
-			else if(level > 0 && (!skillColor || !rangeColor)) rarityScore += 200; //all range or versatile 2.8
+			if(level >= 14) rarityScore += 700; //crazy high level < 0.0066
+			else if(!skillColor && !rangeColor) rarityScore += 600; //all range versatile 0.009
+			else if(level >= 12 && level <= 13) rarityScore += 500; //levels 12to13 0.025-0.79
+			else if(level == 0 && (!skillColor || !rangeColor)) rarityScore += 400; //all range or versatile ancient 0.155
+			else if(level >= 9 && level <= 11) rarityScore += 300; //levels 9to11 1.51-0.234
+			else if(level > 0 && (!skillColor || !rangeColor)) rarityScore += 200; //all range or versatile 2.32
 			else if(level == 0) rarityScore += 100; //ancient 3.1
 			
 			return {
