@@ -24,12 +24,13 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 	
 	// Constants
 	uint64 constant MAX_TOKENS = 1000;
-	uint64 constant MINT1_PIXELCON_INDEX = 1217;//before 2022
-	uint64 constant MINT2_PIXELCON_INDEX = 792; //before 2021
-	uint64 constant MINT3_PIXELCON_INDEX = 714; //before 2020
-	uint64 constant MINT4_PIXELCON_INDEX = 651;
-	uint64 constant MINT5_PIXELCON_INDEX = 651; //genesis
-	uint64 constant MINT6_PIXELCON_INDEX = 100; //first 100
+	uint64 constant MINT1_PIXELCON_INDEX = 1411;//before Feb 1st, 2022 (620 mintable)
+	uint64 constant MINT2_PIXELCON_INDEX = 791; //before Jan 1st, 2021 (156 mintable)
+	uint64 constant MINT3_PIXELCON_INDEX = 713; //before Jan 1st, 2020 (186 mintable)
+	uint64 constant MINT4_PIXELCON_INDEX = 651; //Genesis (1950 mintable)
+	uint64 constant MINT5_PIXELCON_INDEX = 651; 
+	uint64 constant MINT6_PIXELCON_INDEX = 651; //2912 Invaders to mint from
+	
 	
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,16 +109,16 @@ contract PixelConInvadersBridge is Ownable, CrossDomainEnabled {
 		
 		//check that invaders can still be minted
 		uint256 numInvadersCreated = IPixelCons(_pixelconsContract).creatorTotal(address(this));
-		require(numInvadersCreated < (MAX_TOKENS-1), "Max Invaders have been minted");
+		require(numInvadersCreated < MAX_TOKENS, "Max Invaders have been minted");
 		
 		//check that the given generation index is valid for the pixelcon
 		uint64 pixelconIndex = IPixelCons(_pixelconsContract).getTokenIndex(pixelconId);
-		if(generationIndex == 5) require(pixelconIndex < MINT6_PIXELCON_INDEX, "Index out of bounds");
-		if(generationIndex == 4) require(pixelconIndex < MINT5_PIXELCON_INDEX, "Index out of bounds");
-		if(generationIndex == 3) require(pixelconIndex < MINT4_PIXELCON_INDEX, "Index out of bounds");
-		if(generationIndex == 2) require(pixelconIndex < MINT3_PIXELCON_INDEX, "Index out of bounds");
-		if(generationIndex == 1) require(pixelconIndex < MINT2_PIXELCON_INDEX, "Index out of bounds");
-		if(generationIndex == 0) require(pixelconIndex < MINT1_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 5) require(pixelconIndex <= MINT6_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 4) require(pixelconIndex <= MINT5_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 3) require(pixelconIndex <= MINT4_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 2) require(pixelconIndex <= MINT3_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 1) require(pixelconIndex <= MINT2_PIXELCON_INDEX, "Index out of bounds");
+		if(generationIndex == 0) require(pixelconIndex <= MINT1_PIXELCON_INDEX, "Index out of bounds");
 		
 		//generate the invader
 		uint256 invaderId = _generate(pixelconId, generationIndex);

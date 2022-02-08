@@ -10,12 +10,12 @@
 		const _primaryNetworkIndex = 0;
 		const _secondaryNetworkIndex = 1;
 		const _contractParamMaxTokens = 1000;
-		const _contractParamMint1PixelconIndex = 1217;
-		const _contractParamMint2PixelconIndex = 792;
-		const _contractParamMint3PixelconIndex = 714;
+		const _contractParamMint1PixelconIndex = 1411;
+		const _contractParamMint2PixelconIndex = 791;
+		const _contractParamMint3PixelconIndex = 713;
 		const _contractParamMint4PixelconIndex = 651;
 		const _contractParamMint5PixelconIndex = 651;
-		const _contractParamMint6PixelconIndex = 100;
+		const _contractParamMint6PixelconIndex = 651;
 		const _contractParamGenerationSeed = '';
 		const _maxFilterParamSize = 100;
 		const _maxQueryParamSize = 200;
@@ -768,12 +768,12 @@
 		
 		// Gets the number of invaders the given pixelcon index can mint
 		function getNumInvadersForPixelconIndex(index) {
-			if(index < _contractParamMint6PixelconIndex) return 6;
-			if(index < _contractParamMint5PixelconIndex) return 5;
-			if(index < _contractParamMint4PixelconIndex) return 4;
-			if(index < _contractParamMint3PixelconIndex) return 3;
-			if(index < _contractParamMint2PixelconIndex) return 2;
-			if(index < _contractParamMint1PixelconIndex) return 1;
+			if(index <= _contractParamMint6PixelconIndex) return 6;
+			if(index <= _contractParamMint5PixelconIndex) return 5;
+			if(index <= _contractParamMint4PixelconIndex) return 4;
+			if(index <= _contractParamMint3PixelconIndex) return 3;
+			if(index <= _contractParamMint2PixelconIndex) return 2;
+			if(index <= _contractParamMint1PixelconIndex) return 1;
 			return 0;
 		}
 		
