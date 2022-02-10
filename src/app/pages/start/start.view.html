@@ -1,12 +1,12 @@
 <div class="invadersStartPage" ng-class="ctrl.screenSize">
 	<div class="topSpacer"></div>
 	
-	<div class="titleCard colorLight textExxLarge textBold textCenter textDark textSelectable">
+	<div class="titleCard transBack textExxLarge textBold textCenter textDark textSelectable">
 		Account Setup
 		<div class="divider colorGray"></div>
 	</div>
 	
-	<div class="colorLight">
+	<div class="transBack">
 		<div class="fullCard textMedium textLight textCenter">
 			<div ng-if="!ctrl.activeAccount">
 				<div class="ethereumImage crispImage"><img src="/img/large/ethereum.png" alt="Ethereum"></div>
@@ -30,18 +30,17 @@
 	
 	<!-- Setup Steps -->
 	<div class="setupProcedure textCenter" ng-class="{'hidden': ctrl.hideSetup}">
-		<div class="floatCard colorLight textMedium textLight">
+		<div class="floatCard transBack textMedium textLight">
 			
 			<div layout="row" layout-align="space-between center" class="stepTabContainer textDark">
-				<div class="connectingLine"></div>
-				<div class="stepTabOptionWrapper colorLight">
+				<div class="stepTabOptionWrapper">
 					<div class="stepTabOption clickable" ng-class="{'selected':ctrl.stepTab==1}" ng-click="ctrl.setStepTab(1)">
 						<div class="stepTabNum textBold textExLarge">1</div>
 						<img class="stepTabIcon" src="/img/icon_globe_w.svg">
 						<div class="checkBadge" ng-class="{'complete':ctrl.browserCheck}"></div>
 					</div>
 				</div>
-				<div class="stepTabOptionWrapper colorLight">
+				<div class="stepTabOptionWrapper">
 					<div class="stepTabOption clickable" ng-class="{'selected':ctrl.stepTab==2}" ng-click="ctrl.setStepTab(2)">
 						<div class="stepTabNum textBold textExLarge">2</div>
 						<img ng-if="!ctrl.recommendMetaMask" class="stepTabIcon" src="/img/icon_link_w.svg">
@@ -49,7 +48,7 @@
 						<div class="checkBadge" ng-class="{'complete':ctrl.linkCheck}"></div>
 					</div>
 				</div>
-				<div class="stepTabOptionWrapper colorLight">
+				<div class="stepTabOptionWrapper">
 					<div class="stepTabOption clickable" ng-class="{'selected':ctrl.stepTab==3}" ng-click="ctrl.setStepTab(3)">
 						<div class="stepTabNum textBold textExLarge">3</div>
 						<img class="stepTabIcon" src="/img/icon_eth_w.svg">
@@ -100,11 +99,11 @@
 	<div class="bottomSpacer"></div>
 	
 	<!-- Get Started -->
-	<div class="startCardContainer titleCard colorLight textExxLarge textBold textCenter textDark textSelectable">
+	<div class="startCardContainer titleCard transBack textExxLarge textBold textCenter textDark textSelectable">
 		Get Started
 		<div class="divider colorGray"></div>
 	</div>
-	<div class="startCardContainer colorLight textCenter textSelectable">
+	<div class="startCardContainer transBack textCenter textSelectable">
 		<a href="/" class="plain">
 			<div class="giantButton">
 				<div class="giantIcon learn"></div>

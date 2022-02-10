@@ -43,6 +43,9 @@ div.invadersStartPage div.startCardContainer {
 div.invadersStartPage.sm div.startCardContainer {
 	margin: 0px;
 }
+div.invadersStartPage .transBack {
+	background-color: #80808093;
+}
 
 /* Steps */
 div.invadersStartPage div.setupProcedure {

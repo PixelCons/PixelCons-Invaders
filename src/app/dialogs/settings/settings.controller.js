@@ -15,13 +15,17 @@
 		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 
 		// Load initial data
-		var mainNetwork = web3Service.getMainNetwork();
-		_this.networkName = mainNetwork.name + ' RPC';
-		_this.networkRPC = web3Service.getFallbackRPC(mainNetwork.chainId);
+		var mainNetwork = web3Service.getMainNetwork(0);
+		var secondaryNetwork = web3Service.getMainNetwork(1);
+		_this.networkNameL1 = mainNetwork.name + ' RPC';
+		_this.networkRPCL1 = web3Service.getFallbackRPC(mainNetwork.chainId);
+		_this.networkNameL2 = secondaryNetwork.name + ' RPC';
+		_this.networkRPCL2 = web3Service.getFallbackRPC(secondaryNetwork.chainId);
 		
 		// Applies the set values
 		function apply() {
-			web3Service.setFallbackRPC(mainNetwork.chainId, _this.networkRPC);
+			web3Service.setFallbackRPC(mainNetwork.chainId, _this.networkRPCL1);
+			web3Service.setFallbackRPC(secondaryNetwork.chainId, _this.networkRPCL2);
 			$mdDialog.cancel();
 			$route.reload();
 		}

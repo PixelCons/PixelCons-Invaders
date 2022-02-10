@@ -20,6 +20,9 @@ div.pixelconTermsPage div.divider {
 	width: 100%;
 	height: 1px;
 }
+div.pixelconTermsPage .transBack {
+	background-color: #80808093;
+}
 
 /* Terms Card Container */
 div.pixelconTermsPage div.termsCard {

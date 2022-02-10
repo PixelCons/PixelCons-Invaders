@@ -24,41 +24,41 @@ div.header .pixelconTitle .pixelconLogo {
 	position: relative;
 	display: inline-block;
 	height: 65px;
-	width: 65px;
+	width: 70px;
 	min-width: 65px;
-	margin: 0px 15px 0px 15px;
-	background-image: url("/img/logo_header.png");
-	background-size: contain;
+	margin: 0px 10px 0px 10px;
+	background-image: url(/img/logo_header.png);
+	background-size: cover;
 	background-repeat: no-repeat;
 }
 div.header.sm .pixelconTitle .pixelconLogo {
 	height: 50px;
-	width: 50px;
-	min-width: 50px;
-	margin: 0px 0px 0px 12px;
+	width: 58px;
+	min-width: 58px;
+	margin: 0px 0px 0px 6px;
 }
 div.header .pixelconTitle .pixelconLogoText {
-	text-shadow: 0px 0px 30px #989898;
+	text-shadow: 0px 0px 0px #000000;
 	position: absolute;
-	left: -2px;
+	left: 1px;
     top: 18px;
 }
 div.header.sm .pixelconTitle .pixelconLogoText {
-	text-shadow: 0px 0px 15px #a7a7a7;
+	text-shadow: 0px 0px 0px #000000;
 	font-size: 14px;
-	left: -5px;
+	left: -1px;
 	top: 12px;
 }
 div.header .pixelconTitle .pixelconLogoSubText {
-	text-shadow: 0px 0px 30px #989898;
+	text-shadow: 0px 0px 0px #000000;
 	position: absolute;
-	left: 3px;
+	left: 6px;
 	top: 30px;
 	font-size: 14px;
 }
 div.header.sm .pixelconTitle .pixelconLogoSubText {
-	text-shadow: 0px 0px 15px #a7a7a7;
-	left: 0px;
+	text-shadow: 0px 0px 0px #000000;
+	left: 4px;
 	top: 23px;
 	font-size: 12px;
 }

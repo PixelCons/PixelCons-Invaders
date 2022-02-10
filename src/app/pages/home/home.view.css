@@ -37,33 +37,23 @@ div.invaderHomePage div.titleTextBox {
 	max-width: 340px;
 	vertical-align: middle;
 	margin: 0px 20px;
-	padding: 18px;
+	padding: 30px 50px;
 }
 div.invaderHomePage.sm div.titleTextBox {
-    margin: 0px 10px;
-    padding: 10px;
+	margin: 0px 10px;
+	padding: 20px 10px;
+	max-width: 370px;
 }
 div.invaderHomePage div.titleCollectionContainer {
 	display: inline-block;
 	vertical-align: middle;
 	font-size: 0px;
-	width: 250px;
-	height: 250px;
-}
-div.invaderHomePage div.titleCollectionContainer div.titleCollectionItem {
-	display: inline-block;
-	vertical-align: middle;
-	width: 72px;
-	height: 72px;
-	margin: 5px;
+	width: 280px;
+	height: 280px;
 }
 div.invaderHomePage div.titleCollectionContainer.small {
-	width: 226px;
-	height: 226px;
-}
-div.invaderHomePage div.titleCollectionContainer.small div.titleCollectionItem {
-	width: 64px;
-	height: 64px;
+	width: 260px;
+	height: 260px;
 }
 div.invaderHomePage div.sourceImage {
 	display: inline-block;
