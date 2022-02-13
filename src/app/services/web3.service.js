@@ -5,32 +5,6 @@
 	web3Service.$inject = ['$interval', '$timeout', '$window', '$mdDialog', '$q', 'storage'];
 	function web3Service($interval, $timeout, $window, $mdDialog, $q, storage) {
 		const _networkConfig = [{
-			name: 'Kovan',
-			chainId: '42',
-			nativeCurrency: {
-				name: 'ETH',
-				symbol: 'ETH',
-				decimals: 18
-			},
-			icon: '/img/network_mainnet.png',
-			fallbackRPCs: ['https://kovan.infura.io/v3/05a3d97e27434acc998cdfdd6d418bfc'],
-			blockExplorer: 'https://kovan.etherscan.io/',
-			transactionLU: '/tx/<txHash>',
-			accountLU: '/address/<address>'
-		},{
-			name: 'Optimistic Kovan',
-			chainId: '69',
-			nativeCurrency: {
-				name: 'ETH',
-				symbol: 'ETH',
-				decimals: 18
-			},
-			icon: '/img/network_optimism.png',
-			fallbackRPCs: ['https://kovan.optimism.io'],
-			blockExplorer: 'https://kovan-optimistic.etherscan.io/',
-			transactionLU: '/tx/<txHash>',
-			accountLU: '/address/<address>'
-		},{
 			name: 'Mainnet',
 			chainId: '1',
 			nativeCurrency: {
@@ -41,6 +15,19 @@
 			icon: '/img/network_mainnet.png',
 			fallbackRPCs: [],
 			blockExplorer: 'https://etherscan.io/',
+			transactionLU: '/tx/<txHash>',
+			accountLU: '/address/<address>'
+		},{
+			name: 'Optimism',
+			chainId: '10',
+			nativeCurrency: {
+				name: 'ETH',
+				symbol: 'ETH',
+				decimals: 18
+			},
+			icon: '/img/network_optimism.png',
+			fallbackRPCs: ['https://mainnet.optimism.io'],
+			blockExplorer: 'https://optimistic.etherscan.io',
 			transactionLU: '/tx/<txHash>',
 			accountLU: '/address/<address>'
 		},{
@@ -1059,6 +1046,30 @@
 			return provider;
 		}
 		
+		// Helper function to get the current block
+		var currentBlockCache = {};
+		async function getCurrentBlockNumber(chainId) {
+			let time = (new Date()).getTime();
+			let cacheEntry = currentBlockCache[chainId];
+			if(cacheEntry && (time - cacheEntry.time) < 15*1000) {
+				return cacheEntry.block;
+			} else {
+				try {
+					let provider = getWeb3Provider(chainId);
+					if(provider) {
+						currentBlockCache[chainId] = {
+							time: (new Date()).getTime(),
+							block: await provider.getBlockNumber()
+						}
+						return currentBlockCache[chainId].block;
+					}
+				} catch(err) {
+					console.log(err)
+				}
+			}
+			return 0;
+		}
+		
 		// performs a GET REST request
 		function httpGet(path) {
 			return $q(function (resolve, reject) {
@@ -1090,6 +1101,7 @@
 				try {
 					let provider = getWeb3Provider(chainId);
 					if(provider != null) {
+						if(fromBlock == 0) fromBlock = (await getCurrentBlockNumber(chainId)) - 5000;
 						let tempContract = new ethers.Contract(filter.address, [], provider);
 						let events = await tempContract.queryFilter(filter, fromBlock);
 						if(events && events.length) {
@@ -1100,7 +1112,9 @@
 							}
 						}
 					}
-				} catch (err) { }
+				} catch (err) {
+					console.log(err);
+				}
 				return {
 					filter: filter,
 					fromBlock: fromBlock

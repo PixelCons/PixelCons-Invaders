@@ -16,7 +16,7 @@
 		const _contractParamMint4PixelconIndex = 651;
 		const _contractParamMint5PixelconIndex = 651;
 		const _contractParamMint6PixelconIndex = 651;
-		const _contractParamGenerationSeed = '';
+		const _contractParamGenerationSeed = '0xdbc8f49b90212064486c9bdffc0f7ed65f0dfcb2d4c47709f22a7c1c34eebafb';
 		const _maxFilterParamSize = 100;
 		const _maxQueryParamSize = 200;
 		const _cacheTotalsFetchTime = 5 * 60 * 1000;

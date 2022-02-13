@@ -5,8 +5,8 @@
 	MintPageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$timeout', '$sce', 'web3Service', 'coreContract', 'decoder'];
 	function MintPageCtrl($scope, $mdMedia, $mdDialog, $timeout, $sce, web3Service, coreContract, decoder) {
 		var _this = this;
-		const marketSearchEnabled = true;
-		const uncoverInvadersEnabled = true;
+		const marketSearchEnabled = false;
+		const uncoverInvadersEnabled = false;
 		const sortByDefault = 'rarityDesc';
 		const tooltipDelay = 300;
 		_this.marketSearchEnabled = marketSearchEnabled;

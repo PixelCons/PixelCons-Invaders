@@ -27,6 +27,33 @@ div.invaderHomePage div.fullCard {
 div.invaderHomePage.sm div.fullCard {
 	padding: 15px 0px 15px 0px;
 }
+div.invaderHomePage .giantButton {
+	cursor: pointer;
+	padding: 20px 10px;
+	text-align: center;
+	margin: 20px auto;
+	width: 500px;
+	max-width: calc(100% - 40px);
+}
+div.invaderHomePage .giantButton:hover {
+    background-color: #616161ab;
+}
+div.invaderHomePage div.giantIcon {
+	display: inline-block;
+	background-size: contain;
+	vertical-align: middle;
+	margin: 5px;
+	width: 100px;
+	height: 100px;
+	background-image: url("/img/icon_explore_w.svg");
+}
+div.invaderHomePage div.giantText {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: left;
+	width: 200px;
+	margin: 5px;
+}
 div.invaderHomePage .transBack {
 	background-color: #80808093;
 }

@@ -9,52 +9,26 @@
         "transactionHash": "0x09c63b0b85caf92142893764a645faa06827819b2d787b331fb0592539ed17d6",
         "blockHash": "0x1e8f9420e7736444d6868d436a23efb022ee397c040b193570ad7cf0509b15d2",
         "blockNumber": "6814010"
-      }
-    ]
-  },
-  {
-    "name": "Rinkeby",
-    "id": "4",
-    "contracts": [
-      {
-        "name": "PixelCons",
-        "address": "0x306f945b7bdb000f4ec474B989A80048aEF06273",
-        "transactionHash": "0xf1d57c47eb606608658d89e45aa54bc236b3aeb13f814b3458c308ceab53ee45",
-        "blockHash": "0x66ecab6e6c37da70834412b6cbbc9d0e4e174e031da93aa70c968d90139eff1a",
-        "blockNumber": "3341382"
-      }
-    ]
-  },
-  {
-    "name": "unknown_31337",
-    "id": "31337",
-    "contracts": [
-      {
-        "name": "PixelCons",
-        "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
-        "transactionHash": "0x73e783b9dc0e3751ddadde454cf8a252f22db5c9a20cfdcf54a7062a976c5d8d",
-        "blockHash": "0xdcd6e5c8832bbe0aba951f70b1246586312c9feb1ddbe34ce70955eb5af4c14a",
-        "blockNumber": "41"
       },
       {
         "name": "PixelConInvadersBridge",
-        "address": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
-        "transactionHash": "0xd0784ddf7bb0e414a264777b3681ed2a6829b54d95bc1a9ccb29eda6780bc4ef",
-        "blockHash": "0xe7a74192ead8f27126302ec9cb8139b11f1754440fd17ab8ec6ec3e68213d94d",
-        "blockNumber": "42"
+        "address": "0x81d73f4880894D8ec6A17609D21839620A8FB4Cb",
+        "transactionHash": "0x32ed273ff9ff531038461d67cee229a5992d69efb7eeb5514e4dcf762dd58c2e",
+        "blockHash": "0x5cfaf8b9e8da502b81f0403acfe3f135d059e5b60b1fbcb831e77bce5a960aad",
+        "blockNumber": "14177728"
       }
     ]
   },
   {
-    "name": "unknown_420",
-    "id": "420",
+    "name": "Optimism",
+    "id": "10",
     "contracts": [
       {
         "name": "PixelConInvaders",
-        "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-        "transactionHash": "0xaeadd6fb2c29f1f1cd995d29adf84fb41746e957cf7c2399c6b72b546a100d1f",
-        "blockHash": "0xb616372a48154f5055858f3013844749d402bc74a56d74138075185e035286f8",
-        "blockNumber": "21"
+        "address": "0xB5604Fc106074A140DF727Fe28cd68F0dbB6C1B9",
+        "transactionHash": "0xe020f74b274d28a63d8b3fbf52218465e5cf7766a6bb9b12c379cc05b9815e7f",
+        "blockHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "blockNumber": "0"
       }
     ]
   }

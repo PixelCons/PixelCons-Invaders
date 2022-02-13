@@ -4,10 +4,10 @@
 
 	market.$inject = ['web3Service'];
 	function market(web3Service) {
-		const _enabled = true;
+		const _enabled = false;
 		const _marketName = 'Quixotic';
-		const _storeLink = 'https://kovan.quixotic.io/collection/0x6F37e8ec6BAEa74C5fdE46C3B1dF583D1E1d55C8';
-		const _itemLink = 'https://kovan.quixotic.io/asset/opt/0x6F37e8ec6BAEa74C5fdE46C3B1dF583D1E1d55C8/<id>';
+		const _storeLink = 'https://quixotic.io/collection/0xB5604Fc106074A140DF727Fe28cd68F0dbB6C1B9';
+		const _itemLink = 'https://quixotic.io/asset/opt/0xB5604Fc106074A140DF727Fe28cd68F0dbB6C1B9/<id>';
 
 		// Setup functions
 		this.isEnabled = isEnabled;
