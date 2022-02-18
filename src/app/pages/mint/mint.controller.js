@@ -2,11 +2,11 @@
 	angular.module('App')
 		.controller('MintPageCtrl', MintPageCtrl);
 
-	MintPageCtrl.$inject = ['$scope', '$mdMedia', '$mdDialog', '$timeout', '$sce', 'web3Service', 'coreContract', 'decoder'];
-	function MintPageCtrl($scope, $mdMedia, $mdDialog, $timeout, $sce, web3Service, coreContract, decoder) {
+	MintPageCtrl.$inject = ['$scope', '$routeParams', '$mdMedia', '$mdDialog', '$timeout', '$sce', 'web3Service', 'coreContract', 'decoder'];
+	function MintPageCtrl($scope, $routeParams, $mdMedia, $mdDialog, $timeout, $sce, web3Service, coreContract, decoder) {
 		var _this = this;
-		const marketSearchEnabled = false;
-		const uncoverInvadersEnabled = false;
+		const marketSearchEnabled = true;
+		const uncoverInvadersEnabled = true;
 		const sortByDefault = 'rarityDesc';
 		const tooltipDelay = 300;
 		_this.marketSearchEnabled = marketSearchEnabled;
@@ -29,6 +29,18 @@
 		$scope.$watch(function () { return $mdMedia('gt-md'); }, function (lg) { _this.screenSize['lg'] = lg; });
 		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
 		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
+		
+		// Auto open the scan window
+		if($routeParams.scan) {
+			loadMarketData(true);
+		}
+		
+		// Show dialogs on page load
+		if($routeParams.typeExplainer) infoHint('typeExplainer');
+		else if($routeParams.levelExplainer) infoHint('levelExplainer');
+		else if($routeParams.attributesExplainer) infoHint('attributesExplainer');
+		else if($routeParams.mintExplainer) infoHint('mintExplainer');
+		else if($routeParams.l2Explainer) infoHint('l2Explainer');
 		
 		// Loads account related data for invader minting
 		loadPageData();
@@ -53,6 +65,10 @@
 								_this.accountInvaderPixelcons = addPixelconInvaderImageData(_this.accountPixelcons);
 								filterPageData();
 								
+								if(_this.accountPixelcons.length == 0) {
+									loadMarketData(true);
+								}
+								
 							} else {
 								if (web3Service.isReadOnly()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Get started by visiting the <a class="textDark" href="/start">start</a> page');
 								else if (web3Service.isPrivacyMode()) _this.error = $sce.trustAsHtml('<b>Account Not Connected:</b><br/>Please connect your Ethereum account');
@@ -75,7 +91,7 @@
 				}
 			} else {
 				
-				//market not enabled
+				//uncover not enabled
 				_this.accountAddressLoading = true;
 				_this.error = null;
 				try {
@@ -96,8 +112,9 @@
 		}
 		
 		// Loads market data for the more section
-		async function loadMarketData() {
+		async function loadMarketData(forceOpen) {
 			_this.scanOpen = !_this.scanOpen;
+			if(forceOpen) _this.scanOpen = true;
 			if(_this.scanOpen && _this.marketData === undefined) {
 				_this.marketLoading = true;
 				_this.marketError = null;

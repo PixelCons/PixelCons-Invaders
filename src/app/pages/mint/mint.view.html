@@ -12,9 +12,6 @@
 	<!-- Loading -->
 	<md-progress-circular ng-if="ctrl.accountAddressLoading" class="addressLoadingSpinner" md-diameter="80px" md-mode="indeterminate"></md-progress-circular>
 	
-	<!-- Error -->
-	<div class="error textDark textMedium textSelectable" ng-if="ctrl.error" ng-bind-html="ctrl.error"></div>
-	
 	<!-- No More to Uncover Message -->
 	<div class="noMore textDark textSelectable" ng-if="ctrl.noMore">
 		<span class="textLarge textBold">The maximum number of Invaders have been uncovered!</span><br/>
@@ -24,20 +21,11 @@
 	</div>
 	
 	<!-- Scan -->
-	<div class="scanMore" ng-if="!ctrl.accountAddressLoading && !ctrl.error && !ctrl.noMore" ng-click="$event.stopPropagation()" ng-class="{'expanded': ctrl.scanOpen}">
-		<div class="scanTitleCard">
-			<accounticon class="titleCardAccount" address="ctrl.accountAddress" border="2"></accounticon>
-			<div class="titleCardText">
-				<span class="textDark textLarge">{{ctrl.screenSize.sm ? 'Invaders to Uncover...' : 'New Invaders to Uncover...'}}</span><br/>
-				<span class="textDark textSmall">{{ctrl.accountPixelcons.length + (ctrl.accountPixelcons.length == 1 ? ' PixelCon' : ' PixelCons')}}</span>
-			</div>
-		</div>
-		<md-button class="scanMoreButton filterButton textDark right" ng-click="ctrl.loadMarketData()" aria-label="Scan" ng-if="ctrl.marketSearchEnabled">
+	<div class="scanMore" ng-if="!ctrl.accountAddressLoading && !ctrl.noMore" ng-click="$event.stopPropagation()" ng-class="{'expanded': ctrl.scanOpen}">
+		<md-button class="scanMoreButton filterButton textDark" ng-click="ctrl.loadMarketData()" aria-label="Scan" ng-if="ctrl.marketSearchEnabled">
 			<div class="buttonIcon scan"></div>
-			<span>{{ctrl.screenSize.sm ? 'More' : 'Find More'}}</span>
+			<span>Scan OpenSea</span>
 		</md-button>
-		
-		<!-- Scan More Options -->
 		<div class="scanMoreOptions">
 			<div class="moreOptionTitle textDark" ng-class="{'textLarge':!ctrl.screenSize.sm,'textMedium':ctrl.screenSize.sm}">
 				<div class="openSeaIcon"></div>PixelCons with Invaders{{!ctrl.screenSize.sm?' on OpenSea':''}}
@@ -62,6 +50,19 @@
 			</div>
 		</div>
 	</div>
+	<div class="bottomSpacer"></div>
+	<div class="bottomSpacer"></div>
+	
+	<!-- Header -->
+	<div class="scanMore" ng-if="!ctrl.accountAddressLoading && !ctrl.error && !ctrl.noMore" ng-click="$event.stopPropagation()">
+		<div class="scanTitleCard">
+			<accounticon class="titleCardAccount" address="ctrl.accountAddress" border="2"></accounticon>
+			<div class="titleCardText">
+				<span class="textDark textLarge">{{ctrl.screenSize.sm ? 'Invaders to Uncover...' : 'Invaders to Uncover...'}}</span><br/>
+				<span class="textDark textSmall">{{ctrl.accountPixelcons.length + (ctrl.accountPixelcons.length == 1 ? ' PixelCon' : ' PixelCons')}}</span>
+			</div>
+		</div>
+	</div>
 	
 	<!-- Mintable Invaders -->
 	<div class="mintableInvaders" ng-if="!ctrl.accountAddressLoading && !ctrl.error && !ctrl.noMore">
@@ -83,6 +84,9 @@
 			<div class="noInvaders textDark textMedium textSelectable" ng-if="ctrl.accountInvaderPixelcons.length==0">No Invaders</div>
 		</div>
 	</div>
+	
+	<!-- Error -->
+	<div class="error textDark textMedium textSelectable" ng-if="ctrl.error" ng-bind-html="ctrl.error"></div>
 	
 	<div class="bottomSpacer"></div>
 	<div class="bottomSpacer"></div>

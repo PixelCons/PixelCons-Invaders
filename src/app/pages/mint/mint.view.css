@@ -67,9 +67,8 @@ div.invadersMintPage.sm div.scanMore {
 div.invadersMintPage .right {
 	float: right;
 }
-
 div.invadersMintPage button.scanMoreButton {
-    margin-left: 0px;
+    margin-left: 10px;
     margin-right: 0px;
     min-width: 0px;
     height: 0px;
@@ -342,11 +341,8 @@ div.invadersMintPage div.tooltip div.line div.percentage.shared {
 
 /* Error */
 div.invadersMintPage div.error {
-	position: absolute;
 	text-align: center;
-	left: 50%;
-	top: 50%;
-	margin: -100px -153px;
+	margin: 50px auto;
 	width: 276px;
 	min-height: 42px;
 	max-height: 100px;

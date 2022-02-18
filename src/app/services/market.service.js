@@ -4,7 +4,7 @@
 
 	market.$inject = ['web3Service'];
 	function market(web3Service) {
-		const _enabled = false;
+		const _enabled = true;
 		const _marketName = 'Quixotic';
 		const _storeLink = 'https://quixotic.io/collection/0xB5604Fc106074A140DF727Fe28cd68F0dbB6C1B9';
 		const _itemLink = 'https://quixotic.io/asset/opt/0xB5604Fc106074A140DF727Fe28cd68F0dbB6C1B9/<id>';

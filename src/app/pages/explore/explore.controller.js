@@ -55,6 +55,13 @@
 		$scope.$watch(function () { return $mdMedia('gt-xs') && !$mdMedia('gt-md'); }, function (md) { _this.screenSize['md'] = md; });
 		$scope.$watch(function () { return $mdMedia('xs'); }, function (sm) { _this.screenSize['sm'] = sm; });
 		
+		// Show dialogs on page load
+		if($routeParams.typeExplainer) infoHint('typeExplainer');
+		else if($routeParams.levelExplainer) infoHint('levelExplainer');
+		else if($routeParams.attributesExplainer) infoHint('attributesExplainer');
+		else if($routeParams.mintExplainer) infoHint('mintExplainer');
+		else if($routeParams.l2Explainer) infoHint('l2Explainer');
+		
 		// Loads the filter according to path params
 		loadPathParams();
 		function loadPathParams() {

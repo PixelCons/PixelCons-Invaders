@@ -7,6 +7,7 @@
 		const _invadersContractPath = 'contracts/PixelConInvaders.json';
 		const _bridgeContractPath = 'contracts/PixelConInvadersBridge.json';
 		const _pixelconsContractPath = 'contracts/PixelCons.json';
+		const _marketDataURL = 'https://data.pixelcons.io/market/marketdata_invaders.json';
 		const _primaryNetworkIndex = 0;
 		const _secondaryNetworkIndex = 1;
 		const _contractParamMaxTokens = 1000;
@@ -217,8 +218,9 @@
 					try {
 						let marketListings = await getMarketListings();
 						if(marketListings === null) reject('Data analysis not enabled');
-						else if(!marketListings.length) reject('Issue with market API');
+						else if(!marketListings.market || !marketListings.market.length) reject('Issue with market API');
 						else {
+							marketListings = marketListings.market;
 							await sleep(200); //guarantee animations have time to finish
 							
 							let forSale = [];
@@ -644,7 +646,7 @@
 		// Gets current market listings
 		function getMarketListings() {
 			return $q(async function (resolve, reject) {
-				var url = '/api/opensea';
+				var url = _marketDataURL;
 				var xhr = new XMLHttpRequest();
 				xhr.open('GET', url, true);
 				xhr.responseType = 'json';

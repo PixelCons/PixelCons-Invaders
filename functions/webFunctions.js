@@ -5,7 +5,6 @@
 const metadata = require('./metadata.js');
 const imagedata = require('./imagedata.js');
 const tagdata = require('./tagdata.js');
-const openseadata = require('./openseadata.js');
 
 // Gets the metadata JSON for the given pixelcon id
 async function getMetadata(pixelconId, params) {
@@ -40,7 +39,7 @@ async function getMultiImage(pixelconIds, color) {
 // Gets opensea listing data
 async function getOpenseaListings() {
 	try {
-		return await openseadata.getSaleListings();
+		return [];
 	} catch (err) {
 		if (!err) err = 'Error';
 		return { errorText: err.message ? err.message : err }
