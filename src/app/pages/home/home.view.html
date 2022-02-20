@@ -2,9 +2,11 @@
 	<div class="topSpacer"></div>
 	
 	<div class="fullCard textExLarge textLight textCenter">
-		<div class="titleCollectionContainer" ng-class="{'small':ctrl.screenSize.sm}">
-			<img class="crispImage" style="width:100%; height:100%;" ng-src="/img/large/splash.png"/>
-		</div>
+		<a class="plain" href="/explore">
+			<div class="titleCollectionContainer clickable" ng-class="{'small':ctrl.screenSize.sm}">
+				<img class="crispImage" ng-src="/img/large/splash.png"/>
+			</div>
+		</a>
 		<div class="titleTextBox transBack textSelectable">
 			<div class="textBold textDark textCenter" ng-class="{'textTitleExLarge':!ctrl.screenSize.sm, 'textTitleLarge':ctrl.screenSize.sm}">PixelCon Invaders</div>
 			On-Chain Generative NFTs <br/> Powered by <a class="textLight" target="_blank" href="https://pixelcons.io">PixelCons</a>
