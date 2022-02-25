@@ -7,7 +7,7 @@
 		const _invadersContractPath = 'contracts/PixelConInvaders.json';
 		const _bridgeContractPath = 'contracts/PixelConInvadersBridge.json';
 		const _pixelconsContractPath = 'contracts/PixelCons.json';
-		const _marketDataURL = 'https://data.pixelcons.io/market/marketdata_invaders.json';
+		const _marketDataURL = 'https://data.pixelcons.io/market/marketdata_invaders_uncover.json';
 		const _primaryNetworkIndex = 0;
 		const _secondaryNetworkIndex = 1;
 		const _contractParamMaxTokens = 1000;
